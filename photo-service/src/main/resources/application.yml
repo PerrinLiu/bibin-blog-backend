@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: photoservice
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/llpyblog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  cloud:
+    nacos:
+      server-addr: localhost:8848  #nacos??
+      discovery:
+        group: LLPY
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
