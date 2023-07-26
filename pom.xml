@@ -45,6 +45,7 @@
         <commons-pool.version>2.6.1</commons-pool.version>
         <jetty.version>9.4.17.v20190418</jetty.version>
         <swagger.version>2.9.2</swagger.version>
+        <hutool.version>5.3.0</hutool.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -167,7 +168,11 @@
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -224,6 +229,7 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
+
 
     </dependencies>
 

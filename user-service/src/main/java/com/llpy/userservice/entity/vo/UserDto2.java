@@ -1,17 +1,17 @@
-package com.llpy.userservice.entity;
+package com.llpy.userservice.entity.vo;
+
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
 @Data
-@Accessors(chain = true)  //开启链式编程
-@ApiModel(value="User对象", description="用户表")
-public class User {
+@ApiModel(value="UserDto对象", description="用户Dto表")
+public class UserDto2 implements Serializable {
+
     @TableId
     @ApiModelProperty(value = "用户id")
     private Integer UserId;
@@ -22,8 +22,6 @@ public class User {
 
     private String nickname;
 
-    private String password;
-
     private String email;
 
     private String gender;
@@ -32,10 +30,5 @@ public class User {
 
     private Integer root;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
-
-
 }
+
