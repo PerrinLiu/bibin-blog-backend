@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 public class User {
     @TableId
     @ApiModelProperty(value = "用户id")
-    private Long UserId;
+    private Long userId;
 
     private String username;
 
-    private Integer avatarId;
+    private String userImg;
 
     private String nickname;
 

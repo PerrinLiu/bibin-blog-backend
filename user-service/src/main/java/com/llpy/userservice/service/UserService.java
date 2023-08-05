@@ -6,6 +6,7 @@ import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.vo.UserDto2;
 import com.llpy.userservice.entity.vo.UserRegister;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
     Result<UserDto> login(UserLoginQuery userLoginQuery);
@@ -17,4 +18,6 @@ public interface UserService {
     Result<UserDto2> updateUser(UserDto2 userDto2);
 
     Result<?> register(UserRegister userRegister);
+
+    Result<?> updateUserImg(MultipartFile file, Long userId);
 }

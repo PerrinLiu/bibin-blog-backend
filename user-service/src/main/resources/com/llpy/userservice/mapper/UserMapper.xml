@@ -6,7 +6,7 @@
         select
             user.user_id,
             user.username,
-            user.avatar_id,
+            user.user_img,
             user.nickname,
             user.gender,
             user.email,

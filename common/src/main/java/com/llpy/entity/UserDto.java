@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class UserDto implements Serializable {
 
     @ApiModelProperty(value = "用户id")
-    private Long UserId;
+    private Long userId;
 
     @ApiModelProperty(value = "token认证")
     private String token;

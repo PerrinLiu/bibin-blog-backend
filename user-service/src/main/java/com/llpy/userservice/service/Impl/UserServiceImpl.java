@@ -13,6 +13,10 @@ import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.service.UserService;
 import com.llpy.utils.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -22,13 +26,21 @@ public class UserServiceImpl implements UserService {
     private final JwtTokenUtil jwtTokenUtil;
 
     private final RedisUtil redisUtil;
+    private final AliOSSUtils aliOSSUtils;
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil) {
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil,AliOSSUtils aliOSSUtils) {
         this.userMapper = userMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.redisUtil = redisUtil;
+        this.aliOSSUtils = aliOSSUtils;
     }
 
+    /**
+     * 登录
+     *
+     * @param userLoginQuery 用户登录查询
+     * @return {@link Result}
+     */
     @Override
     public Result login(UserLoginQuery userLoginQuery) {
         //根据用户名查找用户
@@ -77,7 +89,7 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}<{@link UserDto2}>
      */
     @Override
-    public Result getUser(Long userId) {
+    public Result<UserDto2> getUser(Long userId) {
         UserDto2 user = userMapper.getUser(userId);
         return Result.success(user);
     }
@@ -93,6 +105,12 @@ public class UserServiceImpl implements UserService {
         return Result.success();
     }
 
+    /**
+     * 更新用户
+     *
+     * @param userDto2 用户dto2
+     * @return {@link Result}
+     */
     @Override
     public Result updateUser(UserDto2 userDto2) {
         User user = new User();
@@ -105,6 +123,12 @@ public class UserServiceImpl implements UserService {
         return Result.success("修改成功");
     }
 
+    /**
+     * 注册
+     *
+     * @param userRegister 用户注册
+     * @return {@link Result}
+     */
     @Override
     public Result register(UserRegister userRegister) {
         //根据用户名查找用户
@@ -122,5 +146,36 @@ public class UserServiceImpl implements UserService {
         newUser.setNickname(userRegister.getNickname());
         userMapper.insert(newUser);
         return Result.success("注册成功，可以登录了");
+    }
+
+    /**
+     * 更新用户img
+     *
+     * @param file   文件
+     * @param userId 用户id
+     * @return {@link Result}<{@link ?}>
+     */
+    @Override
+    public Result<?> updateUserImg(MultipartFile file, Long userId) {
+        //拿到当前用户信息
+        UserDto2 oldUser = getUser(userId).getData();
+        //如果不是默认照片，先进行删除操作
+        String DEFAULT_USER_IMG = "";
+        if(oldUser.getUserImg()!=null && !oldUser.getUserImg().equals(DEFAULT_USER_IMG)){
+            aliOSSUtils.delete(oldUser.getUserImg());
+        }
+        try {
+            //上传
+            String url = aliOSSUtils.upload(file);
+            LocalDateTime updateTime = LocalDateTime.now();
+            User user = new User();
+            user.setUserId(userId);
+            user.setUserImg(url);
+            user.setUpdateTime(updateTime);
+            userMapper.updateById(user);
+        } catch (IOException e) {
+            return new Result<>(CodeMsg.UPLOAD_IMG_ERROR);
+        }
+        return Result.success();
     }
 }
