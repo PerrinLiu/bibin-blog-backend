@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class User {
     @TableId
     @ApiModelProperty(value = "用户id")
-    private Integer UserId;
+    private Long UserId;
 
     private String username;
 

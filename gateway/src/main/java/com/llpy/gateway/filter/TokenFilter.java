@@ -18,6 +18,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +48,8 @@ public class TokenFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpResponse response = exchange.getResponse();
+        response.getHeaders().add("Content-Type", "application/json; charset=UTF-8");
         //拿到请求对象
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
         //获取请求头的RedisKeyEnum.REDIS_KEY_HEADER_INFO  也就是X-Token
@@ -58,7 +61,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             String path = serverHttpRequest.getURI().getPath();
             log.info("当前请求接口：" + path);
             //如果请求包含一下这些，直接放行
-            String[] ignoresUrl = {"login","/swagger-ui.html", "/v2/api-docs"};
+            String[] ignoresUrl = {"login","register","/swagger-ui.html", "/v2/api-docs"};
             for (String url : ignoresUrl) {
                 if (path.contains(url)) {
                     return chain.filter(exchange);

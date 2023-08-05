@@ -5,18 +5,23 @@ import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.vo.UserDto2;
+import com.llpy.userservice.entity.vo.UserRegister;
 import com.llpy.userservice.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
+@Api(tags = {"用户控制类"})
 @RequestMapping("/user")
 public class UserController extends BaseController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * 登录
@@ -25,6 +30,7 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto}>
      */
     @PostMapping("/login")
+    @ApiOperation(value = "登录")
     public Result<UserDto> login(@RequestBody @Valid UserLoginQuery userLoginQuery){
         return userService.login(userLoginQuery);
     }
@@ -35,7 +41,26 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto2}>
      */
     @GetMapping("/getUser")
+    @ApiOperation(value = "获取用户信息")
     public Result<UserDto2> getUser(){
         return userService.getUser(loginUser().getUserId());
+    }
+
+    @GetMapping("/logout")
+    @ApiOperation(value = "当前用户退出")
+    public Result<?> logout(){
+        return userService.logout(loginUser());
+    }
+
+    @PutMapping("/updateUser")
+    @ApiOperation(value = "更新用户信息")
+    public Result<UserDto2> updateUser(@RequestBody UserDto2 userDto2){
+        return userService.updateUser(userDto2);
+    }
+
+    @PostMapping("/register")
+    @ApiOperation(value = "注册用户")
+    public Result<?> register(@RequestBody UserRegister userRegister){
+        return userService.register(userRegister);
     }
 }

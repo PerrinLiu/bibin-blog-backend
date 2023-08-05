@@ -2,7 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.llpy.userservice.mapper.UserMapper">
 
-    <select id="getUser" resultType="com.llpy.userservice.entity.User">
-        select user.username from llpyblog.user;
+    <select id="getUser" resultType="com.llpy.userservice.entity.vo.UserDto2">
+        select
+            user.user_id,
+            user.username,
+            user.avatar_id,
+            user.nickname,
+            user.gender,
+            user.email,
+            user.city,
+            user.root
+        from llpyblog.user
+        where
+            user_id = #{userId}
     </select>
 </mapper>

@@ -14,7 +14,7 @@ public class UserDto2 implements Serializable {
 
     @TableId
     @ApiModelProperty(value = "用户id")
-    private Integer UserId;
+    private Long UserId;
 
     private String username;
 

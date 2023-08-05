@@ -1,10 +1,12 @@
 package com.llpy.model;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
+@ApiOperation(value = "查看指定用户权限信息")
 public class Result<T> implements Serializable {
 
     private String message;
