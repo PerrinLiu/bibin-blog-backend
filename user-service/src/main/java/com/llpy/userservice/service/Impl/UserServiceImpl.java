@@ -34,6 +34,8 @@ public class UserServiceImpl implements UserService {
         this.redisUtil = redisUtil;
         this.aliOSSUtils = aliOSSUtils;
     }
+    //默认图片
+    private final String DEFAULT_USER_IMG = "https://llpy-blog.oss-cn-shenzhen.aliyuncs.com/userImg/2023-08/defaul.jpg";
 
     /**
      * 登录
@@ -144,6 +146,7 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(userRegister.getUsername());
         newUser.setPassword(password);
         newUser.setNickname(userRegister.getNickname());
+        newUser.setUserImg(DEFAULT_USER_IMG);  //给新用户添加默认图片
         userMapper.insert(newUser);
         return Result.success("注册成功，可以登录了");
     }
@@ -160,7 +163,6 @@ public class UserServiceImpl implements UserService {
         //拿到当前用户信息
         UserDto2 oldUser = getUser(userId).getData();
         //如果不是默认照片，先进行删除操作
-        String DEFAULT_USER_IMG = "";
         if(oldUser.getUserImg()!=null && !oldUser.getUserImg().equals(DEFAULT_USER_IMG)){
             aliOSSUtils.delete(oldUser.getUserImg());
         }
