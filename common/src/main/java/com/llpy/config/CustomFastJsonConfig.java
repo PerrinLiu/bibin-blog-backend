@@ -17,7 +17,7 @@ public class CustomFastJsonConfig {
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         //3.设置id字段为字符串
         fastJsonConfig.setSerializeFilters((ValueFilter) (object, name, value) -> {
-            if ("UserId".equalsIgnoreCase(name)){
+            if (name.contains("Id")){
                 return value + "";
             }
             return value;

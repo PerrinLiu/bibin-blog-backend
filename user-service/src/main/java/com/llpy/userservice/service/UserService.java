@@ -4,8 +4,8 @@ package com.llpy.userservice.service;
 import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
-import com.llpy.userservice.entity.vo.UserDto2;
-import com.llpy.userservice.entity.vo.UserRegister;
+import com.llpy.userservice.entity.dto.UserDto2;
+import com.llpy.userservice.entity.dto.UserRegister;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {

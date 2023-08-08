@@ -1,4 +1,4 @@
-package com.llpy.userservice.entity.vo;
+package com.llpy.userservice.entity.dto;
 
 
 import com.baomidou.mybatisplus.annotation.TableId;

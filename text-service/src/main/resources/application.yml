@@ -5,11 +5,12 @@ spring:
   application:
     name: textservice
 
+  #日志信息
   datasource:
-    url: jdbc:mysql://localhost:3306/llpyblog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://127.0.0.1:3306/llpyblog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
-    driver-class-name: com.mysql.jdbc.Driver
 
   cloud:
     nacos:
@@ -20,3 +21,18 @@ spring:
     host: localhost
     database: 0
     port: 6379
+
+  #上传文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+#配置阿里云属性
+aliyun:
+  oss:
+    endpoint: https://oss-cn-shenzhen.aliyuncs.com
+    accessKeyId: LTAI5tSi8iMHaqgxAw5bdBgS
+    accessKeySecret: HebfvTRyALJMuH6grBSVm0cwDtZsmc
+    bucketName: llpy-blog
+    directory: userImg

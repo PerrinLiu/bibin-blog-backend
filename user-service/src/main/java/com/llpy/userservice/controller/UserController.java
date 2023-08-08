@@ -4,17 +4,15 @@ import com.llpy.controller.BaseController;
 import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
-import com.llpy.userservice.entity.vo.UserDto2;
-import com.llpy.userservice.entity.vo.UserRegister;
+import com.llpy.userservice.entity.dto.UserDto2;
+import com.llpy.userservice.entity.dto.UserRegister;
 import com.llpy.userservice.service.UserService;
-import com.llpy.utils.AliOSSUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
 
 @RestController
 @Api(tags = {"用户控制类"})
