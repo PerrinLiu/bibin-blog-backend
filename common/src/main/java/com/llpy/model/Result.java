@@ -24,15 +24,15 @@ public class Result<T> implements Serializable {
     }
     public static Result success(Object data)
     {
-        return new Result("成功",200,data);
+        return new Result<>("成功",200,data);
     }
     public static Result success()
     {
-        return new Result("成功",200,null);
+        return new Result<>("成功",200,null);
     }
     public static Result error(String message)
     {
-        return new Result(message,500,null);
+        return new Result<>(message,500,null);
     }
 
 

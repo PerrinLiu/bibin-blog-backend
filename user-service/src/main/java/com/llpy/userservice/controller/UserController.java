@@ -1,8 +1,10 @@
 package com.llpy.userservice.controller;
 
+
 import com.llpy.controller.BaseController;
 import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
+import com.llpy.annotation.OperateLog;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
@@ -32,7 +34,7 @@ public class UserController extends BaseController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "登录")
-    public Result<UserDto> login(@RequestBody @Valid UserLoginQuery userLoginQuery){
+    public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery){
         return userService.login(userLoginQuery);
     }
 
@@ -42,6 +44,7 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto2}>
      */
     @GetMapping("/getUser")
+    @OperateLog("获取用户信息")
     @ApiOperation(value = "获取用户信息")
     public Result<UserDto2> getUser(){
         return userService.getUser(loginUser().getUserId());
