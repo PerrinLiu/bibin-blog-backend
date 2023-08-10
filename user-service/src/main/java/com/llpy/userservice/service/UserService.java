@@ -17,7 +17,9 @@ public interface UserService {
 
     Result<UserDto2> updateUser(UserDto2 userDto2);
 
-    Result<?> register(UserRegister userRegister);
+    Result<?> register(UserRegister userRegister,String emailToken);
 
     Result<?> updateUserImg(MultipartFile file, Long userId);
+
+    Result<?> sendEmail(String email);
 }

@@ -30,6 +30,13 @@ spring:
       max-file-size: 10MB
       max-request-size: 100MB
 
+  mail:
+    host: smtp.qq.com #SMTP服务器
+    username: 309829291@qq.com #发件人
+    password: iibgaqdurqcvbjia #授权码
+    properties:
+      from: 309829291@qq.com #发件人信息
+
 #配置阿里云属性
 aliyun:
   oss:
@@ -38,6 +45,8 @@ aliyun:
     accessKeySecret: HebfvTRyALJMuH6grBSVm0cwDtZsmc
     bucketName: llpy-blog
     directory: userImg
+
+
 
 
 

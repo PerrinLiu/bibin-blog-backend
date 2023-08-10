@@ -70,7 +70,13 @@ public class UserController extends BaseController {
 
     @PostMapping("/register")
     @ApiOperation(value = "注册用户")
-    public Result<?> register(@RequestBody UserRegister userRegister){
-        return userService.register(userRegister);
+    public Result<?> register(@RequestBody UserRegister userRegister, @RequestHeader("email-token")String emailToken){
+        return userService.register(userRegister,emailToken);
+    }
+
+    @GetMapping("/sendEmail")
+    @ApiOperation(value = "获得验证码")
+    public Result<?> sendEmail(@RequestParam String email){
+        return userService.sendEmail(email);
     }
 }

@@ -6,6 +6,7 @@ public enum RedisKeyEnum {
 
     //
     REDIS_KEY_IMG_UUID_CODE("verUUidCode:", 60*2, "图片验证码"),
+    REDIS_KEY_EMAIL_CODE("userCode:",60*5,"邮箱验证码"),
     //
     REDIS_KEY_IMG_BASE("baseImg", 60, "base64图片"),
     REDIS_KEY_IMG_TYPE("imgType", 60, "t图片类型"),

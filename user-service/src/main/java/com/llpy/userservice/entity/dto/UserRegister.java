@@ -27,6 +27,9 @@ public class UserRegister {
     @ApiModelProperty(value = "昵称", name = "nickname", required = true)
     private  String nickname;
 
+    @ApiModelProperty(value = "邮箱", name = "email", required = true)
+    private  String email;
+
     @ApiModelProperty(value = "验证码")
     private String captcha;
 }

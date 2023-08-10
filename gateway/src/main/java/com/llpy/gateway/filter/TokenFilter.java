@@ -61,7 +61,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             String path = serverHttpRequest.getURI().getPath();
             log.info("当前请求接口：" + path);
             //如果请求包含一下这些，直接放行
-            String[] ignoresUrl = {"login","register","/swagger-ui.html", "/v2/api-docs"};
+            String[] ignoresUrl = {"login","register","sendEmail","/swagger-ui.html", "/v2/api-docs"};
             for (String url : ignoresUrl) {
                 if (path.contains(url)) {
                     return chain.filter(exchange);

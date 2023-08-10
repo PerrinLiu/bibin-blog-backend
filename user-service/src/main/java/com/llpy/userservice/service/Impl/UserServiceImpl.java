@@ -6,11 +6,13 @@ import com.llpy.enums.RedisKeyEnum;
 import com.llpy.model.CodeMsg;
 import com.llpy.model.Result;
 import com.llpy.userservice.entity.User;
+import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
 import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.service.UserService;
+import com.llpy.userservice.utils.EmailUtil;
 import com.llpy.utils.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,12 +27,14 @@ public class UserServiceImpl implements UserService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final EmailUtil emailUtil;
     private final RedisUtil redisUtil;
     private final AliOSSUtils aliOSSUtils;
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil,AliOSSUtils aliOSSUtils) {
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils) {
         this.userMapper = userMapper;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.emailUtil = emailUtil;
         this.redisUtil = redisUtil;
         this.aliOSSUtils = aliOSSUtils;
     }
@@ -126,13 +130,39 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 发送电子邮件
+     *
+     * @param email 邮件dto
+     * @return {@link Result}<{@link ?}>
+     */
+    @Override
+    public Result<?> sendEmail(String email) {
+        MailDto mailDto = new MailDto();
+        mailDto.setTo(email);
+        MailDto mail = emailUtil.sendMail(mailDto);
+        if(!mail.getStatus().equals("ok")){
+            return new Result<>(CodeMsg.USER_EMAIL_ERROR);
+        }
+        //生成一个不带‘ - ‘的uuid，用来和邮箱验证码一起存进redis
+        String redisEmailKey = UUID.randomUUID().toString().replaceAll("-", "");
+        redisUtil.set(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey()+redisEmailKey,mail.getText(),RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getExpireTime());
+        return new Result<>("已发送，5分钟内有效~",200,redisEmailKey);
+    }
+
+    /**
      * 注册
      *
      * @param userRegister 用户注册
      * @return {@link Result}
      */
     @Override
-    public Result register(UserRegister userRegister) {
+    public Result register(UserRegister userRegister, String emailToken) {
+        //验证邮箱验证码
+        String captcha =(String) redisUtil.get(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + emailToken);
+        if(captcha ==null||!captcha.equals(userRegister.getCaptcha())){
+            //验证码错误
+            return new Result<>(CodeMsg.USER_EMAIL_CODE_ERROR);
+        }
         //根据用户名查找用户
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                         .eq(User::getUsername, userRegister.getUsername()));
