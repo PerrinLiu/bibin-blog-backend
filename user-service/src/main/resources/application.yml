@@ -32,10 +32,17 @@ spring:
 
   mail:
     host: smtp.qq.com #SMTP服务器
+    port: 587
     username: 309829291@qq.com #发件人
     password: iibgaqdurqcvbjia #授权码
     properties:
       from: 309829291@qq.com #发件人信息
+      mail:
+        smtp:
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+
+
 
 #配置阿里云属性
 aliyun:

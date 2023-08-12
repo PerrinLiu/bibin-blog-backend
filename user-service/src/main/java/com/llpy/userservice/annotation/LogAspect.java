@@ -23,6 +23,7 @@ import java.util.Arrays;
 @Component
 public class LogAspect extends BaseController {
 
+    //日志接口
     private final OperationMapper operationMapper;
 
     public LogAspect(OperationMapper operationMapper) {
@@ -43,21 +44,29 @@ public class LogAspect extends BaseController {
     public Object saveSysLog(ProceedingJoinPoint pjp) throws Throwable {
 
         HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
+
         System.out.println("LocalDateTime: "+ LocalDateTime.now());
+
         System.out.println("--------------begin----------------");
+
         try {
             // 打印请求内容
             System.out.println("url: {"+request.getRequestURL().toString()+"}");
             System.out.println("method: {"+pjp.getSignature()+"}");
             System.out.println("args: {"+ Arrays.toString(pjp.getArgs())+"}");
+
         } catch (Exception e) {
             System.out.println("###LogAspect.class before() ### ERROR:"+e);
         }
+
         System.out.println("切面配置通知");
-        //保存操作日志
+
+        //创建操作日志对象
         OperationLog log = new OperationLog();
+
         //从切面织入点处通过反射机制获取织入点处的方法
         MethodSignature signature = (MethodSignature) pjp.getSignature();
+
         //获取切入点所在的方法
         Method method = signature.getMethod();
 
@@ -80,8 +89,9 @@ public class LogAspect extends BaseController {
         //将参数所在的数组转换成json
         String params = JSON.toJSONString(args);
         log.setParams(params);
-
+        //获得用户id
         Long userId = loginUser().getUserId();
+        //如果id不为空，设置操作日志对象的用户id值
         if (userId != null){
             log.setUserId(userId);
         }
@@ -89,18 +99,23 @@ public class LogAspect extends BaseController {
 
         // TODO: 2023/8/9 以后这里加一个用户ip地址
 
+        //执行方法
         Result returnObject = (Result) pjp.proceed(pjp.getArgs());
+
+        //后置通知
         log.setCode(returnObject.getRetCode());
         //获取用户具体操作时间
         log.setTime(LocalDateTime.now());
         //存储至数据库
         operationMapper.insert(log);
+
         try {
             System.out.println("Response: {}"+ JSON.toJSONString(args));
         } catch (Exception e) {
             System.out.println("###LogAspect.class after() ### ERROR:"+e);
         }
         System.out.println("--------------end----------------");
+        
         return returnObject;
     }
 

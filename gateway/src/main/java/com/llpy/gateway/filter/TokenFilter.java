@@ -48,28 +48,35 @@ public class TokenFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        //设置响应体为json格式
         ServerHttpResponse response = exchange.getResponse();
         response.getHeaders().add("Content-Type", "application/json; charset=UTF-8");
+
         //拿到请求对象
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
         //获取请求头的RedisKeyEnum.REDIS_KEY_HEADER_INFO  也就是X-Token
         String uuid = serverHttpRequest.getHeaders().getFirst(RedisKeyEnum.REDIS_KEY_HEADER_INFO.getKey());
-        //准备用来获取token
+
+        //准备用来存储token
         String authToken = "";
         try {
             //获取请求的接口
             String path = serverHttpRequest.getURI().getPath();
             log.info("当前请求接口：" + path);
+
             //如果请求包含一下这些，直接放行
             String[] ignoresUrl = {"login","register","sendEmail","/swagger-ui.html", "/v2/api-docs"};
+
             for (String url : ignoresUrl) {
-                if (path.contains(url)) {
-                    return chain.filter(exchange);
-                }
+
+                if (path.contains(url)) return chain.filter(exchange);
+
             }
             //判断请求头是否空或空白
             if (StringUtils.isBlank(uuid)) {
+
                 return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "token出错");
+
             } else {
                 //从缓存中获取jwt
                 Object sessionJwt = redisUtil.get(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + uuid);
@@ -77,6 +84,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     //如果为空，返回无效
                     return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "token is Invalidation");
                 }
+
                 //将其转为字符串
                 authToken = String.valueOf(sessionJwt);
                 //获取到用户信息
@@ -86,7 +94,6 @@ public class TokenFilter implements GlobalFilter, Ordered {
                 UserDto loginUser = new Gson().fromJson(userInfo, UserDto.class);
                 //获取jwt失效时间
                 Date getExpirationDateFromToken = jwtTokenUtil.getExpirationDateFromToken(String.valueOf(sessionJwt));
-
                 long remainingMinutes = DateUtils.getMinuteDifference(getExpirationDateFromToken, DateUtils.getCurrentTime());
 
                 //如果小于1小时，刷新JWT
@@ -94,15 +101,19 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     // randomKey和token已经生成完毕
                     final String randomKey = jwtTokenUtil.getRandomKey();
                     final String newToken = jwtTokenUtil.generateToken(userInfo, randomKey);
+
                     //保存新的token
-                    redisUtil.set(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken(), newToken, RedisKeyEnum.REDIS_KEY_USER_INFO.getExpireTime());
+                    redisUtil.set(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken(),
+                            newToken,
+                            RedisKeyEnum.REDIS_KEY_USER_INFO.getExpireTime());
                     authToken = newToken;
                 }
                 //刷新Redis-token时间
                 Long expireTime = redisUtil.getExpire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken());
                 if (expireTime <= EXPIREDREDIS) {
                     //刷新redis时间
-                    redisUtil.expire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken(), RedisKeyEnum.REDIS_KEY_USER_INFO.getExpireTime());
+                    redisUtil.expire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken(),
+                            RedisKeyEnum.REDIS_KEY_USER_INFO.getExpireTime());
                 }
 
                 ServerHttpRequest request = exchange

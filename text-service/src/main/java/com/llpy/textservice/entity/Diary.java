@@ -17,6 +17,8 @@ public class Diary {
 
     private Long userId;
 
+    private String diaryTitle;
+
     private Long diaryTextId;
 
     private LocalDateTime createTime;

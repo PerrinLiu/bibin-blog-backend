@@ -18,6 +18,8 @@ public class UserDto2 implements Serializable {
 
     private String username;
 
+    private String password;
+
     private String userImg;
 
     private String nickname;
