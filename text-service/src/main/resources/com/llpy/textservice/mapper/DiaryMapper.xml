@@ -2,7 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.llpy.textservice.mapper.DiaryMapper">
 
-    <select id="getList" resultType="java.util.List">
+    <select id="getList" resultType="com.llpy.textservice.entity.dto.DiaryVo">
+        SELECT
+            d.diary_id,
+            d.user_id,
+            d.diary_title,
+            dt.diary_text,
+            dt.create_time
+        FROM
+            llpyblog.diary AS d
+                LEFT JOIN llpyblog.diary_text AS dt
+                          on d.diary_id = dt.diary_id
+    </select>
+
+    <select id="getListById" resultType="com.llpy.textservice.entity.dto.DiaryVo">
         SELECT
             d.diary_id,
             d.user_id,

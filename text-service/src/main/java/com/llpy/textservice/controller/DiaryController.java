@@ -29,6 +29,6 @@ public class DiaryController extends BaseController {
     @GetMapping("/getDiary")
     @ApiOperation(value = "获得当前用户所有文章")
     public Result<List<DiaryVo>> getDiary(){
-        return diaryService.getDiary(loginUser().getUserId());
+        return diaryService.getDiary();
     }
 }

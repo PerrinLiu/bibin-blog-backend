@@ -65,7 +65,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("当前请求接口：" + path);
 
             //如果请求包含一下这些，直接放行
-            String[] ignoresUrl = {"login","register","sendEmail","/swagger-ui.html", "/v2/api-docs"};
+            String[] ignoresUrl = {"login","register","getDiary","sendEmail","/swagger-ui.html", "/v2/api-docs"};
 
             for (String url : ignoresUrl) {
 

@@ -26,8 +26,7 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     @Transactional  //开启事务，确保同时成功，或同时失败，保持数据一致性
     public Result addDiary(DiaryVo diaryVo,Long id) {
-
-        if(id ==null) return Result.success("用户登录过期");
+        if(id ==null) return Result.error("会话过期");
 
         //新建日记信息对象
         DiaryText diaryText = new DiaryText();
@@ -65,12 +64,14 @@ public class DiaryServiceImpl implements DiaryService {
 
     /**
      * 把日记
+     *
      * @param userId 用户id
      * @return {@link Result}<{@link List}<{@link DiaryVo}>>
      */
     @Override
-    public Result<List<DiaryVo>> getDiary(Long userId) {
+    public Result getDiary(Long userId) {
         //查询当前用户的所有文章
-        return diaryMapper.getList(userId);
+        List<DiaryVo> list = diaryMapper.getList();
+        return Result.success(list);
     }
 }

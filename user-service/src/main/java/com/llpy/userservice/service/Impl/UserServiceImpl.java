@@ -67,11 +67,9 @@ public class UserServiceImpl implements UserService {
             return new Result<>(CodeMsg.USER_NOT_EXIST);
         } else {
             //存在则验证密码
-            // TODO: 2023/7/26 后面把密码都改成加密的
-            String password1 = userLoginQuery.getPassword();  //未加密的密码
-            String password2 = DigestUtil.sha256Digest(password1);  //加密的密码
+            String password = DigestUtil.sha256Digest(userLoginQuery.getPassword());  //加密的密码
             //密码验证不通过，然会密码错误信息
-            if (!user.getPassword().equals(password2) && !user.getPassword().equals(password1)) {
+            if (!user.getPassword().equals(password)) {
                 return new Result<>(CodeMsg.USER_PASS_ERROR);
             }
             //生成一个不带‘ - ‘的uuid，用来和jwt一起存进redis
@@ -108,7 +106,6 @@ public class UserServiceImpl implements UserService {
     public Result<UserDto2> getUser(Long userId) {
 
         UserDto2 user = userMapper.getUser(userId);
-
         //将密码设为空再返回
         user.setPassword(null);
 
@@ -226,16 +223,17 @@ public class UserServiceImpl implements UserService {
 
         //如果密码不为空，就代表是更新密码
         if(userDto2.getPassword()!=null){
-            //验证密码是否相同
+            //拿到旧密码，验证密码是否相同
             User oldUser = userMapper.selectById(userDto2.getUserId());
-
+            //将密码加密后比较
+            String password = DigestUtil.sha256Digest(userDto2.getPassword());
             //如果密码相同，直接返回密码无变化
-            if (oldUser.getPassword().equals(userDto2.getPassword())) {
+            if (oldUser.getPassword().equals(password)) {
                 return Result.success("密码无变化，无需改变");
             }
 
             //更新密码
-            user.setPassword(userDto2.getPassword());
+            user.setPassword(password);
         }else{
             //否则就是更新用户信息
             user.setNickname(userDto2.getNickname())

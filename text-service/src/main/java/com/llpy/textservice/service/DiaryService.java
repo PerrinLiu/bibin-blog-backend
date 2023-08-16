@@ -9,5 +9,5 @@ import java.util.List;
 public interface DiaryService {
     Result addDiary(DiaryVo diaryVo,Long id);
 
-    Result<List<DiaryVo>> getDiary(Long userId);
+    Result<List<DiaryVo>> getDiary();
 }

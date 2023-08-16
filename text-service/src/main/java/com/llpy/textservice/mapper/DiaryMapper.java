@@ -12,5 +12,7 @@ import java.util.List;
 @Mapper
 public interface DiaryMapper extends BaseMapper<Diary> {
 
-    Result<List<DiaryVo>> getList(Long userId);
+    List<DiaryVo> getList();
+
+    List<DiaryVo> getListById(Long userId);
 }
