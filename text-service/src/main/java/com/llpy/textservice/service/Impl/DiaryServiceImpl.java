@@ -39,11 +39,12 @@ public class DiaryServiceImpl implements DiaryService {
         //插入后获得生成的日记信息id
         Long textId = diaryText.getDiaryTextId();
 
-        //添加id到日记基本信息表，然后插入数据库
+        //添加日记信息id到日记基本信息表，然后插入数据库
         Diary diary = new Diary();
 
         diary.setUserId(id)
                 .setDiaryId(null)
+                .setIsOpen(diaryVo.getIsOpen())
                 .setDiaryTextId(textId)
                 .setDiaryTitle(diaryVo.getDiaryTitle())
                 .setCreateTime(LocalDateTime.now());
@@ -63,6 +64,18 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     /**
+     * 获取所有日记
+     *
+     * @return
+     */
+    @Override
+    public Result getDiary() {
+        List<DiaryVo> list = diaryMapper.getList();
+
+        return Result.success(list);
+    }
+
+    /**
      * 把日记
      *
      * @param userId 用户id
@@ -71,7 +84,24 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public Result getDiary(Long userId) {
         //查询当前用户的所有文章
-        List<DiaryVo> list = diaryMapper.getList();
+        List<DiaryVo> list = diaryMapper.getListById(userId);
         return Result.success(list);
+    }
+
+    /**
+     * 得到日记基础信息
+     *
+     * @return {@link Result}<{@link List}<{@link Diary}>>
+     */
+    @Override
+    public Result getDiaryBase(Long userId) {
+        //得到基本信息
+        List<Diary> listTitle = diaryMapper.getListTitle(userId);
+        return Result.success(listTitle);
+    }
+
+    public Result<DiaryVo> getOneText(Long diaryId){
+        DiaryVo oneText = diaryMapper.getOneText(diaryId);
+        return Result.success(oneText);
     }
 }

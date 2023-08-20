@@ -35,4 +35,4 @@ aliyun:
     accessKeyId: LTAI5tSi8iMHaqgxAw5bdBgS
     accessKeySecret: HebfvTRyALJMuH6grBSVm0cwDtZsmc
     bucketName: llpy-blog
-    directory: userImg
+    directory: diaryImg

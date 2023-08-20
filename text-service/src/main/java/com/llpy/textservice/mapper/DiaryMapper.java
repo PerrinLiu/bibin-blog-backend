@@ -12,7 +12,15 @@ import java.util.List;
 @Mapper
 public interface DiaryMapper extends BaseMapper<Diary> {
 
+    //获取全部日记
     List<DiaryVo> getList();
 
+    //获取单个用户日记
     List<DiaryVo> getListById(Long userId);
+
+    //获取所有日记的基本信息
+    List<Diary> getListTitle(Long userId);
+
+    //获取单个日记的信息
+    DiaryVo getOneText(Long diaryId);
 }

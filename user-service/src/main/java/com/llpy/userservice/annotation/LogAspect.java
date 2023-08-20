@@ -7,6 +7,7 @@ import com.llpy.entity.OperationLog;
 import com.llpy.model.Result;
 import com.llpy.userservice.mapper.OperationMapper;
 import com.llpy.utils.HttpContextUtils;
+import com.llpy.utils.IPUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -25,9 +26,10 @@ public class LogAspect extends BaseController {
 
     //日志接口
     private final OperationMapper operationMapper;
-
-    public LogAspect(OperationMapper operationMapper) {
+    private final IPUtils ipUtils;
+    public LogAspect(OperationMapper operationMapper, IPUtils ipUtils) {
         this.operationMapper = operationMapper;
+        this.ipUtils = ipUtils;
     }
 
     /**
@@ -92,12 +94,11 @@ public class LogAspect extends BaseController {
         //获得用户id
         Long userId = loginUser().getUserId();
         //如果id不为空，设置操作日志对象的用户id值
-        if (userId != null){
+        if (userId != null) {
             log.setUserId(userId);
         }
-
-
-        // TODO: 2023/8/9 以后这里加一个用户ip地址
+        String clientIpAddress = ipUtils.getClientIpAddress(request);
+        log.setHost(clientIpAddress);
 
         //执行方法
         Result returnObject = (Result) pjp.proceed(pjp.getArgs());

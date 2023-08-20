@@ -8,6 +8,8 @@ import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface UserService {
     Result<UserDto> login(UserLoginQuery userLoginQuery);
 
@@ -22,4 +24,7 @@ public interface UserService {
     Result<?> updateUserImg(MultipartFile file, Long userId);
 
     Result<?> sendEmail(String email);
+
+    Result getAccess(HttpServletRequest request);
+
 }

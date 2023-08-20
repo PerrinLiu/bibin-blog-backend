@@ -14,9 +14,15 @@ public class DiaryVo {
 
     private Long userId;
 
+    //用户名称
+    private String nickname;
+
     private String diaryTitle;
 
     private String diaryText;
+
+    //是否公开
+    private int isOpen;
 
     private String createTime;
 }

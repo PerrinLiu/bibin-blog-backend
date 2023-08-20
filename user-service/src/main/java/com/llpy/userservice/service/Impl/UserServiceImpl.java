@@ -1,6 +1,8 @@
 package com.llpy.userservice.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.llpy.entity.Access;
 import com.llpy.entity.UserDto;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.model.CodeMsg;
@@ -10,6 +12,7 @@ import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
+import com.llpy.userservice.mapper.AccessMapper;
 import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.service.UserService;
 import com.llpy.userservice.utils.EmailUtil;
@@ -17,14 +20,17 @@ import com.llpy.utils.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
     //用户接口
     private final UserMapper userMapper;
+    private final AccessMapper accessMapper;
 
     //jwt工具类
     private final JwtTokenUtil jwtTokenUtil;
@@ -38,13 +44,20 @@ public class UserServiceImpl implements UserService {
     //正则表达式工具类
     private final RegexUtils regexUtils;
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils, RegexUtils regexUtils) {
+
+
+    //ip工具类
+    private final IPUtils ipUtils;
+
+    public UserServiceImpl(UserMapper userMapper, AccessMapper accessMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils, RegexUtils regexUtils, IPUtils ipUtils) {
         this.userMapper = userMapper;
+        this.accessMapper = accessMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.emailUtil = emailUtil;
         this.redisUtil = redisUtil;
         this.aliOSSUtils = aliOSSUtils;
         this.regexUtils = regexUtils;
+        this.ipUtils = ipUtils;
     }
     //默认图片
     private final String DEFAULT_USER_IMG = "https://llpy-blog.oss-cn-shenzhen.aliyuncs.com/userImg/2023-08/defaul.jpg";
@@ -160,6 +173,40 @@ public class UserServiceImpl implements UserService {
                 RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getExpireTime());
 
         return new Result<>("已发送，5分钟内有效~",200,redisEmailKey);
+    }
+
+    /**
+     * 更新访问
+     *
+     * @param request 请求
+     */
+    @Override
+    public Result getAccess(HttpServletRequest request) {
+        //获得用户ip
+        String clientIpAddress = ipUtils.getClientIpAddress(request);
+
+        //查询网页访问的所有ip地址
+        QueryWrapper<Access> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("access_name", "网页访问");
+        List<Access> accesses = accessMapper.selectList(queryWrapper);
+
+        //遍历数组，查看有没有重复，如果重复，则不插入
+        if(accesses ==null) return Result.success(0);
+
+        for (Access access : accesses) {
+            //如果ip相等，则直接返回当前集合长度，就是访问量
+            if(access.getIp().equals(clientIpAddress)){
+                return Result.success(accesses.size());
+            }
+        }
+
+        //如果没有重复的，代表是新用户，则插入后，将集合长度加1返回
+        Access access = new Access();
+        access.setAccessName("网页访问");
+        access.setIp(clientIpAddress);
+        accessMapper.insert(access);
+
+        return Result.success(accesses.size()+1);
     }
 
     /**

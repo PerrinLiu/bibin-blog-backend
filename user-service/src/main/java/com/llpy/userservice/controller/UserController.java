@@ -9,11 +9,14 @@ import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
 import com.llpy.userservice.service.UserService;
+import com.llpy.utils.IPUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -22,7 +25,7 @@ import javax.validation.Valid;
 public class UserController extends BaseController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, IPUtils ipUtils) {
         this.userService = userService;
     }
 
@@ -84,5 +87,11 @@ public class UserController extends BaseController {
     @ApiOperation(value = "忘记密码")
     public Result<?> updatePassword(){
         return null;
+    }
+
+    @GetMapping("/getAccess")
+    @ApiOperation(value="统计网站访问")
+    public Result getAccess(HttpServletRequest request){
+       return userService.getAccess(request);
     }
 }

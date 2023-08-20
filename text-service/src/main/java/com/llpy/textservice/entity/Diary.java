@@ -21,6 +21,8 @@ public class Diary {
 
     private Long diaryTextId;
 
+    private int isOpen;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
