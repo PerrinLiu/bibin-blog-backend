@@ -1,5 +1,6 @@
 package com.llpy.textservice.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
@@ -96,12 +97,42 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public Result getDiaryBase(Long userId) {
         //得到基本信息
-        List<Diary> listTitle = diaryMapper.getListTitle(userId);
+        List<DiaryVo> listTitle = diaryMapper.getListTitle(userId);
+
         return Result.success(listTitle);
     }
 
+    /**
+     * 得到单个日记内容
+     *
+     * @param diaryId 日记id
+     * @return {@link Result}<{@link DiaryVo}>
+     */
     public Result<DiaryVo> getOneText(Long diaryId){
+
         DiaryVo oneText = diaryMapper.getOneText(diaryId);
+
         return Result.success(oneText);
+    }
+
+    /**
+     * 删除日记
+     *
+     * @param diaryId 日记id
+     * @return {@link Result}
+     */
+    @Override
+    @Transactional
+    public Result deleteDiaryOne(Long diaryId) {
+        //删除日记基础信息
+        diaryMapper.deleteById(diaryId);
+        //创建一个根据日记id删除日记内容的lambda表达式，删除日记内容
+        LambdaQueryWrapper<DiaryText> diaryQuery = new LambdaQueryWrapper<>();
+
+        diaryQuery.eq(DiaryText::getDiaryId,diaryId);
+
+        diaryTextMapper.delete(diaryQuery);
+
+        return Result.success();
     }
 }

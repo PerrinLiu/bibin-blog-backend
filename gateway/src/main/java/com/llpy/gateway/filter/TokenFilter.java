@@ -65,10 +65,14 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("当前请求接口：" + path);
 
             //如果请求包含一下这些，直接放行
-            String[] ignoresUrl = {"login","register","getDiaryAll","getAccess","sendEmail","/swagger-ui.html", "/v2/api-docs"};
+            String[] ignoresUrl = {"login","register","getDiaryAll","getAccess","getDiaryOne","getDiaryBase","sendEmail","/swagger-ui.html", "/v2/api-docs"};
+
+            //提取最后一个/的子串
+            int index = path.lastIndexOf("/");
+            path = path.substring(index + 1);
 
             for (String url : ignoresUrl) {
-                if (path.contains(url)) return chain.filter(exchange);
+                if (path.equals(url)) return chain.filter(exchange);
 
             }
             //判断请求头是否空或空白

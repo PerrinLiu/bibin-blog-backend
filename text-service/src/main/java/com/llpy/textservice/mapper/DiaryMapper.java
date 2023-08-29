@@ -19,7 +19,7 @@ public interface DiaryMapper extends BaseMapper<Diary> {
     List<DiaryVo> getListById(Long userId);
 
     //获取所有日记的基本信息
-    List<Diary> getListTitle(Long userId);
+    List<DiaryVo> getListTitle(Long userId);
 
     //获取单个日记的信息
     DiaryVo getOneText(Long diaryId);

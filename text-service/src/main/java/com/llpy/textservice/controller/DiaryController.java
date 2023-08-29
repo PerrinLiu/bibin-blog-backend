@@ -56,4 +56,10 @@ public class DiaryController extends BaseController {
     public Result<DiaryVo> getDiaryOne(@RequestParam Long diaryId){
         return diaryService.getOneText(diaryId);
     }
+
+    @DeleteMapping("/deleteDiaryOne")
+    @ApiOperation(value = "删除单个日记")
+    public Result deleteDiaryOne(@RequestParam Long diaryId){
+        return diaryService.deleteDiaryOne(diaryId);
+    }
 }

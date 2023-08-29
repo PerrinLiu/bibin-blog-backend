@@ -17,4 +17,6 @@ public interface DiaryService {
     Result<List<Diary>> getDiaryBase(Long userId);
 
     Result<DiaryVo> getOneText(Long diaryId);
+
+    Result deleteDiaryOne(Long diaryId);
 }

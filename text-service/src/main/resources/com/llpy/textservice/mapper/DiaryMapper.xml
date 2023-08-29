@@ -7,14 +7,16 @@
                d.user_id,
                d.diary_title,
                dt.diary_text,
-               dt.create_time
+               dt.create_time,
+               u.nickname
         FROM llpyblog.diary AS d
                  LEFT JOIN llpyblog.diary_text AS dt
                            on d.diary_id = dt.diary_id
+                 left join llpyblog.`user` as u on d.user_id = u.user_id
         where d.is_open = 0
     </select>
 
-    <select id="getListTitle" resultType="com.llpy.textservice.entity.Diary">
+    <select id="getListTitle" resultType="com.llpy.textservice.entity.dto.DiaryVo">
         SELECT d.diary_id,
                d.user_id,
                d.diary_title,
@@ -37,10 +39,12 @@
                d.user_id,
                d.diary_title,
                dt.diary_text,
+               u.nickname,
                dt.create_time
         FROM llpyblog.diary AS d
                  LEFT JOIN llpyblog.diary_text AS dt
                            on d.diary_id = dt.diary_id
+                 left join llpyblog.`user` as u on d.user_id = u.user_id
         where d.user_id = #{userId}
     </select>
     <select id="getOneText" resultType="com.llpy.textservice.entity.dto.DiaryVo">
@@ -48,7 +52,7 @@
                dt.diary_text
         FROM llpyblog.diary AS d
                  LEFT JOIN llpyblog.diary_text AS dt ON d.diary_id = dt.diary_id
-        WHERE d.is_open = 0
-          AND d.diary_id = #{diaryId}
+        WHERE
+            d.diary_id = #{diaryId}
     </select>
 </mapper>
