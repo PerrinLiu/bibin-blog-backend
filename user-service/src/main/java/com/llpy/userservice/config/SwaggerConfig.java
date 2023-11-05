@@ -31,6 +31,7 @@ public class SwaggerConfig {
                 .required(false).build();
         List<Parameter> aParameters = new ArrayList<>();
         aParameters.add(aParameterBuilder.build());
+
         return new Docket(DocumentationType.SWAGGER_2)
                 //主要信息
                 .apiInfo(webApiInfo())
@@ -47,7 +48,7 @@ public class SwaggerConfig {
                 .description("小可爱香菜~")
                 .version("1.0")
                 .contact(new Contact("刘林培言", "https://baidu.com",
-                        "811986806@qq.com"))
+                        "309829291@qq.com"))
                 .build();
     }
 }

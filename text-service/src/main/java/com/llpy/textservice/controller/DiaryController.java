@@ -6,6 +6,7 @@ import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.dto.DiaryVo;
 import com.llpy.textservice.service.DiaryService;
 import com.llpy.textservice.service.Impl.DiaryServiceImpl;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/text")
+@Api(tags = {"日记控制类"})
 public class DiaryController extends BaseController {
     private final DiaryService diaryService;
 

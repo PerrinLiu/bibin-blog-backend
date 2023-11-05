@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 public interface UserService {
-    Result<UserDto> login(UserLoginQuery userLoginQuery);
+    Result<UserDto> login(UserLoginQuery userLoginQuery,String captcha);
 
     Result<UserDto2> getUser(Long userId);
 
@@ -25,6 +25,6 @@ public interface UserService {
 
     Result<?> sendEmail(String email);
 
-    Result getAccess(HttpServletRequest request);
+
 
 }

@@ -23,7 +23,7 @@
                u.nickname,
                d.create_time
         FROM llpyblog.diary AS d
-                 LEFT JOIN llpyblog.USER AS u ON d.user_id = u.user_id
+                 LEFT JOIN llpyblog.`user` AS u ON d.user_id = u.user_id
         <where>
             <if test="userId!=null">
                 d.user_id = #{userId}

@@ -2,21 +2,19 @@ server:
   port: 8083
 
 spring:
+
+  profiles:
+    active: dev
+
   application:
     name: userservice  #服务名称
 
-  #日志信息
-  datasource:
-    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    url: jdbc:p6spy:mysql://127.0.0.1:3306/llpyblog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: 123456
-
   cloud:
     nacos:
-      server-addr: localhost:8848  #nacos??
       discovery:
-        group: LLPY   #分组
+        server-addr: localhost:8848  #nacos地址
+        group: LLPY
+
 
   #redis配置
   redis:

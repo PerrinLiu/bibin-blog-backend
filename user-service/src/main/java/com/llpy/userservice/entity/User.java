@@ -30,8 +30,6 @@ public class User {
 
     private String city;
 
-    private Integer root;
-
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;

@@ -41,6 +41,7 @@
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
+<!--        P6Spy来监视数据库的SQL语句-->
         <dependency>
             <groupId>p6spy</groupId>
             <artifactId>p6spy</artifactId>

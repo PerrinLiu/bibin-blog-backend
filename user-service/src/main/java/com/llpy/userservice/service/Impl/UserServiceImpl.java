@@ -1,8 +1,8 @@
 package com.llpy.userservice.service.Impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.llpy.entity.Access;
+import com.llpy.entity.MenuVo;
 import com.llpy.entity.UserDto;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.model.CodeMsg;
@@ -12,7 +12,7 @@ import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
-import com.llpy.userservice.mapper.AccessMapper;
+import com.llpy.userservice.mapper.MenuMapper;
 import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.service.UserService;
 import com.llpy.userservice.utils.EmailUtil;
@@ -20,7 +20,6 @@ import com.llpy.utils.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     //用户接口
     private final UserMapper userMapper;
-    private final AccessMapper accessMapper;
 
     //jwt工具类
     private final JwtTokenUtil jwtTokenUtil;
@@ -44,20 +42,18 @@ public class UserServiceImpl implements UserService {
     //正则表达式工具类
     private final RegexUtils regexUtils;
 
-
+    private final MenuMapper menuMapper;
 
     //ip工具类
-    private final IPUtils ipUtils;
 
-    public UserServiceImpl(UserMapper userMapper, AccessMapper accessMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils, RegexUtils regexUtils, IPUtils ipUtils) {
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils, RegexUtils regexUtils, MenuMapper menuMapper) {
         this.userMapper = userMapper;
-        this.accessMapper = accessMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.emailUtil = emailUtil;
         this.redisUtil = redisUtil;
         this.aliOSSUtils = aliOSSUtils;
         this.regexUtils = regexUtils;
-        this.ipUtils = ipUtils;
+        this.menuMapper = menuMapper;
     }
     //默认图片
     private final String DEFAULT_USER_IMG = "https://llpy-blog.oss-cn-shenzhen.aliyuncs.com/userImg/2023-08/defaul.jpg";
@@ -69,7 +65,23 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}
      */
     @Override
-    public Result login(UserLoginQuery userLoginQuery) {
+    public Result login(UserLoginQuery userLoginQuery,String captchaKey) {
+        // TODO: 2023/9/29 暂时关掉验证码验证
+//        //拿到前端传的验证码
+//        String captcha = userLoginQuery.getCaptcha();
+//        //如果验证码为空
+//        if(StringUtils.isBlank(captcha)){
+//           return Result.error("验证码不能为空");
+//        }
+//
+//        //拿出redis的验证码
+//        String o = (String) redisUtil.get(captchaKey);
+//        if(!o.equalsIgnoreCase(userLoginQuery.getCaptcha())){
+//            return Result.error("验证码错误!");
+//        }
+//        //如果验证通过，删除redis中的值
+//        redisUtil.del(captchaKey);
+
         //根据用户名查找用户
         User user =
                 userMapper.selectOne(
@@ -121,6 +133,10 @@ public class UserServiceImpl implements UserService {
         UserDto2 user = userMapper.getUser(userId);
         //将密码设为空再返回
         user.setPassword(null);
+
+        //获取用户所有的权限
+        List<MenuVo> userRoot = menuMapper.getUserRoot(userId);
+        user.setMenuVos(userRoot);
 
         return Result.success(user);
     }
@@ -175,39 +191,7 @@ public class UserServiceImpl implements UserService {
         return new Result<>("已发送，5分钟内有效~",200,redisEmailKey);
     }
 
-    /**
-     * 更新访问
-     *
-     * @param request 请求
-     */
-    @Override
-    public Result getAccess(HttpServletRequest request) {
-        //获得用户ip
-        String clientIpAddress = ipUtils.getClientIpAddress(request);
 
-        //查询网页访问的所有ip地址
-        QueryWrapper<Access> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("access_name", "网页访问");
-        List<Access> accesses = accessMapper.selectList(queryWrapper);
-
-        //遍历数组，查看有没有重复，如果重复，则不插入
-        if(accesses ==null) return Result.success(0);
-
-        for (Access access : accesses) {
-            //如果ip相等，则直接返回当前集合长度，就是访问量
-            if(access.getIp().equals(clientIpAddress)){
-                return Result.success(accesses.size());
-            }
-        }
-
-        //如果没有重复的，代表是新用户，则插入后，将集合长度加1返回
-        Access access = new Access();
-        access.setAccessName("网页访问");
-        access.setIp(clientIpAddress);
-        accessMapper.insert(access);
-
-        return Result.success(accesses.size()+1);
-    }
 
     /**
      * 注册

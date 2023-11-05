@@ -2,6 +2,7 @@ package com.llpy.gateway.filter;
 
 import com.google.gson.Gson;
 import com.llpy.entity.UserDto;
+import com.llpy.enums.GatewayKey;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.gateway.res.JwtResponse;
 import com.llpy.utils.DateUtils;
@@ -46,11 +47,16 @@ public class TokenFilter implements GlobalFilter, Ordered {
      */
     private final static Long EXPIRED_REDIS = 30 * 60L;
 
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //设置响应体为json格式
         ServerHttpResponse response = exchange.getResponse();
         response.getHeaders().add("Content-Type", "application/json; charset=UTF-8");
+
+        //添加请求头，防止用户绕过网关访问微服务
+        ServerHttpRequest request1 = exchange.getRequest();
+        request1.mutate().header(GatewayKey.GATEWAY_KEY.getKey(),GatewayKey.GATEWAY_KEY.getKeyInfo());
 
         //拿到请求对象
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
@@ -65,13 +71,19 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("当前请求接口：" + path);
 
             //如果请求包含一下这些，直接放行
-            String[] ignoresUrl = {"login","register","getDiaryAll","getAccess","getDiaryOne","getDiaryBase","sendEmail","/swagger-ui.html", "/v2/api-docs"};
+            String[] ignoresUrl = {
+                    "login","register","getDiaryAll",
+                    "getAccess","getDiaryOne","getDiaryBase",
+                    "sendEmail","swagger-ui.html", "api-docs",
+                    "captcha","generate-base64"
+            };
 
             //提取最后一个/的子串
             int index = path.lastIndexOf("/");
             path = path.substring(index + 1);
 
             for (String url : ignoresUrl) {
+
                 if (path.equals(url)) return chain.filter(exchange);
 
             }
@@ -147,6 +159,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             return JwtResponse.jwtResponse(exchange, HttpStatus.NOT_ACCEPTABLE.value(), "TokenFilter：token 解析异常:");
         }
     }
+
 
     @Override
     public int getOrder() {

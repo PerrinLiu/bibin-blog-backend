@@ -4,19 +4,15 @@ package com.llpy.userservice.controller;
 import com.llpy.controller.BaseController;
 import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
-import com.llpy.annotation.OperateLog;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
 import com.llpy.userservice.service.UserService;
-import com.llpy.utils.IPUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Update;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -25,7 +21,7 @@ import javax.validation.Valid;
 public class UserController extends BaseController {
     private final UserService userService;
 
-    public UserController(UserService userService, IPUtils ipUtils) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -37,8 +33,10 @@ public class UserController extends BaseController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "登录")
-    public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery){
-        return userService.login(userLoginQuery);
+    public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery){ //@RequestHeader("captchaToken") String captchaToken
+        // TODO: 2023/9/29 暂时取消请求头
+        String captchaToken = "124";
+        return userService.login(userLoginQuery,captchaToken);
     }
 
     /**
@@ -47,7 +45,7 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto2}>
      */
     @GetMapping("/getUser")
-    @OperateLog("获取用户信息")
+//    @OperateLog("获取用户信息")
     @ApiOperation(value = "获取用户信息")
     public Result<UserDto2> getUser(){
         return userService.getUser(loginUser().getUserId());
@@ -72,7 +70,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/sendEmail")
-    @ApiOperation(value = "获得验证码")
+    @ApiOperation(value = "获得邮箱验证码")
     public Result<?> sendEmail(@RequestParam String email){
         return userService.sendEmail(email);
     }
@@ -89,9 +87,4 @@ public class UserController extends BaseController {
         return null;
     }
 
-    @GetMapping("/getAccess")
-    @ApiOperation(value="统计网站访问")
-    public Result getAccess(HttpServletRequest request){
-       return userService.getAccess(request);
-    }
 }

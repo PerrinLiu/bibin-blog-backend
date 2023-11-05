@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.llpy.userservice.mapper.UserMapper">
-
-    <select id="getUser" resultType="com.llpy.userservice.entity.dto.UserDto2">
-        SELECT
-            u.user_id,
-            u.username,
-            u.user_img,
-            u.nickname,
-            u.gender,
-            u.email,
-            u.city,
-            r.role_name
-        FROM
-            llpyblog.user_roles as ur
-                LEFT JOIN llpyblog.roles AS r ON r.role_id = ur.role_id
-                LEFT JOIN llpyblog.user AS u ON u.user_id = ur.user_id
-        WHERE
-            u.user_id = #{userId}
-    </select>
+<mapper namespace="com.llpy.userservice.mapper.MenuMapper">
     <select id="getUserRoot" resultType="com.llpy.entity.MenuVo">
         SELECT p.*
         FROM llpyblog.user u
