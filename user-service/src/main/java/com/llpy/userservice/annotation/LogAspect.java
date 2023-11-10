@@ -20,6 +20,12 @@ import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+/**
+ * 日志方面
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Aspect
 @Component
 public class LogAspect extends BaseController {
@@ -27,6 +33,7 @@ public class LogAspect extends BaseController {
     //日志接口
     private final OperationMapper operationMapper;
     private final IPUtils ipUtils;
+
     public LogAspect(OperationMapper operationMapper, IPUtils ipUtils) {
         this.operationMapper = operationMapper;
         this.ipUtils = ipUtils;
@@ -42,23 +49,24 @@ public class LogAspect extends BaseController {
     public void logPointCut() {
 
     }
+
     @Around(value = "logPointCut()", argNames = "pjp")
     public Object saveSysLog(ProceedingJoinPoint pjp) throws Throwable {
 
         HttpServletRequest request = HttpContextUtils.getHttpServletRequest();
 
-        System.out.println("LocalDateTime: "+ LocalDateTime.now());
+        System.out.println("LocalDateTime: " + LocalDateTime.now());
 
         System.out.println("--------------begin----------------");
 
         try {
             // 打印请求内容
-            System.out.println("url: {"+request.getRequestURL().toString()+"}");
-            System.out.println("method: {"+pjp.getSignature()+"}");
-            System.out.println("args: {"+ Arrays.toString(pjp.getArgs())+"}");
+            System.out.println("url: {" + request.getRequestURL().toString() + "}");
+            System.out.println("method: {" + pjp.getSignature() + "}");
+            System.out.println("args: {" + Arrays.toString(pjp.getArgs()) + "}");
 
         } catch (Exception e) {
-            System.out.println("###LogAspect.class before() ### ERROR:"+e);
+            System.out.println("###LogAspect.class before() ### ERROR:" + e);
         }
 
         System.out.println("切面配置通知");
@@ -111,12 +119,12 @@ public class LogAspect extends BaseController {
         operationMapper.insert(log);
 
         try {
-            System.out.println("Response: {}"+ JSON.toJSONString(args));
+            System.out.println("Response: {}" + JSON.toJSONString(args));
         } catch (Exception e) {
-            System.out.println("###LogAspect.class after() ### ERROR:"+e);
+            System.out.println("###LogAspect.class after() ### ERROR:" + e);
         }
         System.out.println("--------------end----------------");
-        
+
         return returnObject;
     }
 

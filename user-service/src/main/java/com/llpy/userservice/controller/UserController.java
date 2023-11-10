@@ -15,6 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
+/**
+ * 用户控制器
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @RestController
 @Api(tags = {"用户控制类"})
 @RequestMapping("/user")
@@ -33,10 +39,8 @@ public class UserController extends BaseController {
      */
     @PostMapping("/login")
     @ApiOperation(value = "登录")
-    public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery){ //@RequestHeader("captchaToken") String captchaToken
-        // TODO: 2023/9/29 暂时取消请求头
-        String captchaToken = "124";
-        return userService.login(userLoginQuery,captchaToken);
+    public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery, @RequestHeader("captchaToken") String captchaToken) {
+        return userService.login(userLoginQuery, captchaToken);
     }
 
     /**
@@ -47,44 +51,50 @@ public class UserController extends BaseController {
     @GetMapping("/getUser")
 //    @OperateLog("获取用户信息")
     @ApiOperation(value = "获取用户信息")
-    public Result<UserDto2> getUser(){
+    public Result<UserDto2> getUser() {
         return userService.getUser(loginUser().getUserId());
     }
 
     @GetMapping("/logout")
     @ApiOperation(value = "当前用户退出")
-    public Result<?> logout(){
+    public Result<?> logout() {
         return userService.logout(loginUser());
     }
 
     @PutMapping("/updateUser")
     @ApiOperation(value = "更新用户信息")
-    public Result<UserDto2> updateUser(@RequestBody UserDto2 userDto2){
+    public Result<UserDto2> updateUser(@RequestBody UserDto2 userDto2) {
         return userService.updateUser(userDto2);
     }
 
     @PostMapping("/updateUserImg")
     @ApiOperation(value = "更新用户头像")
     public Result<?> updateUserImg(@RequestBody MultipartFile file) {
-        return userService.updateUserImg(file,loginUser().getUserId());
+        return userService.updateUserImg(file, loginUser().getUserId());
     }
 
     @GetMapping("/sendEmail")
     @ApiOperation(value = "获得邮箱验证码")
-    public Result<?> sendEmail(@RequestParam String email){
-        return userService.sendEmail(email);
+    public Result<?> sendEmail(@RequestParam String email, @RequestParam Boolean bool) {
+        return userService.sendEmail(email, bool);
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "注册用户")
-    public Result<?> register(@RequestBody UserRegister userRegister, @RequestHeader("email-token")String emailToken){
-        return userService.register(userRegister,emailToken);
+    public Result<?> register(@RequestBody UserRegister userRegister, @RequestHeader("email-token") String emailToken) {
+        return userService.register(userRegister, emailToken);
     }
 
-    @PutMapping("/updatePassword")
-    @ApiOperation(value = "忘记密码")
-    public Result<?> updatePassword(){
-        return null;
+    @PostMapping("/emailIsTrue")
+    @ApiOperation("修改密码验证邮箱验证码是否正确")
+    public Result<?> emailIsTrue(@RequestBody UserRegister userRegister, @RequestHeader("email-token") String emailToken) {
+        return userService.emailIsTure(userRegister, emailToken);
+    }
+
+    @PostMapping("/updatePassword")
+    @ApiOperation("修改密码")
+    public Result<?> updatePassword(@RequestBody UserDto2 userDto2) {
+        return userService.updatePassword(userDto2);
     }
 
 }

@@ -9,6 +9,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+/**
+ * 用户寄存器
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @RestController
 @Api(tags = {"用户控制类"})
 @Data
@@ -25,10 +31,10 @@ public class UserRegister {
     private String password;
 
     @ApiModelProperty(value = "昵称", name = "nickname", required = true)
-    private  String nickname;
+    private String nickname;
 
     @ApiModelProperty(value = "邮箱", name = "email", required = true)
-    private  String email;
+    private String email;
 
     @ApiModelProperty(value = "验证码")
     private String captcha;

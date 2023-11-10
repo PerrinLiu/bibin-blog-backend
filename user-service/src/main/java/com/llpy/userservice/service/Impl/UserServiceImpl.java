@@ -1,5 +1,7 @@
 package com.llpy.userservice.service.Impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.llpy.entity.MenuVo;
@@ -25,6 +27,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 用户服务impl
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Service
 public class UserServiceImpl implements UserService {
     //用户接口
@@ -46,15 +54,16 @@ public class UserServiceImpl implements UserService {
 
     //ip工具类
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOSSUtils, RegexUtils regexUtils, MenuMapper menuMapper) {
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper) {
         this.userMapper = userMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.emailUtil = emailUtil;
         this.redisUtil = redisUtil;
-        this.aliOSSUtils = aliOSSUtils;
+        this.aliOSSUtils = aliOssUtils;
         this.regexUtils = regexUtils;
         this.menuMapper = menuMapper;
     }
+
     //默认图片
     private final String DEFAULT_USER_IMG = "https://llpy-blog.oss-cn-shenzhen.aliyuncs.com/userImg/2023-08/defaul.jpg";
 
@@ -65,22 +74,21 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}
      */
     @Override
-    public Result login(UserLoginQuery userLoginQuery,String captchaKey) {
-        // TODO: 2023/9/29 暂时关掉验证码验证
-//        //拿到前端传的验证码
-//        String captcha = userLoginQuery.getCaptcha();
-//        //如果验证码为空
-//        if(StringUtils.isBlank(captcha)){
-//           return Result.error("验证码不能为空");
-//        }
-//
-//        //拿出redis的验证码
-//        String o = (String) redisUtil.get(captchaKey);
-//        if(!o.equalsIgnoreCase(userLoginQuery.getCaptcha())){
-//            return Result.error("验证码错误!");
-//        }
-//        //如果验证通过，删除redis中的值
-//        redisUtil.del(captchaKey);
+    public Result<UserDto> login(UserLoginQuery userLoginQuery, String captchaKey) {
+        //拿到前端传的验证码
+        String captcha = userLoginQuery.getCaptcha();
+        //如果验证码为空
+        if (StringUtils.isBlank(captcha)) {
+            return Result.error("验证码不能为空");
+        }
+
+        //拿出redis的验证码
+        String o = (String) redisUtil.get(captchaKey);
+        if (o == null || !o.equalsIgnoreCase(userLoginQuery.getCaptcha())) {
+            return new Result<>(CodeMsg.LOGIN_CODE_ERROR);
+        }
+        //如果验证通过，删除redis中的值
+        redisUtil.del(captchaKey);
 
         //根据用户名查找用户
         User user =
@@ -147,11 +155,10 @@ public class UserServiceImpl implements UserService {
      * @param loginUser 登录用户
      */
     @Override
-    public Result logout(UserDto loginUser) {
-        redisUtil.del(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey()+loginUser.getToken());
+    public Result<?> logout(UserDto loginUser) {
+        redisUtil.del(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken());
         return Result.success();
     }
-
 
 
     /**
@@ -161,16 +168,28 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}<{@link ?}>
      */
     @Override
-    public Result<?> sendEmail(String email) {
+    public Result<?> sendEmail(String email, Boolean bool) {
+        //验证邮箱格式
+        if (!regexUtils.isEmail(email)) {
+            return new Result<>(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        }
+
         //根据邮箱查找用户
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getEmail, email));
 
-        //如果存在，直接返回
-        if(user!=null) return new Result<>(CodeMsg.USER_EMAIL_EXIST);
 
-        //验证邮箱格式
-        if (!regexUtils.isEmail(email)) return new Result(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        //如果不存在且是修改密码
+        if (!bool && user == null) {
+            return new Result<>("改邮箱未注册账号", 200, null);
+        }
+
+        //如果存在且是注册用户返回邮箱已存在
+        if (user != null && bool) {
+            return new Result<>(CodeMsg.USER_EMAIL_EXIST);
+        }
+
+
         //创建邮箱对象
         MailDto mailDto = new MailDto();
 
@@ -179,18 +198,75 @@ public class UserServiceImpl implements UserService {
         MailDto mail = emailUtil.sendMail(mailDto);
 
         //如果状态码不为ok，返回发送失败
-        if(!mail.getStatus().equals("ok")) return new Result<>(CodeMsg.USER_EMAIL_ERROR);
-
+        String retCode = "ok";
+        if (!mail.getStatus().equals(retCode)) {
+            return new Result<>(CodeMsg.USER_EMAIL_ERROR);
+        }
         //生成一个不带‘ - ‘的uuid，用来和邮箱验证码一起存进redis
         String redisEmailKey = UUID.randomUUID().toString().replaceAll("-", "");
         //1.获得枚举的key加上uuid，2.获得验证码，3.获得设置的默认过期时间
-        redisUtil.set(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey()+ redisEmailKey,
+        redisUtil.set(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + redisEmailKey,
                 mail.getText(),
                 RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getExpireTime());
 
-        return new Result<>("已发送，5分钟内有效~",200,redisEmailKey);
+        return new Result<>("已发送，5分钟内有效~", 200, redisEmailKey);
     }
 
+    /**
+     * 电子邮件是真
+     *
+     * @param emailToken 电子邮件令牌
+     * @return {@link Result}<{@link ?}>
+     */
+    @Override
+    public Result<?> emailIsTure(UserRegister userRegister, String emailToken) {
+        //验证邮箱验证码
+        String redisCode = (String) redisUtil.get(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + emailToken);
+        String captcha = userRegister.getCaptcha();
+        //redis中没有验证码或者验证不通过时返回
+        if (redisCode == null || !redisCode.equals(captcha)) {
+            return new Result<>(CodeMsg.USER_EMAIL_CODE_ERROR);
+        }
+        //验证通过就删除redis中的验证码
+        redisUtil.del(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + emailToken);
+
+        //返回对应的用户信息
+        String email = userRegister.getEmail();
+
+        LambdaQueryWrapper<User> userQuery = new LambdaQueryWrapper<>();
+        userQuery.eq(User::getEmail, email);
+        User user = userMapper.selectOne(userQuery);
+
+        if (user != null) {
+            UserDto2 userDto2 = new UserDto2();
+            userDto2.setUsername(user.getUsername())
+                    .setNickname(user.getNickname())
+                    .setEmail(user.getEmail());
+            return Result.success(userDto2);
+        }
+
+        //返回用户不存在
+        return new Result<>(CodeMsg.USER_NOT_EXIST);
+    }
+
+    @Override
+    public Result<?> updatePassword(UserDto2 userDto2) {
+        //加密密码
+        String password = DigestUtil.sha256Digest(userDto2.getPassword());
+
+        String email = userDto2.getEmail();
+
+        //设置新对象
+        User user = new User();
+        //设置新密码
+        user.setEmail(email).setPassword(password);
+        //更新
+        LambdaUpdateWrapper<User> userUpdate = new LambdaUpdateWrapper<>();
+        userUpdate.eq(User::getEmail, email);
+        userMapper.update(user, userUpdate);
+
+        return Result.success();
+    }
 
 
     /**
@@ -200,23 +276,27 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}
      */
     @Override
-    public Result register(UserRegister userRegister, String emailToken) {
+    public Result<?> register(UserRegister userRegister, String emailToken) {
         //验证邮箱格式
-        if(!regexUtils.isEmail(userRegister.getEmail())) return new Result(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        if (!regexUtils.isEmail(userRegister.getEmail())) {
+            return new Result<>(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        }
 
         //验证邮箱验证码
-        String captcha =(String) redisUtil.get(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + emailToken);
+        String captcha = (String) redisUtil.get(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + emailToken);
 
         //redis中没有验证码或者验证不通过时返回
-        if(captcha ==null||!captcha.equals(userRegister.getCaptcha())){
+        if (captcha == null || !captcha.equals(userRegister.getCaptcha())) {
             //验证码错误
             return new Result<>(CodeMsg.USER_EMAIL_CODE_ERROR);
         }
         //根据用户名查找用户
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
-                        .eq(User::getUsername, userRegister.getUsername()));
+                .eq(User::getUsername, userRegister.getUsername()));
         //如果存在该用户，返回
-        if(user!=null) return new Result<>(CodeMsg.USER_EXIST);
+        if (user != null) {
+            return new Result<>(CodeMsg.USER_EXIST);
+        }
 
         String password = DigestUtil.sha256Digest(userRegister.getPassword());  //加密密码
 
@@ -246,26 +326,30 @@ public class UserServiceImpl implements UserService {
     public Result updateUser(UserDto2 userDto2) {
         //验证邮箱格式
         boolean email = regexUtils.isEmail(userDto2.getEmail());
-        if (!email) return new Result(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        if (!email) {
+            return new Result<>(CodeMsg.USER_EMAIL_REGEX_ERROR);
+        }
 
         //设置新对象
         User user = new User();
         user.setUserId(userDto2.getUserId());
 
         //如果密码不为空，就代表是更新密码
-        if(userDto2.getPassword()!=null){
+        if (userDto2.getPassword() != null) {
             //拿到旧密码，验证密码是否相同
             User oldUser = userMapper.selectById(userDto2.getUserId());
             //将密码加密后比较
             String password = DigestUtil.sha256Digest(userDto2.getPassword());
-            //如果密码相同，直接返回密码无变化
-            if (oldUser.getPassword().equals(password)) {
-                return Result.success("密码无变化，无需改变");
+            //如果密码不相同，返回密码错误
+            if (!oldUser.getPassword().equals(password)) {
+                return Result.success("旧密码错误,请重试");
             }
+            //新密码暂存在昵称
+            String newPassword = DigestUtil.sha256Digest(userDto2.getNickname());
 
-            //更新密码
-            user.setPassword(password);
-        }else{
+            //将新密码加密后设置新密码,然后重新将昵称修改会原先的昵称
+            user.setNickname(oldUser.getNickname()).setPassword(newPassword);
+        } else {
             //否则就是更新用户信息
             user.setNickname(userDto2.getNickname())
                     .setCity(userDto2.getCity())
@@ -292,7 +376,7 @@ public class UserServiceImpl implements UserService {
         UserDto2 oldUser = getUser(userId).getData();
 
         //如果不是默认照片，先进行删除操作
-        if(oldUser.getUserImg()!=null && !oldUser.getUserImg().equals(DEFAULT_USER_IMG)){
+        if (oldUser.getUserImg() != null && !oldUser.getUserImg().equals(DEFAULT_USER_IMG)) {
             aliOSSUtils.delete(oldUser.getUserImg());
         }
         try {

@@ -22,17 +22,17 @@ public class Result<T> implements Serializable {
         this.message = codeMsg.getMessage();
         this.retCode = codeMsg.getRetCode();
     }
-    public static Result success(Object data)
-    {
-        return new Result<>("成功",200,data);
+
+    public static Result success(Object data) {
+        return new Result<>("成功", 200, data);
     }
-    public static Result success()
-    {
-        return new Result<>("成功",200,null);
+
+    public static Result success() {
+        return new Result<>("成功", 200, null);
     }
-    public static Result error(String message)
-    {
-        return new Result<>(message,500,null);
+
+    public static Result error(String message) {
+        return new Result<>(message, 500, null);
     }
 
 

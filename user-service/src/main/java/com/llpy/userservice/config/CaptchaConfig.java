@@ -7,6 +7,12 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
 
+/**
+ * captcha配置
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Configuration
 public class CaptchaConfig {
 

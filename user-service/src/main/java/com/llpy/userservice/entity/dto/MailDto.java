@@ -4,6 +4,12 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * 邮寄至
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Data
 public class MailDto {
     private String id;

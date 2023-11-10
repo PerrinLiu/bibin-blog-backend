@@ -6,6 +6,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
+/**
+ * captcha发生器
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 public class CaptchaGenerator {
     public static void main(String[] args) {
         // 生成验证码
@@ -16,6 +22,7 @@ public class CaptchaGenerator {
         byte[] imageBytes = imageToBytes(captchaImage);
 
         // 将验证码数据传递给前端（这里仅打印出字节数组长度，实际上需要通过HTTP响应发送给前端）
+        assert imageBytes != null;
         System.out.println("验证码字节数组长度: " + imageBytes.length);
     }
 
@@ -57,9 +64,9 @@ public class CaptchaGenerator {
     // 将图像转换为字节数组
     private static byte[] imageToBytes(BufferedImage image) {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
-            return baos.toByteArray();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -18,12 +18,13 @@
 
     <select id="getListTitle" resultType="com.llpy.textservice.entity.dto.DiaryVo">
         SELECT d.diary_id,
-               d.user_id,
-               d.diary_title,
-               u.nickname,
-               d.create_time
+        d.user_id,
+        d.diary_title,
+        u.nickname,
+        u.user_img,
+        d.create_time
         FROM llpyblog.diary AS d
-                 LEFT JOIN llpyblog.`user` AS u ON d.user_id = u.user_id
+        LEFT JOIN llpyblog.`user` AS u ON d.user_id = u.user_id
         <where>
             <if test="userId!=null">
                 d.user_id = #{userId}
@@ -52,7 +53,6 @@
                dt.diary_text
         FROM llpyblog.diary AS d
                  LEFT JOIN llpyblog.diary_text AS dt ON d.diary_id = dt.diary_id
-        WHERE
-            d.diary_id = #{diaryId}
+        WHERE d.diary_id = #{diaryId}
     </select>
 </mapper>

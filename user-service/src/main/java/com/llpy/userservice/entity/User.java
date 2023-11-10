@@ -8,9 +8,15 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * 使用者
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Data
 @Accessors(chain = true)  //开启链式编程
-@ApiModel(value="User对象", description="用户表")
+@ApiModel(value = "User对象", description = "用户表")
 public class User {
     @TableId
     @ApiModelProperty(value = "用户id")
@@ -33,7 +39,6 @@ public class User {
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
-
 
 
 }

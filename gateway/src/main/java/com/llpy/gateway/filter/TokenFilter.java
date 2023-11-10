@@ -13,7 +13,6 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -31,11 +30,9 @@ import java.util.Date;
 @Component
 public class TokenFilter implements GlobalFilter, Ordered {
 
-    @Autowired
-    private RedisUtil redisUtil;
+    private final RedisUtil redisUtil;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
     /**
      * JWT 失效时间小于30分钟，更新JWT
@@ -47,7 +44,19 @@ public class TokenFilter implements GlobalFilter, Ordered {
      */
     private final static Long EXPIRED_REDIS = 30 * 60L;
 
+    public TokenFilter(RedisUtil redisUtil, JwtTokenUtil jwtTokenUtil) {
+        this.redisUtil = redisUtil;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
+
+    /**
+     * 滤器
+     *
+     * @param exchange 交换
+     * @param chain    链条
+     * @return {@link Mono}<{@link Void}>
+     */
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //设置响应体为json格式
@@ -56,7 +65,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
 
         //添加请求头，防止用户绕过网关访问微服务
         ServerHttpRequest request1 = exchange.getRequest();
-        request1.mutate().header(GatewayKey.GATEWAY_KEY.getKey(),GatewayKey.GATEWAY_KEY.getKeyInfo());
+        request1.mutate().header(GatewayKey.GATEWAY_KEY.getKey(), GatewayKey.GATEWAY_KEY.getKeyInfo());
 
         //拿到请求对象
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
@@ -64,7 +73,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String uuid = serverHttpRequest.getHeaders().getFirst(RedisKeyEnum.REDIS_KEY_HEADER_INFO.getKey());
 
         //准备用来存储token
-        String authToken = "";
+        String authToken;
         try {
             //获取请求的接口
             String path = serverHttpRequest.getURI().getPath();
@@ -72,10 +81,11 @@ public class TokenFilter implements GlobalFilter, Ordered {
 
             //如果请求包含一下这些，直接放行
             String[] ignoresUrl = {
-                    "login","register","getDiaryAll",
-                    "getAccess","getDiaryOne","getDiaryBase",
-                    "sendEmail","swagger-ui.html", "api-docs",
-                    "captcha","generate-base64"
+                    "login", "register", "getDiaryAll",
+                    "getAccess", "getDiaryOne", "getDiaryBase",
+                    "sendEmail", "swagger-ui.html", "api-docs",
+                    "captcha", "generate-base64", "emailIsTrue",
+                    "updatePassword"
             };
 
             //提取最后一个/的子串
@@ -124,7 +134,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     authToken = newToken;
                 }
                 //小于半小时刷新Redis时间
-                Long expireTime = redisUtil.getExpire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken());
+                long expireTime = redisUtil.getExpire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken());
                 if (expireTime <= EXPIRED_REDIS) {
                     //刷新redis时间
                     redisUtil.expire(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + loginUser.getToken(),
@@ -143,7 +153,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
                 return chain.filter(webExchange);
             }
         } catch (MalformedJwtException e) {
-            log.error("JWT格式错误异常:{}======>>>:{}====={}", uuid, e.getMessage(), e);
+            log.error("JWT格式错误异常:{}======>>>:{}", uuid, e.getMessage(), e);
             return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "JWT格式错误");
         } catch (SignatureException e) {
             log.error("JWT签名错误异常:{}======>>>:{}", uuid, e.getMessage(), e);

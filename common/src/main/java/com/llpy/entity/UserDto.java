@@ -7,9 +7,15 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
+/**
+ * 用户dto
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Data
 @Accessors(chain = true)  //开启链式编程
-@ApiModel(value="UserDto对象", description="用户Dto表")
+@ApiModel(value = "UserDto对象", description = "用户Dto表")
 public class UserDto implements Serializable {
 
     @ApiModelProperty(value = "用户id")

@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 访问控制器
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @RestController
 @RequestMapping("/user")
 @Api(tags = {"统计访问类"})
@@ -23,8 +29,10 @@ public class AccessController {
     }
 
     @GetMapping("/getAccess")
-    @ApiOperation(value="统计网站访问")
-    public Result getAccess(HttpServletRequest request){
+    @ApiOperation(value = "统计网站访问")
+    public Result<?> getAccess(HttpServletRequest request) {
         return accessService.getAccess(request);
     }
+
+
 }

@@ -11,6 +11,12 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.Random;
 
+/**
+ * 有用电子邮件
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Component
 @Service
 @Slf4j

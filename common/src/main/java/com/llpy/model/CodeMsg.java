@@ -1,10 +1,10 @@
 package com.llpy.model;
 
 /**
- * @program: hd
- * @description: 错误CODE和MSG
- * @author: XuChao
- * @create: 2019-12-24 14:57
+ * @author llPY
+ * @program hd
+ * @description 错误CODE和MSG
+ * @date 2023/7/08
  **/
 public class CodeMsg {
 
@@ -13,6 +13,7 @@ public class CodeMsg {
     // 业务异常
     public static CodeMsg USER_NOT_EXIST = new CodeMsg(500103, "用户不存在");
     public static CodeMsg USER_EXIST = new CodeMsg(500104, "用户名已存在");
+    public static CodeMsg LOGIN_CODE_ERROR = new CodeMsg(500105, "验证码错误");
     public static CodeMsg USER_EMAIL_EXIST = new CodeMsg(500104, "该邮箱已被使用");
     public static CodeMsg NOT_FIND_DATA = new CodeMsg(500106, "查找不到对应数据");
     public static CodeMsg USER_PASS_ERROR = new CodeMsg(500107, "密码错误!");

@@ -17,11 +17,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 招摇配置
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
     @Bean
-    public Docket api(){
+    public Docket api() {
         ParameterBuilder aParameterBuilder = new ParameterBuilder();
         aParameterBuilder
                 .parameterType("header")
@@ -42,7 +48,8 @@ public class SwaggerConfig {
                 .globalOperationParameters(aParameters);
 
     }
-    private ApiInfo webApiInfo(){
+
+    private ApiInfo webApiInfo() {
         return new ApiInfoBuilder()
                 .title("用户api文档")
                 .description("小可爱香菜~")

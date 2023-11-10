@@ -11,6 +11,12 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * 访问服务impl
+ *
+ * @author LLPY
+ * @date 2023/11/08
+ */
 @Service
 public class AccessServiceImpl implements AccessService {
 
@@ -29,7 +35,7 @@ public class AccessServiceImpl implements AccessService {
      * @param request 请求
      */
     @Override
-    public Result getAccess(HttpServletRequest request) {
+    public Result<?> getAccess(HttpServletRequest request) {
         //获得用户ip
         String clientIpAddress = ipUtils.getClientIpAddress(request);
 
@@ -39,11 +45,13 @@ public class AccessServiceImpl implements AccessService {
         List<Access> accesses = accessMapper.selectList(queryWrapper);
 
         //遍历数组，查看有没有重复，如果重复，则不插入
-        if(accesses ==null) return Result.success(0);
+        if (accesses == null) {
+            return Result.success(0);
+        }
 
         for (Access access : accesses) {
             //如果ip相等，则直接返回当前集合长度，就是访问量
-            if(access.getIp().equals(clientIpAddress)){
+            if (access.getIp().equals(clientIpAddress)) {
                 return Result.success(accesses.size());
             }
         }
@@ -54,7 +62,7 @@ public class AccessServiceImpl implements AccessService {
         access.setIp(clientIpAddress);
         accessMapper.insert(access);
 
-        return Result.success(accesses.size()+1);
+        return Result.success(accesses.size() + 1);
     }
 
 }
