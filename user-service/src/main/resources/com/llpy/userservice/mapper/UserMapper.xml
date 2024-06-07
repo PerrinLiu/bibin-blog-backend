@@ -2,18 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.llpy.userservice.mapper.UserMapper">
 
-    <select id="getUser" resultType="com.llpy.userservice.entity.vo.UserDto2">
-        select
-            user.user_id,
-            user.username,
-            user.user_img,
-            user.nickname,
-            user.gender,
-            user.email,
-            user.city,
-            user.root
-        from llpyblog.user
-        where
-            user_id = #{userId}
+    <select id="getUser" resultType="com.llpy.userservice.entity.dto.UserDto2">
+        SELECT
+            u.user_id,
+            u.username,
+            u.user_img,
+            u.nickname,
+            u.gender,
+            u.email,
+            u.city,
+            r.role_name
+        FROM
+            llpyblog.user_roles as ur
+                LEFT JOIN llpyblog.roles AS r ON r.role_id = ur.role_id
+                LEFT JOIN llpyblog.user AS u ON u.user_id = ur.user_id
+        WHERE
+            u.user_id = #{userId}
+    </select>
+    <select id="getUserRoot" resultType="com.llpy.entity.MenuVo">
+        SELECT p.*
+        FROM llpyblog.user u
+                 INNER JOIN llpyblog.user_roles ur ON u.user_id = ur.user_id
+                 INNER JOIN llpyblog.roles r ON ur.role_id = r.role_id
+                 INNER JOIN llpyblog.role_permissions rp ON r.role_id = rp.role_id
+                 INNER JOIN llpyblog.permissions p ON rp.permission_id = p.permission_id
+        WHERE u.user_id = #{userId};
     </select>
 </mapper>

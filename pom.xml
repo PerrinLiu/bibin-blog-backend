@@ -33,10 +33,11 @@
         <openfeign.version>2.2.1.RELEASE</openfeign.version>
         <mybatisplus.version>3.4.1</mybatisplus.version>
         <eureka-client.version>2.1.1.RELEASE</eureka-client.version>
+        <aspectj.version>1.9.7</aspectj.version>
         <druid-starter.version>1.1.16</druid-starter.version>
         <fastjson.version>1.2.47</fastjson.version>
         <jackson.version>2.11.1</jackson.version>
-<!--        <mysql-connector.version>8.0.20</mysql-connector.version>-->
+        <!--        <mysql-connector.version>8.0.20</mysql-connector.version>-->
         <mysql-connector.version>5.1.47</mysql-connector.version>
         <jjwt.version>0.9.1</jjwt.version>
         <lombok.version>1.16.20</lombok.version>
@@ -178,11 +179,20 @@
                 <artifactId>freemarker</artifactId>
                 <version>${freemarker.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -235,9 +245,14 @@
 
     <build>
         <plugins>
+            <!--编译插件-->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -2,6 +2,8 @@ package com.llpy.utils;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.PutObjectRequest;
+import com.aliyun.oss.model.PutObjectResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,7 @@ public class AliOSSUtils {
         // 避免文件覆盖
         String originalFilename = file.getOriginalFilename();
         assert originalFilename != null;
+        //生成一个uuid拼接上文件的后缀作为文件名
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + originalFilename.substring(originalFilename.lastIndexOf("."));
         //文件名称
         fileName = getFileName(fileName,directory);
@@ -52,6 +55,31 @@ public class AliOSSUtils {
         return url;// 把上传到oss的路径返回
     }
 
+    //上传字符串
+    public String uploadString(String s) throws IOException {
+        String endpoint = aliOSSProperties.getEndpoint();
+        String accessKeyId = aliOSSProperties.getAccessKeyId();
+        String accessKeySecret = aliOSSProperties.getAccessKeySecret();
+        String bucketName = aliOSSProperties.getBucketName();
+        String directory = aliOSSProperties.getDirectory();
+
+        //文件组成
+        String fileName = UUID.randomUUID().toString().replaceAll("-", "");
+        //文件名称
+        fileName = getFileName(fileName,directory);
+
+        //Oss实例
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        //上传到 OSS
+        PutObjectResult putObjectResult = ossClient.putObject(bucketName, fileName, new ByteArrayInputStream(s.getBytes()));
+        System.out.println(putObjectResult);
+
+        //文件访问路径
+        String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+        // 关闭ossClient
+        ossClient.shutdown();
+        return url;// 把上传到oss的路径返回
+    }
 
     /**
      * 删除文件
