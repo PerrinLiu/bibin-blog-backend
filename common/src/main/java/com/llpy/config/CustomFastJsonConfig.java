@@ -6,6 +6,9 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * 将所有带有id的返回值都以字符串返回前端
+ */
 @Configuration
 public class CustomFastJsonConfig {
     @Bean
@@ -17,7 +20,7 @@ public class CustomFastJsonConfig {
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         //3.设置id字段为字符串
         fastJsonConfig.setSerializeFilters((ValueFilter) (object, name, value) -> {
-            if ("UserId".equalsIgnoreCase(name)){
+            if (name.contains("Id")){
                 return value + "";
             }
             return value;
