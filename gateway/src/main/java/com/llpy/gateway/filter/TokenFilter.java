@@ -79,7 +79,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             String path = serverHttpRequest.getURI().getPath();
             log.info("当前请求接口：" + path);
 
-            //如果请求包含一下这些，直接放行
+            //直接可请求的资源
             String[] ignoresUrl = {
                     "login", "register", "getDiaryAll",
                     "getAccess", "getDiaryOne", "getDiaryBase",
@@ -88,13 +88,16 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     "updatePassword"
             };
 
-            //提取最后一个/的子串
+            //提取最后一个'/'的子串
             int index = path.lastIndexOf("/");
             path = path.substring(index + 1);
 
             for (String url : ignoresUrl) {
-
-                if (path.equals(url)) return chain.filter(exchange);
+                //如果是直接可请求的资源
+                if (path.equals(url)) {
+                    //放行
+                    return chain.filter(exchange);
+                }
 
             }
             //判断请求头是否空或空白

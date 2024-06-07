@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)  //开启链式编程
-@ApiModel(value="Diary对象", description="日记表")
+@ApiModel(value = "Article", description = "文章表")
 public class Article {
     @TableId
     private Long articleId;

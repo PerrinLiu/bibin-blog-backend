@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.llpy.userservice.mapper.UserMapper">
-
-    <select id="getUser" resultType="com.llpy.userservice.entity.User">
-        select user.username from llpyblog.user;
-    </select>
-</mapper>

@@ -37,7 +37,7 @@
         <druid-starter.version>1.1.16</druid-starter.version>
         <fastjson.version>1.2.47</fastjson.version>
         <jackson.version>2.11.1</jackson.version>
-<!--        <mysql-connector.version>8.0.20</mysql-connector.version>-->
+        <!--        <mysql-connector.version>8.0.20</mysql-connector.version>-->
         <mysql-connector.version>5.1.47</mysql-connector.version>
         <jjwt.version>0.9.1</jjwt.version>
         <lombok.version>1.16.20</lombok.version>
@@ -184,11 +184,15 @@
                 <artifactId>aspectjrt</artifactId>
                 <version>${aspectj.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -2,7 +2,6 @@ package com.llpy.userservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.llpy.entity.MenuVo;
 import com.llpy.entity.UserDto;
@@ -10,18 +9,21 @@ import com.llpy.enums.RedisKeyEnum;
 import com.llpy.model.CodeMsg;
 import com.llpy.model.Result;
 import com.llpy.userservice.entity.User;
+import com.llpy.userservice.entity.UserRoles;
 import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
 import com.llpy.userservice.mapper.MenuMapper;
 import com.llpy.userservice.mapper.UserMapper;
+import com.llpy.userservice.mapper.UserRolesMapper;
 import com.llpy.userservice.service.UserService;
 import com.llpy.userservice.utils.EmailUtil;
 import com.llpy.utils.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,6 +54,8 @@ public class UserServiceImpl implements UserService {
 
     private final MenuMapper menuMapper;
 
+    @Resource
+    private UserRolesMapper userRolesMapper;
     //ip工具类
 
     public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper) {
@@ -75,20 +79,21 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Result<UserDto> login(UserLoginQuery userLoginQuery, String captchaKey) {
-        //拿到前端传的验证码
-        String captcha = userLoginQuery.getCaptcha();
-        //如果验证码为空
-        if (StringUtils.isBlank(captcha)) {
-            return Result.error("验证码不能为空");
-        }
-
-        //拿出redis的验证码
-        String o = (String) redisUtil.get(captchaKey);
-        if (o == null || !o.equalsIgnoreCase(userLoginQuery.getCaptcha())) {
-            return new Result<>(CodeMsg.LOGIN_CODE_ERROR);
-        }
-        //如果验证通过，删除redis中的值
-        redisUtil.del(captchaKey);
+        // TODO: 2023/11/18 暂时关闭验证码登录 
+//        //拿到前端传的验证码
+//        String captcha = userLoginQuery.getCaptcha();
+//        //如果验证码为空
+//        if (StringUtils.isBlank(captcha)) {
+//            return Result.error("验证码不能为空");
+//        }
+//
+//        //拿出redis的验证码
+//        String o = (String) redisUtil.get(captchaKey);
+//        if (o == null || !o.equalsIgnoreCase(userLoginQuery.getCaptcha())) {
+//            return new Result<>(CodeMsg.LOGIN_CODE_ERROR);
+//        }
+//        //如果验证通过，删除redis中的值
+//        redisUtil.del(captchaKey);
 
         //根据用户名查找用户
         User user =
@@ -312,6 +317,10 @@ public class UserServiceImpl implements UserService {
                 .setCreateTime(LocalDateTime.now());
         //插入
         userMapper.insert(newUser);
+        //默认权限是普通用户
+        UserRoles userRoles = new UserRoles();
+        userRoles.setUserId(newUser.getUserId()).setRoleId(3);
+        userRolesMapper.insert(userRoles);
         return Result.success("注册成功，可以登录了");
     }
 

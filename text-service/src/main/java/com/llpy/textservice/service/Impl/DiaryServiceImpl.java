@@ -1,6 +1,7 @@
 package com.llpy.textservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
@@ -26,8 +27,8 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     @Transactional  //开启事务，确保同时成功，或同时失败，保持数据一致性
-    public Result addDiary(DiaryVo diaryVo,Long id) {
-        if(id ==null) return Result.error("会话过期");
+    public Result addDiary(DiaryVo diaryVo, Long id) {
+        if (id == null) return Result.error("会话过期");
 
         //新建日记信息对象
         DiaryText diaryText = new DiaryText();
@@ -95,11 +96,12 @@ public class DiaryServiceImpl implements DiaryService {
      * @return {@link Result}<{@link List}<{@link Diary}>>
      */
     @Override
-    public Result getDiaryBase(Long userId) {
+    public Result<?> getDiaryBase(Long userId, Integer pageSize, Integer pageNum) {
+        Page<DiaryVo> diaryVoPage = new Page<>(pageNum, pageSize);
         //得到基本信息
-        List<DiaryVo> listTitle = diaryMapper.getListTitle(userId);
+        diaryMapper.getListTitle(diaryVoPage, userId);
 
-        return Result.success(listTitle);
+        return Result.success(diaryVoPage);
     }
 
     /**
@@ -108,7 +110,7 @@ public class DiaryServiceImpl implements DiaryService {
      * @param diaryId 日记id
      * @return {@link Result}<{@link DiaryVo}>
      */
-    public Result<DiaryVo> getOneText(Long diaryId){
+    public Result<DiaryVo> getOneText(Long diaryId) {
 
         DiaryVo oneText = diaryMapper.getOneText(diaryId);
 
@@ -129,7 +131,7 @@ public class DiaryServiceImpl implements DiaryService {
         //创建一个根据日记id删除日记内容的lambda表达式，删除日记内容
         LambdaQueryWrapper<DiaryText> diaryQuery = new LambdaQueryWrapper<>();
 
-        diaryQuery.eq(DiaryText::getDiaryId,diaryId);
+        diaryQuery.eq(DiaryText::getDiaryId, diaryId);
 
         diaryTextMapper.delete(diaryQuery);
 

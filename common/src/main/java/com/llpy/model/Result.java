@@ -18,6 +18,7 @@ public class Result<T> implements Serializable {
         this.retCode = retCode;
         this.data = data;
     }
+
     public Result(CodeMsg codeMsg) {
         this.message = codeMsg.getMessage();
         this.retCode = codeMsg.getRetCode();
@@ -34,7 +35,6 @@ public class Result<T> implements Serializable {
     public static Result error(String message) {
         return new Result<>(message, 500, null);
     }
-
 
 
 }

@@ -1,6 +1,8 @@
 package com.llpy.textservice.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
@@ -19,7 +21,7 @@ public interface DiaryMapper extends BaseMapper<Diary> {
     List<DiaryVo> getListById(Long userId);
 
     //获取所有日记的基本信息
-    List<DiaryVo> getListTitle(Long userId);
+    IPage<DiaryVo> getListTitle(Page<DiaryVo> diaryVoPage, Long userId);
 
     //获取单个日记的信息
     DiaryVo getOneText(Long diaryId);
