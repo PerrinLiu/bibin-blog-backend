@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: textservice
+  profiles:
+    include: secret
 
   #日志信息
   datasource:
@@ -28,11 +30,3 @@ spring:
       max-file-size: 10MB
       max-request-size: 100MB
 
-#配置阿里云属性
-aliyun:
-  oss:
-    endpoint: https://oss-cn-shenzhen.aliyuncs.com
-    accessKeyId: LTAI5tSi8iMHaqgxAw5bdBgS
-    accessKeySecret: HebfvTRyALJMuH6grBSVm0cwDtZsmc
-    bucketName: llpy-blog
-    directory: diaryImg
