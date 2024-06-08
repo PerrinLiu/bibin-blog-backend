@@ -2,11 +2,10 @@ package com.llpy.utils;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +41,7 @@ public class AliOSSUtils {
         //生成一个uuid拼接上文件的后缀作为文件名
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + originalFilename.substring(originalFilename.lastIndexOf("."));
         //文件名称
-        fileName = getFileName(fileName,directory);
+        fileName = getFileName(fileName, directory);
         //Oss实例
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         //上传文件到 OSS
@@ -66,7 +65,7 @@ public class AliOSSUtils {
         //文件组成
         String fileName = UUID.randomUUID().toString().replaceAll("-", "");
         //文件名称
-        fileName = getFileName(fileName,directory);
+        fileName = getFileName(fileName, directory);
 
         //Oss实例
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
@@ -86,7 +85,7 @@ public class AliOSSUtils {
      *
      * @param url 文件链接
      */
-    public void delete(String url){
+    public void delete(String url) {
         String endpoint = aliOSSProperties.getEndpoint();
         String accessKeyId = aliOSSProperties.getAccessKeyId();
         String accessKeySecret = aliOSSProperties.getAccessKeySecret();
@@ -95,11 +94,11 @@ public class AliOSSUtils {
         // 提取文件名
         String fileName = url.substring(url.lastIndexOf("/") + 1);
         //拿到完整文件名
-        fileName = getFileName(fileName,directory);
+        fileName = getFileName(fileName, directory);
         //Oss实例
         OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
         //删除文件
-        ossClient.deleteObject(bucketName,fileName);
+        ossClient.deleteObject(bucketName, fileName);
         // 关闭ossClient
         ossClient.shutdown();
     }
@@ -110,13 +109,13 @@ public class AliOSSUtils {
      * @param fileName 文件名称
      * @return {@link String}
      */
-    private String getFileName(String fileName,String directory) {
+    private String getFileName(String fileName, String directory) {
         //获取当月时间
         LocalDateTime nowDateTime = LocalDateTime.now();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
         String date = nowDateTime.format(fmt);
         //指定文件夹然后划分月份
-        fileName = directory+"/"+date+"/"+ fileName;
+        fileName = directory + "/" + date + "/" + fileName;
         return fileName;
     }
 

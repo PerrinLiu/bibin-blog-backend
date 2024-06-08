@@ -1,11 +1,11 @@
-package com.llpy.textservice.service.Impl;
+package com.llpy.textservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
-import com.llpy.textservice.entity.dto.DiaryVo;
+import com.llpy.textservice.entity.vo.DiaryVo;
 import com.llpy.textservice.mapper.DiaryMapper;
 import com.llpy.textservice.mapper.DiaryTextMapper;
 import com.llpy.textservice.service.DiaryService;

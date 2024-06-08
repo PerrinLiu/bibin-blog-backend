@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.llpy.textservice.mapper.DiaryMapper">
 
-    <select id="getList" resultType="com.llpy.textservice.entity.dto.DiaryVo">
+    <select id="getList" resultType="com.llpy.textservice.entity.vo.DiaryVo">
         SELECT d.diary_id,
                d.user_id,
                d.diary_title,
@@ -16,7 +16,7 @@
         where d.is_open = 0
     </select>
 
-    <select id="getListTitle" resultType="com.llpy.textservice.entity.dto.DiaryVo">
+    <select id="getListTitle" resultType="com.llpy.textservice.entity.vo.DiaryVo">
         SELECT d.diary_id,
         d.user_id,
         d.diary_title,
@@ -35,7 +35,7 @@
         </where>
     </select>
 
-    <select id="getListById" resultType="com.llpy.textservice.entity.dto.DiaryVo">
+    <select id="getListById" resultType="com.llpy.textservice.entity.vo.DiaryVo">
         SELECT d.diary_id,
                d.user_id,
                d.diary_title,
@@ -48,7 +48,7 @@
                  left join llpyblog.`user` as u on d.user_id = u.user_id
         where d.user_id = #{userId}
     </select>
-    <select id="getOneText" resultType="com.llpy.textservice.entity.dto.DiaryVo">
+    <select id="getOneText" resultType="com.llpy.textservice.entity.vo.DiaryVo">
         SELECT d.diary_id,
                dt.diary_text
         FROM llpyblog.diary AS d

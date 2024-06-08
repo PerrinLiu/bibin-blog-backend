@@ -2,8 +2,7 @@ package com.llpy.textservice.service;
 
 
 import com.llpy.model.Result;
-import com.llpy.textservice.entity.Diary;
-import com.llpy.textservice.entity.dto.DiaryVo;
+import com.llpy.textservice.entity.vo.DiaryVo;
 
 import java.util.List;
 

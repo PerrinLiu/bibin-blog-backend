@@ -1,4 +1,4 @@
-package com.llpy.textservice.entity.dto;
+package com.llpy.textservice.entity.vo;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
