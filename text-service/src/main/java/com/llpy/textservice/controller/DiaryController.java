@@ -2,12 +2,9 @@ package com.llpy.textservice.controller;
 
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
-import com.llpy.textservice.entity.Diary;
-import com.llpy.textservice.entity.dto.DiaryVo;
+import com.llpy.textservice.entity.vo.DiaryVo;
 import com.llpy.textservice.service.DiaryService;
-import com.llpy.textservice.service.Impl.DiaryServiceImpl;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 

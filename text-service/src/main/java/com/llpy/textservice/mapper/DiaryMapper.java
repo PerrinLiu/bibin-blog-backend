@@ -3,10 +3,8 @@ package com.llpy.textservice.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
-import com.llpy.textservice.entity.DiaryText;
-import com.llpy.textservice.entity.dto.DiaryVo;
+import com.llpy.textservice.entity.vo.DiaryVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
