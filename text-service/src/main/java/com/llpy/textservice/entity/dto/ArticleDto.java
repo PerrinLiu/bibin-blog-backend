@@ -21,6 +21,12 @@ public class ArticleDto {
     private String title;
 
     /**
+     * 文章封面
+     */
+    @NotBlank(message = "文章封面不能为空")
+    private String cover;
+
+    /**
      * 文章正文
      */
     @NotBlank(message = "文章正文不能为空")

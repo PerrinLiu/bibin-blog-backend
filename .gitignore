@@ -33,3 +33,8 @@ photo-service/target/
 text-service/target/
 user-service/target/
 
+gateway/src/test/
+photo-service/src/test/
+text-service/src/test/
+user-service/src/test/
+

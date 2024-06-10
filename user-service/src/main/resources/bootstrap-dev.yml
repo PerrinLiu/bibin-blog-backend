@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        namespace: a4c64d4f-45e6-4b77-9261-0ac7a9b244c1
+        file-extension: yaml # 配置的后缀名
+        # 使用extension-configs[n]，配置加载多个dataId
+        extension-configs:
+          - data-id: common-aliyun.yaml
+            group: LLPY
+            refresh: true  # 动态刷新配置
+          - data-id: common-dev.yaml
+            group: LLPY
+            refresh: true  #
