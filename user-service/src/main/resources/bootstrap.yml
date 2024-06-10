@@ -3,7 +3,6 @@ server:
 spring:
   profiles:
     active: dev
-    include: secret
   application:
     name: userservice  #服务名称
 
@@ -14,17 +13,7 @@ spring:
         group: LLPY
 
 
-  #redis配置
-  redis:
-    host: localhost
-    database: 0
-    port: 6379
 
-  #上传文件大小限制
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
 
   mail:
     host: smtp.qq.com #SMTP服务器
@@ -38,6 +27,11 @@ spring:
           socketFactory:
             class: javax.net.ssl.SSLSocketFactory
 
+
+#配置阿里云属性
+aliyun:
+  oss:
+    directory: userImg
 
 
 

@@ -43,6 +43,9 @@ public class Article extends Model<Article> {
     @ApiModelProperty(value = "文章标题")
     private String articleTitle;
 
+    @ApiModelProperty(value = "文章封面")
+    private String cover;
+
     @ApiModelProperty(value = "分组ID，关联到文章分组表中的分组ID")
     private Long articleGroupId;
 
