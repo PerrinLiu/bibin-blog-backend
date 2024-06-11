@@ -3,6 +3,7 @@ package com.llpy.textservice.entity.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * 文章dto
@@ -35,5 +36,5 @@ public class ArticleDto {
     /**
      * 组id
      */
-    private Long groupId;
+    private List<Integer> groupIds;
 }

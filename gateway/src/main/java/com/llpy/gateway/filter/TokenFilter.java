@@ -79,13 +79,17 @@ public class TokenFilter implements GlobalFilter, Ordered {
             String path = serverHttpRequest.getURI().getPath();
             log.info("当前请求接口：" + path);
 
+            //如果是公共可请求的资源，直接放行
+            if (path.contains("common")) {
+                return chain.filter(exchange);
+            }
             //直接可请求的资源
             String[] ignoresUrl = {
                     "login", "register", "getDiaryAll",
                     "getAccess", "getDiaryOne", "getDiaryBase",
                     "sendEmail", "swagger-ui.html", "api-docs",
                     "captcha", "generate-base64", "emailIsTrue",
-                    "updatePassword"
+                    "updatePassword", "getGroupList", "listArticle"
             };
 
             //提取最后一个'/'的子串

@@ -1,10 +1,13 @@
 package com.llpy.textservice.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.model.CodeMsg;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Article;
+import com.llpy.textservice.entity.ArticleGroup;
 import com.llpy.textservice.entity.ArticleText;
 import com.llpy.textservice.entity.dto.ArticleDto;
+import com.llpy.textservice.mapper.ArticleGroupMapper;
 import com.llpy.textservice.mapper.ArticleMapper;
 import com.llpy.textservice.mapper.ArticleTextMapper;
 import com.llpy.textservice.service.ArticleService;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * <p>
@@ -33,12 +37,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private final ArticleTextMapper articleTextMapper;
 
-    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper) {
+    private final ArticleGroupMapper articleGroupMapper;
+
+    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper, ArticleGroupMapper articleGroupMapper) {
         this.aliOSSUtils = aliOSSUtils;
         this.articleMapper = articleMapper;
         this.articleTextMapper = articleTextMapper;
+        this.articleGroupMapper = articleGroupMapper;
     }
 
+    /**
+     * 上传img
+     *
+     * @param file 文件
+     * @return {@code Result<?>}
+     */
     @Override
     public Result<?> uploadImg(MultipartFile file) {
         try {
@@ -59,7 +72,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Result<?> addArticle(ArticleDto articleDto, Long userId) {
         Article article = new Article();
-        article.setArticleTitle(articleDto.getTitle()).setArticleGroupId(articleDto.getGroupId()).setCreatBy(userId);
+        article.setArticleTitle(articleDto.getTitle()).setCreatBy(userId);
+        StringBuilder groupId = new StringBuilder();
+        for (Integer i : articleDto.getGroupIds()) {
+            if (groupId.length() > 0) {
+                groupId.append(",");
+            }
+            groupId.append(i);
+        }
+        article.setArticleGroupId(groupId.toString()).setCover(articleDto.getCover());
 
         //添加文章内容后获取内容id，设置给文章
         ArticleText articleText = new ArticleText();
@@ -72,4 +93,35 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         return Result.success();
     }
+
+    /**
+     * 获取组列表
+     *
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> getGroupList() {
+        List<ArticleGroup> articleTexts = articleGroupMapper.selectList(null);
+        return Result.success(articleTexts);
+    }
+
+    /**
+     * 列出文章
+     *
+     * @param pageSize   页面大小
+     * @param pageNum    书籍页码
+     * @param searchText 搜索文本
+     * @param userId     用户id
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText, Long userId) {
+        Page<Article> articlePage = new Page<>(pageNum, pageSize);
+        //todo 后续根据用户点赞，收藏，评论数排序
+        //得到基本信息
+        articleMapper.getArticleList(articlePage, searchText);
+        return Result.success(articlePage);
+    }
+
+
 }

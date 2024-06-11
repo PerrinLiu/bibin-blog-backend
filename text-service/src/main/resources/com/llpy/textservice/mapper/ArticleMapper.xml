@@ -4,22 +4,32 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.llpy.textservice.entity.Article">
-        <id column="article_id" property="articleId" />
-        <result column="article_text_id" property="articleTextId" />
-        <result column="article_title" property="articleTitle" />
-        <result column="article_group_id" property="articleGroupId" />
-        <result column="comment_sum" property="commentSum" />
-        <result column="read_sum" property="readSum" />
-        <result column="collections_sum" property="collectionsSum" />
-        <result column="like_sum" property="likeSum" />
-        <result column="creat_by" property="creatBy" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
+        <id column="article_id" property="id"/>
+        <result column="article_text_id" property="articleTextId"/>
+        <result column="article_title" property="articleTitle"/>
+        <result column="article_group_id" property="articleGroupId"/>
+        <result column="comment_sum" property="commentSum"/>
+        <result column="read_sum" property="readSum"/>
+        <result column="collections_sum" property="collectionsSum"/>
+        <result column="like_sum" property="likeSum"/>
+        <result column="creat_by" property="creatBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         article_id, article_text_id, article_title, article_group_id, comment_sum, read_sum, collections_sum, like_sum, creat_by, create_time, update_time
     </sql>
+    <select id="getArticleList" resultType="com.llpy.textservice.entity.Article">
+        select *
+        from article as a
+        <where>
+            <if test="searchText!=null">
+                a.article_title like concat('%',#{searchText},'%')
+            </if>
+        </where>
+        order by a.like_sum desc, a.create_time desc
+    </select>
 
 </mapper>

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/text")
+@RequestMapping("/diary")
 @Api(tags = {"日记控制类"})
 public class DiaryController extends BaseController {
     private final DiaryService diaryService;

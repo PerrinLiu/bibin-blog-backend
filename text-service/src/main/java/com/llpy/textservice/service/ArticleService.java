@@ -21,4 +21,8 @@ public interface ArticleService extends IService<Article> {
     Result<?> uploadImg(MultipartFile file);
 
     Result<?> addArticle(ArticleDto articleDto, Long userId);
+
+    Result<?> getGroupList();
+
+    Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText, Long userId);
 }

@@ -5,6 +5,7 @@ import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.service.ArticleService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,13 +34,27 @@ public class ArticleController extends BaseController {
     }
 
     @PostMapping("/uploadImg")
+    @ApiOperation(value = "上传图片")
     public Result<?> updateImg(@RequestParam("image") MultipartFile image) {
         return articleService.uploadImg(image);
     }
 
     @PostMapping("/addArticle")
+    @ApiOperation(value = "添加文章")
     public Result<?> addArticle(@Valid @RequestBody ArticleDto articleDto) {
         return articleService.addArticle(articleDto, loginUser().getUserId());
+    }
+
+    @GetMapping("/listArticle")
+    @ApiOperation(value = "获得文章列表")
+    public Result<?> getArticle(Integer pageSize, Integer pageNum, String searchText) {
+        return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
+    }
+
+    @GetMapping("/getGroupList")
+    @ApiOperation(value = "获得文章分组")
+    public Result<?> getGroupList() {
+        return articleService.getGroupList();
     }
 }
 

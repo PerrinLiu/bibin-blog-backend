@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -49,7 +50,7 @@ public class ArticleComment extends Model<ArticleComment> {
 
     @ApiModelProperty(value = "评论时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date createdTime;
+    private LocalDateTime createdTime;
 
 
     @Override

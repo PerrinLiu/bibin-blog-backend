@@ -12,13 +12,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 
-public class BaseController{
+public class BaseController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     /**
      * 由网关 传入最新的user信息
+     *
      * @return
      */
     public UserDto loginUser() {
@@ -31,7 +32,7 @@ public class BaseController{
             UserDto empAccount = JsonUtil.jsonToBean(userInfo, UserDto.class);
             return empAccount;
         }
-        return null;
+        return new UserDto();
     }
 
 }

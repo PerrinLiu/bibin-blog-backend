@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -47,7 +49,7 @@ public class Article extends Model<Article> {
     private String cover;
 
     @ApiModelProperty(value = "分组ID，关联到文章分组表中的分组ID")
-    private Long articleGroupId;
+    private String articleGroupId;
 
     @ApiModelProperty(value = "评论数")
     private Integer commentSum;
@@ -56,7 +58,7 @@ public class Article extends Model<Article> {
     private Integer readSum;
 
     @ApiModelProperty(value = "收藏数")
-    private String collectionsSum;
+    private Integer collectionsSum;
 
     @ApiModelProperty(value = "点赞数")
     private Integer likeSum;
@@ -66,10 +68,10 @@ public class Article extends Model<Article> {
 
     @ApiModelProperty(value = "文章创建时间，默认为当前时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
+    private LocalDateTime createTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
     @Override
