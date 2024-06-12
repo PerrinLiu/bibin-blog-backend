@@ -25,4 +25,9 @@ public interface ArticleService extends IService<Article> {
     Result<?> getGroupList();
 
     Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText, Long userId);
+
+    Result<?> getArticle(String articleId);
+
+    Result<?> getArticleComments(String articleId);
+
 }

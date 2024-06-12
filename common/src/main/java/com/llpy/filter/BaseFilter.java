@@ -14,17 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 请求拦截，避免服务绕过接口被直接访问
+ * 请求拦截，避免服务绕过接口被直接访问,排在网关之后
  */
 @Component
-@WebFilter(filterName = "BaseFilter",urlPatterns = {"/**"})
+@WebFilter(filterName = "BaseFilter", urlPatterns = {"/**"})
 @Order(999)
 public class BaseFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         System.out.println("init filter");
     }
- 
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         System.out.println("进入过滤器========");
@@ -36,11 +36,11 @@ public class BaseFilter implements Filter {
         response.setCharacterEncoding("UTF-8");
 
         //获取请求头
-        HttpServletRequest request = (HttpServletRequest)servletRequest;
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
         String gateway = request.getHeader(GatewayKey.GATEWAY_KEY.getKey());
 
         //判断是否携带了密钥
-        if(gateway == null || !gateway.equals(GatewayKey.GATEWAY_KEY.getKeyInfo())){
+        if (gateway == null || !gateway.equals(GatewayKey.GATEWAY_KEY.getKeyInfo())) {
             //如果不携带密钥，返回403错误
             // 创建一个包含 code 和 message 的 Java 对象
             Map<String, Object> jsonResponse = new HashMap<>();
@@ -55,10 +55,10 @@ public class BaseFilter implements Filter {
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
- 
+
     @Override
     public void destroy() {
         System.out.println("destroy filter");
     }
- 
+
 }

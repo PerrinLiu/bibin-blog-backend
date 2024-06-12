@@ -18,4 +18,4 @@ spring:
 #配置阿里云属性
 aliyun:
   oss:
-    directory: diaryImg
+    directory: textImg

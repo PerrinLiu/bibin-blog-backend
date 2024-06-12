@@ -51,6 +51,18 @@ public class ArticleController extends BaseController {
         return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
     }
 
+    @GetMapping("/common/getArticle")
+    @ApiOperation(value = "获得文章")
+    public Result<?> getArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
+        return articleService.getArticle(articleId);
+    }
+
+    @GetMapping("/common/getArticleComments")
+    @ApiOperation(value = "获得文章评论")
+    public Result<?> getArticleDetails(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
+        return articleService.getArticleComments(articleId);
+    }
+
     @GetMapping("/getGroupList")
     @ApiOperation(value = "获得文章分组")
     public Result<?> getGroupList() {

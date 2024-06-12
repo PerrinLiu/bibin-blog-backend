@@ -1,8 +1,10 @@
 package com.llpy.utils;
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.*;
+import com.aliyun.oss.common.comm.ResponseMessage;
+import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
+import com.llpy.enums.MimeTypeEnum;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +23,23 @@ public class AliOSSUtils {
 
     public AliOSSUtils(AliOSSProperties aliOSSProperties) {
         this.aliOSSProperties = aliOSSProperties;
+    }
+
+
+    /**
+     * 获得oss
+     *
+     * @return {@link OSSClient}
+     */
+    public OSSClient getOss() {
+        try {
+            ClientBuilderConfiguration conf = new ClientBuilderConfiguration();
+            // 私有云要关闭CNAME
+            conf.setSupportCname(false);
+            return (OSSClient) new OSSClientBuilder().build(aliOSSProperties.getEndpoint(), aliOSSProperties.getAccessKeyId(), aliOSSProperties.getAccessKeySecret(), conf);
+        } catch (Exception e) {
+            throw new RuntimeException("请检查aliOss配置是否正确!!");
+        }
     }
 
     /**
@@ -42,16 +61,28 @@ public class AliOSSUtils {
         String fileName = UUID.randomUUID().toString().replaceAll("-", "") + originalFilename.substring(originalFilename.lastIndexOf("."));
         //文件名称
         fileName = getFileName(fileName, directory);
-        //Oss实例
-        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-        //上传文件到 OSS
-        ossClient.putObject(bucketName, fileName, inputStream);
 
-        //文件访问路径
-        String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
-        // 关闭ossClient
-        ossClient.shutdown();
-        return url;// 把上传到oss的路径返回
+
+        //设置文件元数据,文件类型等,缓存策略等
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(MimeTypeEnum.JPG.getMimeType());
+        objectMetadata.setCacheControl("public, max-age=2592000");
+        try {
+            //上传
+            OSSClient ossClient = getOss();
+            PutObjectResult putObjectResult = ossClient.putObject(aliOSSProperties.getBucketName(), fileName, file.getInputStream(), objectMetadata);
+            ResponseMessage responseMessage = putObjectResult.getResponse();
+            // 根据响应状态码判断请求是否成功
+            if (responseMessage == null) {
+                // 上传成功,返回文件访问路径
+                return endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+            }
+        } catch (OSSException e) {
+            throw new RuntimeException("图片上传失败");
+        } finally {
+            getOss().shutdown();
+        }
+        throw new RuntimeException("图片上传失败");
     }
 
     //上传字符串

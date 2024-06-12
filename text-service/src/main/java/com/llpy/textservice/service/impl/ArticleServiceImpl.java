@@ -1,18 +1,20 @@
 package com.llpy.textservice.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.llpy.model.CodeMsg;
+import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Article;
 import com.llpy.textservice.entity.ArticleGroup;
 import com.llpy.textservice.entity.ArticleText;
 import com.llpy.textservice.entity.dto.ArticleDto;
+import com.llpy.textservice.entity.vo.ArticleDetailsVo;
 import com.llpy.textservice.mapper.ArticleGroupMapper;
 import com.llpy.textservice.mapper.ArticleMapper;
 import com.llpy.textservice.mapper.ArticleTextMapper;
 import com.llpy.textservice.service.ArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.utils.AliOSSUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +60,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             String upload = aliOSSUtils.upload(file);
             return Result.success(upload);
         } catch (IOException e) {
-            return new Result<>(CodeMsg.UPLOAD_IMG_ERROR);
+            return Result.error(ResponseError.UPLOAD_IMG_ERROR);
         }
     }
 
@@ -121,6 +123,39 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //得到基本信息
         articleMapper.getArticleList(articlePage, searchText);
         return Result.success(articlePage);
+    }
+
+    /**
+     * 获取文章
+     *
+     * @param articleId 文章id
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> getArticle(String articleId) {
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            return Result.error(ResponseError.NOT_FOUND_ERROR);
+        }
+        //创建返回对象
+        ArticleDetailsVo articleDetailsVo = new ArticleDetailsVo();
+        //拷贝
+        BeanUtils.copyProperties(article, articleDetailsVo);
+        //根据文章id获取文章详情
+        ArticleText articleText = articleTextMapper.selectById(article.getArticleTextId());
+        articleDetailsVo.setArticleText(articleText.getArticleText());
+        return Result.success(articleDetailsVo);
+    }
+
+    /**
+     * 获取文章评论
+     *
+     * @param articleId 文章id
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> getArticleComments(String articleId) {
+        return null;
     }
 
 

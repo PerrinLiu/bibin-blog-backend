@@ -20,7 +20,7 @@ public class CustomFastJsonConfig {
         FastJsonConfig fastJsonConfig = new FastJsonConfig();
         //3.设置id字段为字符串
         fastJsonConfig.setSerializeFilters((ValueFilter) (object, name, value) -> {
-            if (name.contains("Id")){
+            if (name.contains("Id") || name.contains("id")) {
                 return value + "";
             }
             return value;

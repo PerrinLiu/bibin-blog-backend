@@ -1,5 +1,6 @@
 package com.llpy.model;
 
+import com.llpy.enums.ResponseError;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 
@@ -19,10 +20,6 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
-    public Result(CodeMsg codeMsg) {
-        this.message = codeMsg.getMessage();
-        this.retCode = codeMsg.getRetCode();
-    }
 
     public static Result success(Object data) {
         return new Result<>("成功", 200, data);
@@ -36,5 +33,8 @@ public class Result<T> implements Serializable {
         return new Result<>(message, 500, null);
     }
 
+    public static Result error(ResponseError responseError) {
+        return new Result<>(responseError.getMessage(), responseError.getCode(), null);
+    }
 
 }

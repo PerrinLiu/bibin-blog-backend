@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2023/11/08
  */
 public interface UserService {
-    Result<UserDto> login(UserLoginQuery userLoginQuery, String captcha);
+    Result<?> login(UserLoginQuery userLoginQuery, String captcha);
 
     Result<UserDto2> getUser(Long userId);
 

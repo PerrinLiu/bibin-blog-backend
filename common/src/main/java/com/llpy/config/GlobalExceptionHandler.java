@@ -1,5 +1,6 @@
 package com.llpy.config;
 
+import com.llpy.model.Result;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,11 @@ public class GlobalExceptionHandler {
         Map<String, String> map = new HashMap<>();
         map.put("message", collect.get(0).getDefaultMessage());
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public Result<?> handleException(RuntimeException e) {
+        e.printStackTrace();
+        return Result.error(e.getMessage());
     }
 }
