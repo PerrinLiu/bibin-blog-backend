@@ -14,7 +14,7 @@ spring:
         group: LLPY
       config:
         namespace: a4c64d4f-45e6-4b77-9261-0ac7a9b244c1
-
+        file-extension: yaml # 配置的后缀名
 #配置阿里云属性
 aliyun:
   oss:
