@@ -2,17 +2,14 @@ server:
   port: 10010
 spring:
   profiles:
-    active: dev
+    active: prod
   application:
     name: gateway
 
   cloud:
     nacos:
-      server-addr: localhost:8848  #nacos地址
       discovery:
         group: LLPY
-      config:
-        namespace: a4c64d4f-45e6-4b77-9261-0ac7a9b244c1
     gateway:
       routes:
         - id: user-service
