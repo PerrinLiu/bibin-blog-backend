@@ -12,17 +12,23 @@ import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
+/**
+ * 操作日志
+ *
+ * @author llpy
+ * @date 2024/06/21
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="OperationLog对象", description="操作日志记录表")
+@ApiModel(value = "OperationLog对象", description = "操作日志记录表")
 public class OperationLog {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "操作日志id")
     @TableId(value = "id", type = IdType.ID_WORKER)
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @ApiModelProperty(value = "状态码")
