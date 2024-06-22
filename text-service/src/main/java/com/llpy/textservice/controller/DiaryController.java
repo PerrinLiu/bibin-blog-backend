@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 日记控制器
+ *
+ * @author llpy
+ * @date 2024/06/23
+ */
 @RestController
 @RequestMapping("/diary")
 @Api(tags = {"日记控制类"})

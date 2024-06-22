@@ -49,6 +49,12 @@ public class ArticleDetailsVo {
     @ApiModelProperty(value = "创建人")
     private Long creatBy;
 
+    @ApiModelProperty(value = "是否点赞")
+    private boolean like;
+
+    @ApiModelProperty(value = "是否收藏")
+    private boolean star;
+
     @ApiModelProperty(value = "文章创建时间，默认为当前时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

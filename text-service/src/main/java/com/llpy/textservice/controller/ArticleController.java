@@ -2,6 +2,7 @@ package com.llpy.textservice.controller;
 
 
 import com.llpy.controller.BaseController;
+import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.service.ArticleService;
@@ -54,13 +55,19 @@ public class ArticleController extends BaseController {
     @GetMapping("/common/getArticle")
     @ApiOperation(value = "获得文章")
     public Result<?> getArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
-        return articleService.getArticle(articleId);
+        return articleService.getArticle(articleId,loginUser().getUserId());
     }
 
-    @GetMapping("/common/getArticleComments")
+    @GetMapping("/getArticleComments")
     @ApiOperation(value = "获得文章评论")
     public Result<?> getArticleDetails(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
         return articleService.getArticleComments(articleId);
+    }
+
+    @PostMapping("/likeArticle")
+    @ApiOperation(value = "点赞文章")
+    public Result<?> likeArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
+        return articleService.likeArticle(articleId, loginUser().getUserId());
     }
 
     @GetMapping("/getGroupList")
