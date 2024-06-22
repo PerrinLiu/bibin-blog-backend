@@ -26,6 +26,8 @@ public class Access {
 
     private String ip;
 
+    private Integer count;
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
