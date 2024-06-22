@@ -101,6 +101,10 @@ public class DiaryServiceImpl implements DiaryService {
         //得到基本信息
         diaryMapper.getListTitle(diaryVoPage, userId);
 
+        List<DiaryVo> records = diaryVoPage.getRecords();
+        //根据日期对日记进行排序
+        records.sort((o1, o2) -> o2.getCreateTime().compareTo(o1.getCreateTime()));
+
         return Result.success(diaryVoPage);
     }
 

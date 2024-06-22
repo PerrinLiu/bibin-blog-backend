@@ -15,6 +15,7 @@ import com.llpy.textservice.service.ArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.utils.AliOSSUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -137,6 +138,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (article == null) {
             return Result.error(ResponseError.NOT_FOUND_ERROR);
         }
+        Integer readSum = article.getReadSum();
+        article.setReadSum(readSum + 1);
+        updateReadSum(article);
         //创建返回对象
         ArticleDetailsVo articleDetailsVo = new ArticleDetailsVo();
         //拷贝
@@ -145,6 +149,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleText articleText = articleTextMapper.selectById(article.getArticleTextId());
         articleDetailsVo.setArticleText(articleText.getArticleText());
         return Result.success(articleDetailsVo);
+    }
+
+
+    @Async("taskExecutor")
+    public void updateReadSum(Article article){
+        articleMapper.updateById(article);
     }
 
     /**

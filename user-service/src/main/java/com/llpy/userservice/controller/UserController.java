@@ -1,6 +1,7 @@
 package com.llpy.userservice.controller;
 
 
+import com.llpy.annotation.OperateLog;
 import com.llpy.controller.BaseController;
 import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
@@ -38,6 +39,7 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto}>
      */
     @PostMapping("/login")
+    @OperateLog("登录")
     @ApiOperation(value = "登录")
     public Result<?> login(@RequestBody @Valid UserLoginQuery userLoginQuery, @RequestHeader("captchaToken") String captchaToken) {
         return userService.login(userLoginQuery, captchaToken);
@@ -49,7 +51,6 @@ public class UserController extends BaseController {
      * @return {@link Result}<{@link UserDto2}>
      */
     @GetMapping("/getUser")
-//    @OperateLog("获取用户信息")
     @ApiOperation(value = "获取用户信息")
     public Result<UserDto2> getUser() {
         return userService.getUser(loginUser().getUserId());

@@ -17,22 +17,33 @@
     </select>
 
     <select id="getListTitle" resultType="com.llpy.textservice.entity.vo.DiaryVo">
-        SELECT d.diary_id,
-        d.user_id,
-        d.diary_title,
-        u.nickname,
-        u.user_img,
-        d.create_time
-        FROM llpyblog.diary AS d
-        LEFT JOIN llpyblog.`user` AS u ON d.user_id = u.user_id
-        <where>
-            <if test="userId!=null">
-                d.user_id = #{userId}
-            </if>
-            <if test="userId==null">
-                d.is_open = 0
-            </if>
-        </where>
+        SELECT
+            d.diary_id,
+            d.user_id,
+            d.diary_title,
+            u.nickname,
+            u.user_img,
+            d.create_time
+        FROM
+            llpyblog.diary AS d
+        LEFT JOIN
+            llpyblog.`user` AS u ON d.user_id = u.user_id
+        INNER JOIN
+            (SELECT
+                 diary_id
+            FROM
+                llpyblog.diary
+            <where>
+                <if test="userId!=null">
+                    user_id = #{userId}
+                </if>
+                <if test="userId==null">
+                    is_open = 0
+                </if>
+            </where>
+            ) AS subquery ON d.diary_id = subquery.diary_id
+        ORDER BY
+        d.create_time DESC
     </select>
 
     <select id="getListById" resultType="com.llpy.textservice.entity.vo.DiaryVo">

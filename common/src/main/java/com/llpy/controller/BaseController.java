@@ -12,6 +12,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 
+/**
+ * 基本控制器
+ *
+ * @author llpy
+ * @date 2024/06/22
+ */
 public class BaseController {
 
     @Autowired

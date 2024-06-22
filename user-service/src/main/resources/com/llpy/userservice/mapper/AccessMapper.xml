@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.llpy.userservice.mapper.AccessMapper">
+
+    <select id="getIpCount" resultType="com.llpy.entity.Access">
+        SELECT *
+        FROM llpyblog.access
+        WHERE ip = #{accessIp}
+    </select>
+</mapper>

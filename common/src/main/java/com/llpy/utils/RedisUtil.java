@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Redis Util
+ *
+ * @author llpy
+ * @date 2024/06/22
+ */
 @Slf4j
 @Component
 public class RedisUtil {

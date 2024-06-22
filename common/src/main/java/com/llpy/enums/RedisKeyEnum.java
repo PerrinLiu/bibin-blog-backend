@@ -1,6 +1,14 @@
 package com.llpy.enums;
 
 
+import lombok.Getter;
+
+/**
+ * redis密钥枚举
+ *
+ * @author llpy
+ * @date 2024/06/22
+ */
 public enum RedisKeyEnum {
 
 
@@ -26,6 +34,7 @@ public enum RedisKeyEnum {
     REDIS_ADMIN_ROLE_STR("adminRole:",-1,"管理员角色 "),
     REDIS_USER_ROLES_STR("userRoles:",-1,"用户和角色关系 "),
     REDIS_ROLE_ACLS_MAP("roleAcls:",-1,"角色和权限关系 "),
+    ACCESS_SUM("accessSum:",30*60,"网站访问量")
     ;
     private final String key;
     private final int expireTime;
