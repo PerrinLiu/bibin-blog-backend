@@ -31,5 +31,11 @@
         </where>
         order by a.like_sum desc, a.create_time desc
     </select>
+    <select id="listIndexArticle" resultType="com.llpy.textservice.entity.Article">
+        select *
+        from article as a
+        order by a.create_time desc
+        limit 0,5
+    </select>
 
 </mapper>

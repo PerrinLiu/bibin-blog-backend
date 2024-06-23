@@ -16,6 +16,7 @@ import com.llpy.textservice.mapper.UserArticleMapper;
 import com.llpy.textservice.service.ArticleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.utils.AliOSSUtils;
+import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -138,7 +139,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @return {@code Result<?>}
      */
     @Override
-    public Result<?> getArticle(String articleId, Long userId) {
+    public Result<?> getArticle(Long articleId, Long userId) {
         // TODO: 2024/6/23 根据用户id判断是否已经点过赞和收藏
         Article article = articleMapper.selectById(articleId);
         if (article == null) {
@@ -150,11 +151,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         //创建返回对象
         ArticleDetailsVo articleDetailsVo = new ArticleDetailsVo();
-        if(userId != null){
+        if (userId != null) {
             //判断是否点赞和收藏
-            UserArticle userArticle= userArticleMapper.getOneByUserIdAndArticleId(userId, articleId);
-            if(userArticle != null){
-                articleDetailsVo.setLike(userArticle.getLike());
+            UserArticle userArticle = userArticleMapper.getOneByUserIdAndArticleId(userId, articleId);
+            if (userArticle != null) {
+                articleDetailsVo.setLiked(userArticle.getLiked());
                 articleDetailsVo.setStar(userArticle.getStar());
             }
         }
@@ -173,7 +174,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param article 文章
      */
     @Async("taskExecutor")
-    public void updateReadSum(Article article){
+    public void updateReadSum(Article article) {
         articleMapper.updateById(article);
     }
 
@@ -193,12 +194,59 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      *
      * @param articleId 文章id
      * @param userId    用户id
+     * @param type      类型 1点赞 2收藏
      * @return {@code Result<?>}
      */
     @Override
-    public Result<?> likeArticle(String articleId, Long userId) {
-        return null;
+    public Result<?> likeOrStarArticle(Long articleId, Long userId, Integer type) {
+        if (userId == null) {
+            return Result.error(ResponseError.USER_NOT_LOGIN);
+        }
+
+        //判断是否点赞和收藏
+        UserArticle userArticle = userArticleMapper.getOneByUserIdAndArticleId(userId, articleId);
+        //第一次的情况
+        if (userArticle == null) {
+            userArticle = new UserArticle();
+            //设置点赞和收藏
+            if (type == 1) {
+                userArticle.setLiked(true);
+            } else {
+                userArticle.setStar(true);
+            }
+            userArticle.setUserId(userId).setArticleId(articleId);
+            userArticleMapper.insert(userArticle);
+        } else {
+            if (type == 1) {
+                userArticle.setLiked(!userArticle.getLiked());
+            } else {
+                userArticle.setStar(!userArticle.getStar());
+            }
+            userArticleMapper.updateById(userArticle);
+        }
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            return Result.error(ResponseError.NOT_FOUND_ERROR);
+        }
+        if (type == 1) {
+            article.setLikeSum(userArticle.getLiked() ? 1 : -1);
+        } else {
+            article.setCollectionsSum(userArticle.getStar() ? 1 : -1);
+        }
+        articleMapper.updateById(article);
+        return Result.success();
     }
 
+    /**
+     * 列出索引文章
+     *
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> listIndexArticle() {
+        //根据日期获取前5篇文章
+        List<Article> articles = articleMapper.listIndexArticle();
+        return Result.success(articles);
+    }
 
 }

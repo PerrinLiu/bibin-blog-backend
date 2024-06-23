@@ -2,7 +2,6 @@ package com.llpy.textservice.controller;
 
 
 import com.llpy.controller.BaseController;
-import com.llpy.entity.UserDto;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.service.ArticleService;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * <p>
@@ -48,13 +46,19 @@ public class ArticleController extends BaseController {
 
     @GetMapping("/listArticle")
     @ApiOperation(value = "获得文章列表")
-    public Result<?> getArticle(Integer pageSize, Integer pageNum, String searchText) {
+    public Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText) {
         return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
+    }
+
+    @GetMapping("/common/listIndexArticle")
+    @ApiOperation(value = "获得首页文章列表")
+    public Result<?> listIndexArticle() {
+        return articleService.listIndexArticle();
     }
 
     @GetMapping("/common/getArticle")
     @ApiOperation(value = "获得文章")
-    public Result<?> getArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
+    public Result<?> getArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam Long articleId) {
         return articleService.getArticle(articleId,loginUser().getUserId());
     }
 
@@ -64,10 +68,10 @@ public class ArticleController extends BaseController {
         return articleService.getArticleComments(articleId);
     }
 
-    @PostMapping("/likeArticle")
-    @ApiOperation(value = "点赞文章")
-    public Result<?> likeArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
-        return articleService.likeArticle(articleId, loginUser().getUserId());
+    @PostMapping("/likeOrStarArticle")
+    @ApiOperation(value = "点赞或收藏文章")
+    public Result<?> likeArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam Long articleId, @RequestParam Integer type) {
+        return articleService.likeOrStarArticle(articleId, loginUser().getUserId(), type);
     }
 
     @GetMapping("/getGroupList")

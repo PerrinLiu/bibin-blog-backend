@@ -16,5 +16,5 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface UserArticleMapper extends BaseMapper<UserArticle> {
 
-    UserArticle getOneByUserIdAndArticleId(Long userId, String articleId);
+    UserArticle getOneByUserIdAndArticleId(Long userId, Long articleId);
 }

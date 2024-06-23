@@ -17,6 +17,7 @@ public enum ResponseError {
     NOT_FOUND_ERROR(404001, "该资源不存在"),
     USER_NOT_EXIST(500103, "用户不存在"),
     USER_EXIST(500104, "用户名已存在"),
+    USER_NOT_LOGIN(500103, "请先登录"),
     LOGIN_CODE_ERROR(500105, "验证码错误"),
     USER_EMAIL_EXIST(500104, "该邮箱已被使用"),
     NOT_FIND_DATA(500106, "查找不到对应数据"),

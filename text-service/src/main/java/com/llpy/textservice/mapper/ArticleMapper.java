@@ -6,6 +6,8 @@ import com.llpy.textservice.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 文章表 Mapper 接口
@@ -18,4 +20,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ArticleMapper extends BaseMapper<Article> {
 
     IPage<Article> getArticleList(Page<Article> articlePage, String searchText);
+
+    List<Article> listIndexArticle();
+
 }

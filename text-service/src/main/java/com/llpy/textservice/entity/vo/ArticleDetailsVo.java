@@ -50,7 +50,7 @@ public class ArticleDetailsVo {
     private Long creatBy;
 
     @ApiModelProperty(value = "是否点赞")
-    private boolean like;
+    private boolean liked;
 
     @ApiModelProperty(value = "是否收藏")
     private boolean star;
