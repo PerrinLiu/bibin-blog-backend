@@ -31,6 +31,9 @@ public class ArticleDetailsVo {
     @ApiModelProperty(value = "文章封面")
     private String cover;
 
+    @ApiModelProperty(value = "文章描述")
+    private String des;
+
     @ApiModelProperty(value = "分组ID，关联到文章分组表中的分组ID")
     private String articleGroupId;
 

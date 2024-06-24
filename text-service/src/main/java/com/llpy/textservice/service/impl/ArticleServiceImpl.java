@@ -89,7 +89,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             groupId.append(i);
         }
-        article.setArticleGroupId(groupId.toString()).setCover(articleDto.getCover());
+        article.setArticleGroupId(groupId.toString()).setCover(articleDto.getCover()).setDes(articleDto.getDes());
 
         //添加文章内容后获取内容id，设置给文章
         ArticleText articleText = new ArticleText();

@@ -45,6 +45,9 @@ public class Article extends Model<Article> {
     @ApiModelProperty(value = "文章标题")
     private String articleTitle;
 
+    @ApiModelProperty(value = "文章描述")
+    private String des;
+
     @ApiModelProperty(value = "文章封面")
     private String cover;
 
