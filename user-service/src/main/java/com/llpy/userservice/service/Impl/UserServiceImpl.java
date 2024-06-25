@@ -2,6 +2,7 @@ package com.llpy.userservice.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.llpy.entity.MenuVo;
 import com.llpy.entity.UserDto;
@@ -79,21 +80,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Result<?> login(UserLoginQuery userLoginQuery, String captchaKey) {
-        // TODO: 2023/11/18 暂时关闭验证码登录 
-//        //拿到前端传的验证码
-//        String captcha = userLoginQuery.getCaptcha();
-//        //如果验证码为空
-//        if (StringUtils.isBlank(captcha)) {
-//            return Result.error("验证码不能为空");
-//        }
-//
-//        //拿出redis的验证码
-//        String o = (String) redisUtil.get(captchaKey);
-//        if (o == null || !o.equalsIgnoreCase(userLoginQuery.getCaptcha())) {
-//            return Result.error(ResponseError.LOGIN_CODE_ERROR);
-//        }
-//        //如果验证通过，删除redis中的值
-//        redisUtil.del(captchaKey);
+        //拿到前端传的验证码
+        String captcha = userLoginQuery.getCaptcha();
+        //如果验证码为空
+        if (StringUtils.isBlank(captcha)) {
+            return Result.error("验证码不能为空");
+        }
+
+        //拿出redis的验证码
+        String o = (String) redisUtil.get(captchaKey);
+        if (o == null || !o.equalsIgnoreCase(userLoginQuery.getCaptcha())) {
+            return Result.error(ResponseError.LOGIN_CODE_ERROR);
+        }
+        //如果验证通过，删除redis中的值
+        redisUtil.del(captchaKey);
 
         //根据用户名查找用户
         User user =

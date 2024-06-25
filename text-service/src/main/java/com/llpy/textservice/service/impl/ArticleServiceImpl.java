@@ -139,7 +139,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @Override
     public Result<?> getArticle(Long articleId, Long userId) {
-        // TODO: 2024/6/23 根据用户id判断是否已经点过赞和收藏
         Article article = articleMapper.selectById(articleId);
         if (article == null) {
             return Result.error(ResponseError.NOT_FOUND_ERROR);
