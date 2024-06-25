@@ -34,4 +34,7 @@ public interface ArticleService extends IService<Article> {
     Result<?> likeOrStarArticle(Long articleId, Long userId, Integer type);
 
     Result<?> listIndexArticle();
+
+    Result<?> uploadFile(MultipartFile file);
+
 }

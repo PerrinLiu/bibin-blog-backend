@@ -38,6 +38,12 @@ public class ArticleController extends BaseController {
         return articleService.uploadImg(image);
     }
 
+    @PostMapping("/common/uploadFile")
+    @ApiOperation(value = "上传文件")
+    public Result<?> updateFile(@RequestParam("file") MultipartFile file) {
+        return articleService.uploadFile(file);
+    }
+
     @PostMapping("/addArticle")
     @ApiOperation(value = "添加文章")
     public Result<?> addArticle(@Valid @RequestBody ArticleDto articleDto) {
