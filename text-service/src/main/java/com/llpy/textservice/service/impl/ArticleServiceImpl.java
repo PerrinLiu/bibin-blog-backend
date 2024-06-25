@@ -1,6 +1,7 @@
 package com.llpy.textservice.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Article;
@@ -14,19 +15,13 @@ import com.llpy.textservice.mapper.ArticleMapper;
 import com.llpy.textservice.mapper.ArticleTextMapper;
 import com.llpy.textservice.mapper.UserArticleMapper;
 import com.llpy.textservice.service.ArticleService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.utils.AliOSSUtils;
-import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -251,39 +246,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //根据日期获取前5篇文章
         List<Article> articles = articleMapper.listIndexArticle();
         return Result.success(articles);
-    }
-
-    @Override
-    public Result<?> uploadFile(MultipartFile file) {
-        //todo 添加文件唯一标志，按月划分文件
-        String uploadDir = "/path/to/upload/dir";
-        String serverUrl = "http://127.0.0.1:10010/text";
-        if (file.isEmpty()) {
-            return Result.error("文件为空");
-        }
-
-        try {
-            // 获取上传文件的名字
-            String fileName = file.getOriginalFilename();
-            Path path = Paths.get(uploadDir + File.separator + fileName);
-            // 确保上传目录存在
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            // 保存文件到服务器目录
-            Files.write(path, file.getBytes());
-
-            // 生成文件的URL
-            String fileUrl = serverUrl + "/files/common/" + fileName;
-
-            // 返回文件URL
-            return Result.success(fileUrl);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Result.error("上传文件失败");
-        }
     }
 
 }

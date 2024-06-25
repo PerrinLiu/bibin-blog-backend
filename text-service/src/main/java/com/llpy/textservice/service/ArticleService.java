@@ -35,6 +35,5 @@ public interface ArticleService extends IService<Article> {
 
     Result<?> listIndexArticle();
 
-    Result<?> uploadFile(MultipartFile file);
 
 }

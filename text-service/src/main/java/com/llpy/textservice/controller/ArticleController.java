@@ -5,6 +5,7 @@ import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.service.ArticleService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ import javax.validation.constraints.NotNull;
  */
 @RestController
 @RequestMapping("/article")
+@Api(tags = "文章控制类")
 public class ArticleController extends BaseController {
 
     private final ArticleService articleService;
@@ -38,11 +40,6 @@ public class ArticleController extends BaseController {
         return articleService.uploadImg(image);
     }
 
-    @PostMapping("/common/uploadFile")
-    @ApiOperation(value = "上传文件")
-    public Result<?> updateFile(@RequestParam("file") MultipartFile file) {
-        return articleService.uploadFile(file);
-    }
 
     @PostMapping("/addArticle")
     @ApiOperation(value = "添加文章")
