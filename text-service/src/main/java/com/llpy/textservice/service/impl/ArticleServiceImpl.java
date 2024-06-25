@@ -55,7 +55,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     /**
-     * 上传img
+     * 上传图片到ali oss
      *
      * @param file 文件
      * @return {@code Result<?>}

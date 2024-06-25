@@ -198,9 +198,10 @@ public class UserServiceImpl implements UserService {
         //创建邮箱对象
         MailDto mailDto = new MailDto();
 
+        String message = bool ? "注册" : "密码重置";
         mailDto.setTo(email);
         //调用工具类发送验证码
-        MailDto mail = emailUtil.sendMail(mailDto);
+        MailDto mail = emailUtil.sendMail(mailDto,message);
 
         //如果状态码不为ok，返回发送失败
         String retCode = "ok";
