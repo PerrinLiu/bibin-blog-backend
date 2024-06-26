@@ -1,6 +1,7 @@
 package com.llpy.userservice.utils;
 
 import com.llpy.userservice.entity.dto.MailDto;
+import com.llpy.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,7 +20,6 @@ import java.util.Random;
  * @date 2023/11/08
  */
 @Component
-@Service
 @Slf4j
 public class EmailUtil {
     private final JavaMailSenderImpl mailSender;
@@ -78,7 +78,7 @@ public class EmailUtil {
             messageHelper.setText(htmlContent, true); // 设置为true，表示内容是HTML格式
 
             // 更新MailDto中的信息
-            mailVo.setText(code);
+            mailVo.setText(message);
             mailVo.setSentDate(LocalDateTime.now());
 
             // 发送邮件

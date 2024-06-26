@@ -12,6 +12,7 @@ import com.llpy.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.Email;
 import java.util.UUID;
 
 /**
@@ -26,8 +27,11 @@ public class RegisterEmail implements EmailStrategy {
     @Autowired
     private EmailUtil emailUtil;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
-    public Result<?> sendEmail(String email, Integer type, User user) {
+    public Result<?> sendEmail(String email, User user) {
         //返回邮箱已存在
         if (user != null) {
             return Result.error(ResponseError.USER_EMAIL_EXIST);
@@ -35,11 +39,12 @@ public class RegisterEmail implements EmailStrategy {
 
         //创建邮箱对象
         MailDto mailDto = new MailDto();
+        String code = EmailUtil.generateRandomCode();
         String message = "<p style=\"color: #555; line-height: 1.6;\">" +
                 "正在进行bibin账号的" +
                 "<span style='font-size: 18px; font-weight: bold;'>注册</span>，您的验证码是：" +
                 "<span style='font-size: 20px; font-weight: bold;'>" +
-                EmailUtil.generateRandomCode() +
+                code+
                 "</span>" +
                 "</p>" +
                 "<p style=\"color: #555;\">此验证码将在5分钟内有效。</p>";
@@ -52,10 +57,16 @@ public class RegisterEmail implements EmailStrategy {
         if (!mail.getStatus().equals(retCode)) {
             return Result.error(ResponseError.USER_EMAIL_ERROR);
         }
+        String redisEmailKey = getEmailToken(code);
+
+        return new Result<>("已发送，5分钟内有效~", 200, redisEmailKey);
+    }
+
+    private String getEmailToken(String code) {
         //生成一个不带‘ - ‘的uuid，用来和邮箱验证码一起存进redis
         String redisEmailKey = UUID.randomUUID().toString().replaceAll("-", "");
         //1.获得枚举的key加上uuid，2.获得验证码，3.获得设置的默认过期时间
-
-        return new Result<>("已发送，5分钟内有效~", 200, redisEmailKey);
+        redisService.savaRedis(RedisKeyEnum.REDIS_KEY_EMAIL_CODE,code,redisEmailKey);
+        return redisEmailKey;
     }
 }

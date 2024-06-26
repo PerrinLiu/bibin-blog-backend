@@ -6,6 +6,7 @@ import com.llpy.entity.Access;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.userservice.entity.User;
 import com.llpy.userservice.mapper.AccessMapper;
+import com.llpy.userservice.utils.EmailUtil;
 import com.llpy.utils.RedisUtil;
 import io.swagger.models.auth.In;
 import org.springframework.stereotype.Component;
@@ -77,10 +78,8 @@ public class RedisService {
      * @param value        价值
      * @param key          钥匙
      */
-    public static void savaRedis(RedisKeyEnum redisKeyEnum, String value, String key) {
-        RedisUtil redisUtil = RedisUtil.getInstance();
-        redisUtil.set(redisKeyEnum.getKey(), value);
-        redisUtil.expire(redisKeyEnum.getKey(), redisKeyEnum.getExpireTime());
+    public void savaRedis(RedisKeyEnum redisKeyEnum, String value, String key) {
+        redisUtil.set(redisKeyEnum.getKey()+key, value,redisKeyEnum.getExpireTime());
     }
 
     /**

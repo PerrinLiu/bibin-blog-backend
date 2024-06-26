@@ -75,8 +75,8 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/sendEmail")
-    @ApiOperation(value = "发送邮箱")
-    public Result<?> sendEmail(@RequestParam String email, @RequestParam Integer type) {
+    @ApiOperation(value = "发送邮件")
+    public Result<?> sendEmail(@RequestParam String email, @RequestParam String type) {
         return userService.sendEmail(email, type);
     }
 

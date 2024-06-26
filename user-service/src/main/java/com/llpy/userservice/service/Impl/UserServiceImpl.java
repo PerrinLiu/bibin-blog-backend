@@ -175,7 +175,7 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}<{@link ?}>
      */
     @Override
-    public Result<?> sendEmail(String email, Integer type) {
+    public Result<?> sendEmail(String email, String type) {
         //验证邮箱格式
         if (!regexUtils.isEmail(email)) {
             return Result.error(ResponseError.USER_EMAIL_REGEX_ERROR);
@@ -186,12 +186,13 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getEmail, email));
 
+        //根据不同的类型，获取不同的策略
         EmailStrategy emailStrategy = emailFactory.getEmailStrategy(type);
         if(emailStrategy==null){
             return Result.error(ResponseError.USER_EMAIL_ERROR);
         }
 
-        return emailStrategy.sendEmail(email,type,user);
+        return emailStrategy.sendEmail(email,user);
     }
 
     /**

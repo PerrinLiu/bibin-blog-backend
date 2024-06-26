@@ -1,6 +1,6 @@
 package com.llpy.userservice.design.factory;
 
-import com.llpy.enums.EmailEnum;
+import com.llpy.userservice.enums.EmailEnum;
 import com.llpy.userservice.design.strategy.EmailStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +18,7 @@ import java.util.Map;
 @Component
 public class EmailStrategyFactory  {
 
-    private static final Map<Integer, EmailStrategy> STRATEGY_MAP = new HashMap<>();
+    private static final Map<String, EmailStrategy> STRATEGY_MAP = new HashMap<>();
 
     @Autowired
     public EmailStrategyFactory(ApplicationContext context) {
@@ -27,7 +27,7 @@ public class EmailStrategyFactory  {
         }
     }
 
-    public EmailStrategy getEmailStrategy(Integer emailType) {
+    public EmailStrategy getEmailStrategy(String emailType) {
         return STRATEGY_MAP.get(emailType);
     }
 
