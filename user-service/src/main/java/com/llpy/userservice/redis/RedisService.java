@@ -77,7 +77,8 @@ public class RedisService {
      * @param value        价值
      * @param key          钥匙
      */
-    public void savaRedis(RedisKeyEnum redisKeyEnum, String value, String key) {
+    public static void savaRedis(RedisKeyEnum redisKeyEnum, String value, String key) {
+        RedisUtil redisUtil = RedisUtil.getInstance();
         redisUtil.set(redisKeyEnum.getKey(), value);
         redisUtil.expire(redisKeyEnum.getKey(), redisKeyEnum.getExpireTime());
     }

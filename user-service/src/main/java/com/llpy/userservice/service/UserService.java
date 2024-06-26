@@ -30,7 +30,7 @@ public interface UserService {
 
     Result<?> updateUserImg(MultipartFile file, Long userId);
 
-    Result<?> sendEmail(String email, Boolean type);
+    Result<?> sendEmail(String email, Integer type);
 
 
     Result<?> emailIsTure(UserRegister userRegister, String emailToken);

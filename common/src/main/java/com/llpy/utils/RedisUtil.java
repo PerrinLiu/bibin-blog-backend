@@ -21,6 +21,19 @@ public class RedisUtil {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    // 私有构造函数以防止外部实例化
+    private RedisUtil() {
+    }
+
+    // 静态内部类实现单例模式
+    private static class SingletonHelper {
+        private static final RedisUtil INSTANCE = new RedisUtil();
+    }
+
+    // 获取唯一实例的方法
+    public static RedisUtil getInstance() {
+        return SingletonHelper.INSTANCE;
+    }
 
     /**
      * 指定缓存失效时间

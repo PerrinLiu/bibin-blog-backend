@@ -75,9 +75,9 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/sendEmail")
-    @ApiOperation(value = "获得邮箱验证码")
-    public Result<?> sendEmail(@RequestParam String email, @RequestParam Boolean bool) {
-        return userService.sendEmail(email, bool);
+    @ApiOperation(value = "发送邮箱")
+    public Result<?> sendEmail(@RequestParam String email, @RequestParam Integer type) {
+        return userService.sendEmail(email, type);
     }
 
     @PostMapping("/register")
