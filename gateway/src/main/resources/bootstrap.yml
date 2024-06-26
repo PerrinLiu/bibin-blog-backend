@@ -17,15 +17,10 @@ spring:
           predicates: #路由断言，判断请求是否符合规则
             - Path=/user/**  # 路由断言，判断路径是否是以/user开头
 
-        - id: photo-service
-          uri: lb://photoservice #路由的目标地址
-          predicates: #路由断言，判断请求是否符合规则
-            - Path=/photo/**  # 路由断言
-
         - id: text-service
           uri: lb://textservice #路由的目标地址
           predicates: #路由断言，判断请求是否符合规则
-            - Path=/text/**  # 路由断言
+            - Path=/text/**,/images/**  # 新增路由断言
 
       default-filters:
         - StripPrefix=1  #忽略一级请求前缀

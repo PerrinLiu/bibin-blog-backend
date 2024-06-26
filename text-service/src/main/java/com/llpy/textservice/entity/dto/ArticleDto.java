@@ -34,6 +34,11 @@ public class ArticleDto {
     private String articleText;
 
     /**
+     * 文章描述
+     */
+    private String des;
+
+    /**
      * 组id
      */
     private List<Integer> groupIds;

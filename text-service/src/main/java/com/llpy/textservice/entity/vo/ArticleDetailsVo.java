@@ -31,6 +31,9 @@ public class ArticleDetailsVo {
     @ApiModelProperty(value = "文章封面")
     private String cover;
 
+    @ApiModelProperty(value = "文章描述")
+    private String des;
+
     @ApiModelProperty(value = "分组ID，关联到文章分组表中的分组ID")
     private String articleGroupId;
 
@@ -48,6 +51,12 @@ public class ArticleDetailsVo {
 
     @ApiModelProperty(value = "创建人")
     private Long creatBy;
+
+    @ApiModelProperty(value = "是否点赞")
+    private boolean liked;
+
+    @ApiModelProperty(value = "是否收藏")
+    private boolean star;
 
     @ApiModelProperty(value = "文章创建时间，默认为当前时间")
     @TableField(fill = FieldFill.INSERT)
