@@ -43,14 +43,14 @@ public class ArticleComment extends Model<ArticleComment> {
     private Long userId;
 
     @ApiModelProperty(value = "被回复的评论id")
-    private Long replyUserId;
+    private Long parentId;
 
     @ApiModelProperty(value = "评论内容")
     private String content;
 
     @ApiModelProperty(value = "评论时间")
     @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createdTime;
+    private LocalDateTime createTime;
 
 
     @Override

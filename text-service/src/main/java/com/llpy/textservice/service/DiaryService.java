@@ -6,6 +6,12 @@ import com.llpy.textservice.entity.vo.DiaryVo;
 
 import java.util.List;
 
+/**
+ * 日记服务
+ *
+ * @author llpy
+ * @date 2024/06/26
+ */
 public interface DiaryService {
     Result addDiary(DiaryVo diaryVo, Long id);
 

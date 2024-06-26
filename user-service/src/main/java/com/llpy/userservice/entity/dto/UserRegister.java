@@ -3,7 +3,6 @@ package com.llpy.userservice.entity.dto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -15,7 +14,6 @@ import javax.validation.constraints.NotNull;
  * @author LLPY
  * @date 2023/11/08
  */
-@RestController
 @Api(tags = {"用户控制类"})
 @Data
 public class UserRegister {

@@ -16,5 +16,15 @@
     <sql id="Base_Column_List">
         id, article_id, user_id, reply_user_id, content, created_time
     </sql>
+    <select id="listComment" resultType="com.llpy.textservice.entity.Article">
+        select * from llpyblog.article_comment
+        <where>
+            <if test="articleId != null">
+                and article_id = #{articleId}
+            </if>
+        </where>
+        order by
+        created_time desc
+    </select>
 
 </mapper>
