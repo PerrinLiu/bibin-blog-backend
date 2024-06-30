@@ -12,10 +12,13 @@ import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.io.Serializable;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -27,6 +30,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @ApiModel(value = "ArticleComment对象", description = "")
 public class ArticleComment extends Model<ArticleComment> {
 
@@ -45,12 +49,22 @@ public class ArticleComment extends Model<ArticleComment> {
     @ApiModelProperty(value = "被回复的评论id")
     private Long parentId;
 
+    @ApiModelProperty(value = "第一级的评论id")
+    private Long finalId;
+
+    @ApiModelProperty(value = "点赞数")
+    private Integer likeSum;
+
     @ApiModelProperty(value = "评论内容")
     private String content;
 
     @ApiModelProperty(value = "评论时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
+    @ApiModelProperty(value = "更新时间")
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 
 
     @Override

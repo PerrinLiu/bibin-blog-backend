@@ -2,16 +2,20 @@ package com.llpy.userservice.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.llpy.entity.Access;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.userservice.entity.User;
+import com.llpy.userservice.entity.vo.UserVo;
 import com.llpy.userservice.mapper.AccessMapper;
-import com.llpy.userservice.utils.EmailUtil;
+import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.utils.RedisUtil;
-import io.swagger.models.auth.In;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * redis服务
@@ -26,9 +30,12 @@ public class RedisService {
 
     private final AccessMapper accessMapper;
 
-    public RedisService(RedisUtil redisUtil, AccessMapper accessMapper) {
+    private final UserMapper userMapper;
+
+    public RedisService(RedisUtil redisUtil, AccessMapper accessMapper, UserMapper userMapper) {
         this.redisUtil = redisUtil;
         this.accessMapper = accessMapper;
+        this.userMapper = userMapper;
     }
 
     /**
@@ -89,5 +96,27 @@ public class RedisService {
      */
     private void isRefresh(String key) {
         // TODO: 2024/6/22 待做
+    }
+
+    public HashMap<Long, UserVo> getUserData() {
+        Object o = redisUtil.get(RedisKeyEnum.USER_BASE_INFO.getKey());
+        HashMap<Long, UserVo> map = new HashMap<>();
+        if(o == null){
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.select(User::getUserId,User::getUserImg, User::getUsername);
+            List<User> users = userMapper.selectList(queryWrapper);
+            for (User user : users) {
+                UserVo userVo = new UserVo();
+                userVo.setUserImg(user.getUserImg());
+                userVo.setUserName(user.getUsername());
+                map.put(user.getUserId(), userVo);
+            }
+        }else{
+            String jsonString = JSON.toJSONString(o);
+            map = JSON.parseObject(jsonString, new TypeReference<HashMap<Long, UserVo>>() {  //数据是集合的情况
+            });
+        }
+
+        return map;
     }
 }

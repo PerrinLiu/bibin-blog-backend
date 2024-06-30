@@ -1,5 +1,6 @@
 package com.llpy.config;
 
+import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.*;
@@ -27,6 +29,12 @@ public class GlobalExceptionHandler {
         Map<String, String> map = new HashMap<>();
         map.put("message", collect.get(0).getDefaultMessage());
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public Result<?> handleException(NullPointerException e) {
+        e.printStackTrace();
+        return Result.error(ResponseError.COMMON_ERROR);
     }
 
     @ExceptionHandler(RuntimeException.class)

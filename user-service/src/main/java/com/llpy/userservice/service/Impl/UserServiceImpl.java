@@ -13,23 +13,26 @@ import com.llpy.userservice.design.factory.EmailStrategyFactory;
 import com.llpy.userservice.design.strategy.EmailStrategy;
 import com.llpy.userservice.entity.User;
 import com.llpy.userservice.entity.UserRoles;
-import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
+import com.llpy.userservice.entity.vo.UserVo;
 import com.llpy.userservice.mapper.MenuMapper;
 import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.mapper.UserRolesMapper;
+import com.llpy.userservice.redis.RedisService;
 import com.llpy.userservice.service.UserService;
-import com.llpy.userservice.utils.EmailUtil;
 import com.llpy.utils.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -61,7 +64,9 @@ public class UserServiceImpl implements UserService {
     private final EmailStrategyFactory emailFactory;
     //ip工具类
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper, EmailStrategyFactory emailFactory) {
+    private final RedisService redisService;
+
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper, EmailStrategyFactory emailFactory, RedisService redisService) {
         this.userMapper = userMapper;
         this.jwtTokenUtil = jwtTokenUtil;
         this.redisUtil = redisUtil;
@@ -69,6 +74,7 @@ public class UserServiceImpl implements UserService {
         this.regexUtils = regexUtils;
         this.menuMapper = menuMapper;
         this.emailFactory = emailFactory;
+        this.redisService = redisService;
     }
 
     //默认图片

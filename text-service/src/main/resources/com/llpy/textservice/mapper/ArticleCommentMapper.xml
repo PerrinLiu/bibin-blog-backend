@@ -7,16 +7,16 @@
         <id column="id" property="id" />
         <result column="article_id" property="articleId" />
         <result column="user_id" property="userId" />
-        <result column="reply_user_id" property="replyUserId" />
+        <result column="parent_id" property="parentId" />
         <result column="content" property="content" />
-        <result column="created_time" property="createdTime" />
+        <result column="created_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, article_id, user_id, reply_user_id, content, created_time
     </sql>
-    <select id="listComment" resultType="com.llpy.textservice.entity.Article">
+     <select id="listComment" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
         select * from llpyblog.article_comment
         <where>
             <if test="articleId != null">
@@ -24,7 +24,7 @@
             </if>
         </where>
         order by
-        created_time desc
+        create_time desc
     </select>
 
 </mapper>

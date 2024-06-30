@@ -30,4 +30,5 @@ public class CommentDto {
 
     private Long parentId;
 
+    private Long finalId;
 }

@@ -5,6 +5,7 @@ import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.CommentDto;
 import com.llpy.textservice.service.CommentService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2024/06/26
  */
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/comment")
 @Api(tags = "评论控制类")
 public class CommentController {
 
@@ -26,12 +27,14 @@ public class CommentController {
     }
 
 
-    @GetMapping("/listComment")
+    @GetMapping("/common/listComment")
+    @ApiOperation("获取评论列表")
     public Result<?> listComment(@RequestParam Long articleId,@RequestParam Integer pageSize, @RequestParam Integer pageNum) {
         return commentService.listComment(articleId,pageSize,pageNum);
     }
 
     @PostMapping("/addComment")
+    @ApiOperation("添加评论或回复")
     public Result<?> addComment(@RequestBody CommentDto commentDto) {
         return commentService.addComment(commentDto);
     }

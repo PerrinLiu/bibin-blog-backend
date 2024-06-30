@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.textservice.entity.Article;
 import com.llpy.textservice.entity.ArticleComment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.llpy.textservice.entity.vo.ArticleCommonVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ArticleCommentMapper extends BaseMapper<ArticleComment> {
 
-    IPage<Article> listComment(Long articleId, Page<ArticleComment> articleCommentPage);
+    IPage<ArticleCommonVo> listComment(Long articleId, Page<ArticleCommonVo> articleCommentPage);
 
 }
