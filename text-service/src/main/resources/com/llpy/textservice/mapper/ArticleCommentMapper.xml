@@ -16,15 +16,25 @@
     <sql id="Base_Column_List">
         id, article_id, user_id, reply_user_id, content, created_time
     </sql>
-     <select id="listComment" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
-        select * from llpyblog.article_comment
+
+    <select id="listCommentFinal" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
+        select * from article_comment
         <where>
+            parent_id is null
             <if test="articleId != null">
                 and article_id = #{articleId}
             </if>
         </where>
         order by
         create_time desc
+    </select>
+    <select id="selectSubComment" resultType="com.llpy.textservice.entity.ArticleComment">
+        SELECT * FROM article_comment
+        where
+        final_id IN
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 
 </mapper>

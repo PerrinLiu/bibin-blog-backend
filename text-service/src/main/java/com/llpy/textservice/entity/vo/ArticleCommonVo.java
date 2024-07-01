@@ -3,6 +3,7 @@ package com.llpy.textservice.entity.vo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class ArticleCommonVo {
 
     private Long id;
 
-    private String userId;
+    private Long userId;
 
     private String userImg;
 
@@ -27,7 +28,7 @@ public class ArticleCommonVo {
 
     private String content;
 
-    private String createTime;
+    private LocalDateTime createTime;
 
     private Integer likeSum;
 

@@ -9,6 +9,8 @@ import com.llpy.textservice.entity.vo.ArticleCommonVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ArticleCommentMapper extends BaseMapper<ArticleComment> {
 
-    IPage<ArticleCommonVo> listComment(Long articleId, Page<ArticleCommonVo> articleCommentPage);
+    IPage<ArticleCommonVo> listCommentFinal(Long articleId, Page<ArticleCommonVo> articleCommentPage);
 
+    List<ArticleComment> selectSubComment(List<Long> ids);
 }

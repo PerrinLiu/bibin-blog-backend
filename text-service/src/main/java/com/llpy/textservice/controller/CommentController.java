@@ -1,6 +1,7 @@
 package com.llpy.textservice.controller;
 
 
+import com.llpy.annotation.OperateLog;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.CommentDto;
 import com.llpy.textservice.service.CommentService;
@@ -35,7 +36,20 @@ public class CommentController {
 
     @PostMapping("/addComment")
     @ApiOperation("添加评论或回复")
+    @OperateLog("添加评论或回复")
     public Result<?> addComment(@RequestBody CommentDto commentDto) {
         return commentService.addComment(commentDto);
+    }
+
+    @DeleteMapping("/deleteComment")
+    @ApiOperation("删除评论")
+    public Result<?> deleteComment(@RequestParam Long commentId) {
+        return commentService.deleteComment(commentId);
+    }
+
+    @PostMapping("/likeComment")
+    @ApiOperation("点赞评论")
+    public Result<?> likeComment(@RequestParam Long commentId,@RequestParam Long userId) {
+        return commentService.likeComment(commentId,userId);
     }
 }

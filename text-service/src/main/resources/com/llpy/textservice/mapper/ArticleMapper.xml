@@ -21,6 +21,12 @@
     <sql id="Base_Column_List">
         article_id, article_text_id, article_title, article_group_id, comment_sum, read_sum, collections_sum, like_sum, creat_by, create_time, update_time
     </sql>
+    <update id="commentCountAddOne">
+        UPDATE `article`
+        SET `comment_sum` = `comment_sum` + 1
+        WHERE `id` = #{articleId}
+
+    </update>
     <select id="getArticleList" resultType="com.llpy.textservice.entity.Article">
         select *
         from article as a

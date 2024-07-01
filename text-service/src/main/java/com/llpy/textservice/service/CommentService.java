@@ -15,4 +15,7 @@ public interface CommentService {
 
     Result<?> addComment(CommentDto commentDto);
 
+    Result<?> deleteComment(Long commentId);
+
+    Result<?> likeComment(Long commentId, Long userId);
 }
