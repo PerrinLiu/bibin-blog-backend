@@ -1,6 +1,7 @@
 package com.llpy.userservice.controller;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.llpy.model.Result;
 import com.llpy.utils.RedisUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +49,7 @@ public class CaptchaController {
 
     @GetMapping("/generate-base64")
     @ResponseBody
-    public List<String> generateCaptchaBase64(HttpServletRequest request) throws IOException {
+    public Result<List<String>> generateCaptchaBase64(HttpServletRequest request) throws IOException {
         String captchaToken = request.getHeader("captchaToken");
         //如果有token
         if (captchaToken != null) {
@@ -73,6 +74,6 @@ public class CaptchaController {
         List<String> list = new ArrayList<>();
         list.add(redisCaptchaKey);
         list.add(Base64.getEncoder().encodeToString(imageBytes));
-        return list;
+        return Result.success(list);
     }
 }
