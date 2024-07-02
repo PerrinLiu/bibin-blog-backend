@@ -39,8 +39,7 @@ public class ThreadPoolConfig implements AsyncConfigurer {
      * @return
      */
     @Bean("taskExecutor")
-    @Override
-    public Executor getAsyncExecutor() {
+    public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         // 配置核心线程池数量
         taskExecutor.setCorePoolSize(cpuNum);
@@ -62,6 +61,43 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         taskExecutor.initialize();
         logger.info("线程池初始化......");
         return taskExecutor;
+    }
+
+    /**
+     * 线程池配置,(多个线程池就配置多个bean)
+     *
+     * @return
+     */
+    @Bean("anotherTaskExecutor")
+    public ThreadPoolTaskExecutor anotherTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        // 配置核心线程池数量
+        taskExecutor.setCorePoolSize(cpuNum);
+        // 配置最大线程池数量
+        taskExecutor.setMaxPoolSize(cpuNum * 2);
+        /// 线程池所使用的缓冲队列
+        taskExecutor.setQueueCapacity(100);
+        // 等待时间 （默认为0，此时立即停止），并没等待xx秒后强制停止
+        taskExecutor.setAwaitTerminationSeconds(60);
+        // 空闲线程存活时间
+        taskExecutor.setKeepAliveSeconds(30);
+        // 等待任务在关机时完成--表明等待所有线程执行完
+        taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+        // 线程池名称前缀
+        taskExecutor.setThreadNamePrefix("anotherTaskExecutor-pool-");
+        // 线程池拒绝策略
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+        // 线程池初始化
+        taskExecutor.initialize();
+        logger.info("线程池初始化......");
+        return taskExecutor;
+    }
+
+
+    @Override
+    public Executor getAsyncExecutor() {
+        //默认线程池
+        return taskExecutor();
     }
 
     /**

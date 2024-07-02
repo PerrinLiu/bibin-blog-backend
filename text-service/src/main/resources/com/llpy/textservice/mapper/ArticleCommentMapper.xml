@@ -16,6 +16,12 @@
     <sql id="Base_Column_List">
         id, article_id, user_id, reply_user_id, content, created_time
     </sql>
+    <delete id="deleteCommentByFinalId">
+        delete from article_comment where final_id = #{commentId}
+    </delete>
+    <delete id="deleteCommentByParentId">
+        delete from article_comment where parent_id = #{commentId}
+    </delete>
 
     <select id="listCommentFinal" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
         select * from article_comment
@@ -35,6 +41,18 @@
         <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
             #{item}
         </foreach>
+    </select>
+    <select id="listCommentParent" resultType="com.llpy.textservice.entity.ArticleComment">
+        SELECT * FROM article_comment
+        where
+        parent_id IN
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="countByArticleId" resultType="java.lang.Integer">
+        select count(*) from article_comment
+        where article_id = #{articleId}
     </select>
 
 </mapper>

@@ -12,6 +12,7 @@ import lombok.Getter;
 public enum ResponseError {
 
     COMMON_ERROR(500000, "网络错误"),
+    COMMON_PARAM_ERROR(400001, "参数错误"),
     /**
      * 未知错误
      */

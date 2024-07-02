@@ -1,5 +1,7 @@
 package com.llpy.textservice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.enums.ResponseError;
@@ -16,7 +18,10 @@ import com.llpy.textservice.mapper.UserCommentMapper;
 import com.llpy.textservice.service.CommentService;
 import com.llpy.utils.DataUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,29 +45,36 @@ public class CommentServiceImpl implements CommentService {
 
     private final UserCommentMapper userCommentMapper;
 
-    public CommentServiceImpl(ArticleCommentMapper articleCommentMapper, ArticleMapper articleMapper, UserService userService, UserCommentMapper userCommentMapper) {
+    private final ThreadPoolTaskExecutor anotherTaskExecutor;
+
+    public CommentServiceImpl(ArticleCommentMapper articleCommentMapper, ArticleMapper articleMapper, UserService userService, UserCommentMapper userCommentMapper, @Qualifier("anotherTaskExecutor") ThreadPoolTaskExecutor anotherTaskExecutor) {
         this.articleCommentMapper = articleCommentMapper;
         this.articleMapper = articleMapper;
         this.userService = userService;
         this.userCommentMapper = userCommentMapper;
+        this.anotherTaskExecutor = anotherTaskExecutor;
     }
 
     @Override
-    public Result<?> listComment(Long articleId, Integer pageSize, Integer pageNum) {
+    public Result<?> listComment(Long articleId, Integer pageSize, Integer pageNum,Long userId) {
         //远程调用用户服务获取用户信息
         HashMap<Long, UserVo> userData = userService.getUserData();
+
         //构造分页，每次最多查询10条
         Page<ArticleCommonVo> articleCommentPage = new Page<>(pageNum, pageSize);
         IPage<ArticleCommonVo> articlePage = articleCommentMapper.listCommentFinal(articleId, articleCommentPage);
         List<ArticleCommonVo> records = articlePage.getRecords();
+
         //获取评论的子级
         List<Long> ids = records.stream().map(ArticleCommonVo::getId).collect(Collectors.toList());
         List<ArticleComment> articleComments = new ArrayList<>();
         if (!ids.isEmpty()) {
             articleComments = articleCommentMapper.selectSubComment(ids);
         }
+
         //根据最终父级划分子级
         Map<Long, List<ArticleComment>> commentByFinalIdMap = new HashMap<>();
+
         //评论id对应的用户id集合
         HashMap<Long, Long> userIdByCommentIdMap = new HashMap<>();
         for (ArticleComment articleComment : articleComments) {
@@ -70,6 +82,11 @@ public class CommentServiceImpl implements CommentService {
             commentByFinalIdMap.get(articleComment.getFinalId()).add(articleComment);
             userIdByCommentIdMap.put(articleComment.getId(), articleComment.getUserId());
         }
+
+        //获取该用户点赞过这篇文章的评论
+        Map<Long, Boolean> commentLikes = userCommentMapper.listByUserIdAndArticleId(userId, articleId).stream()
+                .collect(Collectors.toMap(commentId -> commentId, commentId -> true));
+
         //构造评论视图对象
         for (ArticleCommonVo record : records) {
             //将父级存入集合中
@@ -77,15 +94,17 @@ public class CommentServiceImpl implements CommentService {
             //设置父级评论的信息
             record.setUserImg(userData.get(record.getUserId()).getUserImg());
             record.setUserName(userData.get(record.getUserId()).getUserName());
-            // TODO: 2024/7/2 点赞标识待做
-            record.setLiked(false).setShowDelete(false);
-            List<ArticleCommonVo> subComment = new ArrayList<>();
+            // 设置是否点赞
+            record.setShowDelete(false).setLiked(commentLikes.getOrDefault(record.getId(), false));
+
             //设置子级评论
+            List<ArticleCommonVo> subComment = new ArrayList<>();
             record.setSubComment(subComment);
             //验证是否存在子级评论
             if (commentByFinalIdMap.get(record.getId()) == null || commentByFinalIdMap.get(record.getId()).isEmpty()) {
                 continue;
             }
+
             //构造子级视图对象
             List<ArticleComment> subList = commentByFinalIdMap.get(record.getId());
             for (ArticleComment articleComment : subList) {
@@ -97,9 +116,9 @@ public class CommentServiceImpl implements CommentService {
                 articleCommonVo.setUserImg(userData.get(articleComment.getUserId()).getUserImg());
 
                 Long parentUserId = userIdByCommentIdMap.get(articleComment.getParentId());
-                String replyUserName = parentUserId == null ? "该评论已被删除" : userData.get(parentUserId).getUserName();
+                String replyUserName = parentUserId == null ? "该评论已删除" : userData.get(parentUserId).getUserName();
                 articleCommonVo.setReplyUserName(replyUserName);
-                articleCommonVo.setLiked(false).setShowDelete(false);
+                articleCommonVo.setShowDelete(false).setLiked(commentLikes.getOrDefault(articleComment.getId(), false));
                 subComment.add(articleCommonVo);
             }
         }
@@ -118,12 +137,14 @@ public class CommentServiceImpl implements CommentService {
         ArticleComment articleComment = new ArticleComment();
         articleComment.setContent(commentDto.getContent()).setUserId(commentDto.getUserId())
                 .setArticleId(commentDto.getArticleId());
+
         //parentId不为空就是回复
         if (commentDto.getParentId() != null && !DataUtils.isEmpty(commentDto.getParentId().toString())) {
             ArticleComment parentComment = articleCommentMapper.selectById(commentDto.getParentId());
             if (parentComment == null) {
                 return Result.error(ResponseError.COMMENT_ERROR);
             }
+
             articleComment.setParentId(parentComment.getId());
             //设置finalId
             Long finalId = parentComment.getFinalId() == null ? parentComment.getId() : parentComment.getFinalId();
@@ -137,18 +158,77 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public Result<?> deleteComment(Long commentId) {
-        // TODO: 2024/7/2 需要将评论数-1
-        articleCommentMapper.deleteById(commentId);
+        ArticleComment articleComment = articleCommentMapper.selectById(commentId);
+        if (articleComment == null) {
+            return Result.error(ResponseError.COMMON_ERROR);
+        }
+        //评论-1然后删除
+        articleMapper.commentCountReduceOne(articleComment.getArticleId());
+        int i = articleCommentMapper.deleteById(commentId);
+
+        //删除所有点赞和所有子级
+        if (i > 0) {
+            //找出该评论的所有子级
+            //如果评论是一级，直接删除所有子级评论
+            Long finalId = articleComment.getFinalId();
+            if (finalId == null) {
+                //异步删除,因为一级评论删除，所有子级不可见，可以采用异步
+                anotherTaskExecutor.submit(() -> deleteByParentId(commentId));
+                return Result.success();
+            }
+            //非一级评论，删除所有子级
+            articleCommentMapper.deleteCommentByParentId(commentId);
+            userCommentMapper.deleteByParentId(commentId);
+        }
+        Long articleId = articleComment.getArticleId();
+        Integer sum = articleCommentMapper.countByArticleId(articleId);
+        articleMapper.updateCommentCount(articleId, sum);
         return Result.success();
+    }
+
+    /**
+     * 按最终id删除点赞信息，异步
+     *
+     * @param finalId 最终id
+     */
+    public void deleteByParentId(Long finalId) {
+        //删除点赞信息
+        userCommentMapper.deleteByParentId(finalId);
+        List<Long> ids = articleCommentMapper.selectSubComment(DataUtils.longToList(finalId))
+                .stream().map(ArticleComment::getId).collect(Collectors.toList());
+        for (Long id : ids) {
+            userCommentMapper.deleteByParentId(id);
+        }
+        //删除所有最终id为finalId的子级
+        articleCommentMapper.deleteCommentByFinalId(finalId);
     }
 
     @Override
     public Result<?> likeComment(Long commentId, Long userId) {
-        // TODO: 2024/7/2 待完善 ，点赞数+1
-        UserComment userComment = new UserComment();
-        userComment.setCommentId(commentId).setUserId(userId);
-        userCommentMapper.insert(userComment);
+        //获取评论
+        ArticleComment articleComment = articleCommentMapper.selectById(commentId);
+        if(articleComment==null){
+            return Result.error(ResponseError.COMMENT_ERROR);
+        }
+        //取消点赞
+        UserComment oneByUserAndComment = userCommentMapper.getOneByUserAndComment(commentId, userId);
+        if (oneByUserAndComment != null) {
+            //删除
+            userCommentMapper.deleteById(oneByUserAndComment);
+            articleComment.setLikeSum(articleComment.getLikeSum() - 1);
+        }else{
+            //点赞
+            UserComment userComment = new UserComment();
+            Long parentId = articleComment.getParentId() == null ? articleComment.getId() : articleComment.getParentId();
+            userComment.setCommentId(commentId).setUserId(userId).setCommentParent(parentId);
+            //插入
+            userCommentMapper.insert(userComment);
+            articleComment.setLikeSum(articleComment.getLikeSum() + 1);
+        }
+        //更新点赞数
+        articleCommentMapper.updateById(articleComment);
         return Result.success();
     }
 }

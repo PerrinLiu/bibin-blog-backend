@@ -41,4 +41,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param articleId 文章id
      */
     void commentCountAddOne(Long articleId);
+
+    void commentCountReduceOne(Long articleId);
+
+    void updateCommentCount(Long articleId, Integer sum);
 }

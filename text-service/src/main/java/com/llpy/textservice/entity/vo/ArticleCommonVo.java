@@ -34,6 +34,9 @@ public class ArticleCommonVo {
 
     private Boolean liked;
 
+    /**
+     * 显示删除
+     */
     private Boolean showDelete;
 
     private List<ArticleCommonVo> subComment;

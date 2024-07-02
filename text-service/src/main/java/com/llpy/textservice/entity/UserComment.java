@@ -41,6 +41,8 @@ public class UserComment extends Model<UserComment> {
 
     private Long commentId;
 
+    private Long commentParent;
+
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 

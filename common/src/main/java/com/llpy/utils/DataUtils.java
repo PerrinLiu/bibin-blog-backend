@@ -1,5 +1,8 @@
 package com.llpy.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 校验数据工具类
  *
@@ -17,5 +20,14 @@ public class DataUtils {
      */
     public static boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
+    }
+
+    public static List<Long> longToList(Long longValue) {
+        if(longValue==null){
+            return new ArrayList<>();
+        }
+        List<Long> list = new ArrayList<>();
+        list.add(longValue);
+        return list;
     }
 }

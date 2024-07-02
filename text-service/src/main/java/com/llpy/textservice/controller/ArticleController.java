@@ -65,12 +65,6 @@ public class ArticleController extends BaseController {
         return articleService.getArticle(articleId,loginUser().getUserId());
     }
 
-    @GetMapping("/getArticleComments")
-    @ApiOperation(value = "获得文章评论")
-    public Result<?> getArticleDetails(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam String articleId) {
-        return articleService.getArticleComments(articleId);
-    }
-
     @PostMapping("/likeOrStarArticle")
     @ApiOperation(value = "点赞或收藏文章")
     public Result<?> likeArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam Long articleId, @RequestParam Integer type) {
