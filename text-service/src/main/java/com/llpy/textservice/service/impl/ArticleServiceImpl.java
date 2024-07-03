@@ -10,6 +10,7 @@ import com.llpy.textservice.entity.ArticleText;
 import com.llpy.textservice.entity.UserArticle;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.entity.vo.ArticleDetailsVo;
+import com.llpy.textservice.entity.vo.ArticleCountVo;
 import com.llpy.textservice.mapper.ArticleGroupMapper;
 import com.llpy.textservice.mapper.ArticleMapper;
 import com.llpy.textservice.mapper.ArticleTextMapper;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -103,14 +105,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleText articleText = new ArticleText();
         articleText.setArticleText(articleDto.getArticleText());
         //如果文章id不为空，代表是更新
-        if(articleDto.getArticleId() != null){
+        if (articleDto.getArticleId() != null) {
             article.setId(articleDto.getArticleId());
             articleMapper.updateById(article);
             //根据文章id获取文章内容id
-            Long articleTextId= articleTextMapper.getOneByArticleId(article.getId());
+            Long articleTextId = articleTextMapper.getOneByArticleId(article.getId());
             articleText.setId(articleTextId);
             articleTextMapper.updateById(articleText);
-        }else{
+        } else {
             //插入文章内容，获取内容id，设置给文章
             articleTextMapper.insert(articleText);
             article.setArticleTextId(articleText.getId());
@@ -194,16 +196,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleMapper.updateById(article);
     }
 
-    /**
-     * 获取文章评论
-     *
-     * @param articleId 文章id
-     * @return {@code Result<?>}
-     */
-    @Override
-    public Result<?> getArticleComments(String articleId) {
-        return null;
-    }
 
     /**
      * 喜欢文章
@@ -286,5 +278,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         System.out.println("退出");
         return Result.success();
     }
+
+    @Override
+    public HashMap<String, Integer> getCountText() {
+        HashMap<String, Integer> res = new HashMap<>();
+        //根据时间获取每天的文章数
+        List<ArticleCountVo> list = articleMapper.selectCountByDate();
+        for (ArticleCountVo articleCountVo : list) {
+            res.put(articleCountVo.getDate(),articleCountVo.getCount());
+        }
+        //获取总文章数和组数
+        int articleCount = articleMapper.selectCount(null);
+        int groupCount = articleGroupMapper.selectCount(null);
+        res.put("articleCount",articleCount);
+        res.put("groupCount",groupCount);
+        return res;
+    }
+
 
 }

@@ -53,5 +53,19 @@
         order by a.create_time desc
         limit 0,5
     </select>
+    <select id="selectCountByDate" resultType="com.llpy.textservice.entity.vo.ArticleCountVo">
+        SELECT
+            DATE(create_time) AS date,
+            COUNT(*) AS count
+        FROM
+            article
+        WHERE
+            create_time BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                AND NOW()
+        GROUP BY
+            DATE(create_time)
+        ORDER BY
+            DATE(create_time);
+    </select>
 
 </mapper>

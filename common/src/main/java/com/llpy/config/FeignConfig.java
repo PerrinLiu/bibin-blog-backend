@@ -1,4 +1,4 @@
-package com.llpy.textservice.feign;
+package com.llpy.config;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;

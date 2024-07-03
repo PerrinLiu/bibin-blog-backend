@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.textservice.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.llpy.textservice.entity.vo.ArticleCountVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -42,7 +43,25 @@ public interface ArticleMapper extends BaseMapper<Article> {
      */
     void commentCountAddOne(Long articleId);
 
+    /**
+     * 评论数量减少一
+     *
+     * @param articleId 文章id
+     */
     void commentCountReduceOne(Long articleId);
 
+    /**
+     * 更新评论计数
+     *
+     * @param articleId 文章id
+     * @param sum       总和
+     */
     void updateCommentCount(Long articleId, Integer sum);
+
+    /**
+     * 获取最近半年每天的文章数
+     *
+     * @return {@code Integer[]}
+     */
+    List<ArticleCountVo> selectCountByDate();
 }
