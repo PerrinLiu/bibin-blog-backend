@@ -14,6 +14,6 @@ public interface AccessService {
 
     void getAccess(HttpServletRequest request);
 
-    Result<?> getCountData();
+    Result<?> getCountData(Integer day);
 
 }

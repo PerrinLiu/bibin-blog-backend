@@ -267,6 +267,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         //删除文章
         articleMapper.deleteById(articleId);
+        // TODO: 2024/7/3 待删除文章内容数据 
         taskExecutor.submit(() -> {
             System.out.println("删除文章后，异步删除评论和评论的点赞信息");
             //删除文章的点赞信息
