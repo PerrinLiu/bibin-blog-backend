@@ -222,7 +222,7 @@ public class CommentServiceImpl implements CommentService {
             //点赞
             UserComment userComment = new UserComment();
             Long parentId = articleComment.getParentId() == null ? articleComment.getId() : articleComment.getParentId();
-            userComment.setCommentId(commentId).setUserId(userId).setCommentParent(parentId);
+            userComment.setCommentId(commentId).setUserId(userId).setCommentParent(parentId).setArticleId(articleComment.getArticleId());
             //插入
             userCommentMapper.insert(userComment);
             articleComment.setLikeSum(articleComment.getLikeSum() + 1);
@@ -230,5 +230,11 @@ public class CommentServiceImpl implements CommentService {
         //更新点赞数
         articleCommentMapper.updateById(articleComment);
         return Result.success();
+    }
+
+    @Override
+    public void deleteByArticleId(Long articleId) {
+        userCommentMapper.deleteByArticleId(articleId);
+        articleCommentMapper.deleteByArticleId(articleId);
     }
 }

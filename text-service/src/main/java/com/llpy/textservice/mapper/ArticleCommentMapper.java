@@ -54,7 +54,25 @@ public interface ArticleCommentMapper extends BaseMapper<ArticleComment> {
     void deleteCommentByFinalId(Long commentId);
 
 
+    /**
+     * 按父id删除评论
+     *
+     * @param commentId 评论id
+     */
     void deleteCommentByParentId(Long commentId);
 
+    /**
+     * 获取文章评论数量
+     *
+     * @param articleId 文章id
+     * @return {@code Integer}
+     */
     Integer countByArticleId(Long articleId);
+
+    /**
+     * 按文章id删除评论
+     *
+     * @param articleId 文章id
+     */
+    void deleteByArticleId(Long articleId);
 }

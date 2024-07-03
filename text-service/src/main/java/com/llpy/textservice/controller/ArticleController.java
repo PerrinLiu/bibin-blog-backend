@@ -1,6 +1,7 @@
 package com.llpy.textservice.controller;
 
 
+import com.llpy.annotation.OperateLog;
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.ArticleDto;
@@ -43,8 +44,16 @@ public class ArticleController extends BaseController {
 
     @PostMapping("/addArticle")
     @ApiOperation(value = "添加文章")
+    @OperateLog("添加文章")
     public Result<?> addArticle(@Valid @RequestBody ArticleDto articleDto) {
         return articleService.addArticle(articleDto, loginUser().getUserId());
+    }
+
+    @DeleteMapping("/deleteArticle")
+    @ApiOperation(value = "删除文章")
+    @OperateLog("删除文章")
+    public Result<?> deleteArticle(@NotNull(message = "文章id不能为空") @NotBlank(message = "文章id不能为空") @RequestParam Long articleId) {
+        return articleService.deleteArticle(articleId, loginUser().getUserId());
     }
 
     @GetMapping("/listArticle")

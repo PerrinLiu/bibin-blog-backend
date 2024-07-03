@@ -14,5 +14,17 @@
     <sql id="Base_Column_List">
         article_text_id, article_text, update_time, create_time
     </sql>
+    <select id="selectByArticleId" resultType="com.llpy.textservice.entity.ArticleText">
+        select * from article_text where article_id = #{articleId}
+    </select>
+    <select id="getOneByArticleId" resultType="java.lang.Long">
+        SELECT
+            b.id
+        FROM
+            article AS a
+                INNER JOIN article_text AS b ON a.article_text_id = b.id
+        WHERE
+            a.id = #{id}
+    </select>
 
 </mapper>

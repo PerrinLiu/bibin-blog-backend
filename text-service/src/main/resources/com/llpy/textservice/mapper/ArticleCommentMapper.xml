@@ -22,6 +22,9 @@
     <delete id="deleteCommentByParentId">
         delete from article_comment where parent_id = #{commentId}
     </delete>
+    <delete id="deleteByArticleId">
+        delete from article_comment where article_id = #{articleId}
+    </delete>
 
     <select id="listCommentFinal" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
         select * from article_comment

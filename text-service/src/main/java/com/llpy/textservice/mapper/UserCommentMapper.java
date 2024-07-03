@@ -42,4 +42,5 @@ public interface UserCommentMapper extends BaseMapper<UserComment> {
      */
     List<Long> listByUserIdAndArticleId(Long userId, Long articleId);
 
+    void deleteByArticleId(Long articleId);
 }

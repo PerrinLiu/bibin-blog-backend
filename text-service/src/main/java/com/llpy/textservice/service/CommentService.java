@@ -46,4 +46,6 @@ public interface CommentService {
      * @return {@code Result<?>}
      */
     Result<?> likeComment(Long commentId, Long userId);
+
+    void deleteByArticleId(Long articleId);
 }

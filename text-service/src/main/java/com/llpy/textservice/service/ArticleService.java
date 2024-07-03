@@ -36,4 +36,5 @@ public interface ArticleService extends IService<Article> {
     Result<?> listIndexArticle();
 
 
+    Result<?> deleteArticle(Long articleId, Long userId);
 }

@@ -19,6 +19,9 @@
         FROM user_comment
         WHERE comment_parent = #{parentId};
     </delete>
+    <delete id="deleteByArticleId">
+        DELETE FROM user_comment WHERE article_id = #{articleId};
+    </delete>
     <select id="getOneByUserAndComment" resultType="com.llpy.textservice.entity.UserComment">
         SELECT *
         FROM user_comment

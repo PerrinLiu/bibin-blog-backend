@@ -15,9 +15,12 @@ import com.llpy.textservice.mapper.ArticleMapper;
 import com.llpy.textservice.mapper.ArticleTextMapper;
 import com.llpy.textservice.mapper.UserArticleMapper;
 import com.llpy.textservice.service.ArticleService;
+import com.llpy.textservice.service.CommentService;
 import com.llpy.utils.AliOSSUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,12 +49,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private final UserArticleMapper userArticleMapper;
 
-    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper, ArticleGroupMapper articleGroupMapper, UserArticleMapper userArticleMapper) {
+    private final CommentService commentService;
+
+    private final ThreadPoolTaskExecutor taskExecutor;
+
+    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper, ArticleGroupMapper articleGroupMapper, UserArticleMapper userArticleMapper, CommentService commentService, @Qualifier("taskExecutor") ThreadPoolTaskExecutor taskExecutor) {
         this.aliOSSUtils = aliOSSUtils;
         this.articleMapper = articleMapper;
         this.articleTextMapper = articleTextMapper;
         this.articleGroupMapper = articleGroupMapper;
         this.userArticleMapper = userArticleMapper;
+        this.commentService = commentService;
+        this.taskExecutor = taskExecutor;
     }
 
     /**
@@ -79,6 +88,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     @Override
     public Result<?> addArticle(ArticleDto articleDto, Long userId) {
+        //添加文章,如果文章id不为空，代表是更新
         Article article = new Article();
         article.setArticleTitle(articleDto.getTitle()).setCreatBy(userId);
         StringBuilder groupId = new StringBuilder();
@@ -89,16 +99,24 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             groupId.append(i);
         }
         article.setArticleGroupId(groupId.toString()).setCover(articleDto.getCover()).setDes(articleDto.getDes());
-
-        //添加文章内容后获取内容id，设置给文章
+        //设置文章内容
         ArticleText articleText = new ArticleText();
         articleText.setArticleText(articleDto.getArticleText());
-        articleTextMapper.insert(articleText);
-        article.setArticleTextId(articleText.getId());
-
-        //添加文章
-        articleMapper.insert(article);
-
+        //如果文章id不为空，代表是更新
+        if(articleDto.getArticleId() != null){
+            article.setId(articleDto.getArticleId());
+            articleMapper.updateById(article);
+            //根据文章id获取文章内容id
+            Long articleTextId= articleTextMapper.getOneByArticleId(article.getId());
+            articleText.setId(articleTextId);
+            articleTextMapper.updateById(articleText);
+        }else{
+            //插入文章内容，获取内容id，设置给文章
+            articleTextMapper.insert(articleText);
+            article.setArticleTextId(articleText.getId());
+            //添加文章
+            articleMapper.insert(article);
+        }
         return Result.success();
     }
 
@@ -246,6 +264,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //根据日期获取前5篇文章
         List<Article> articles = articleMapper.listIndexArticle();
         return Result.success(articles);
+    }
+
+    @Override
+    public Result<?> deleteArticle(Long articleId, Long userId) {
+        //判断是否为作者
+        Article article = articleMapper.selectById(articleId);
+        if (article == null) {
+            return Result.error(ResponseError.COMMON_ERROR);
+        }
+        //删除文章
+        articleMapper.deleteById(articleId);
+        taskExecutor.submit(() -> {
+            System.out.println("删除文章后，异步删除评论和评论的点赞信息");
+            //删除文章的点赞信息
+            userArticleMapper.deleteByArticleId(articleId);
+            //删除文章评论和评论的点赞信息
+            commentService.deleteByArticleId(articleId);
+            System.out.println("异步结束");
+        });
+        System.out.println("退出");
+        return Result.success();
     }
 
 }

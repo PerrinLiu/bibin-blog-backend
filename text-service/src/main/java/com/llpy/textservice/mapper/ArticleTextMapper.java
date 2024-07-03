@@ -15,4 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ArticleTextMapper extends BaseMapper<ArticleText> {
 
+    ArticleText selectByArticleId(Long articleId);
+
+    Long getOneByArticleId(Long id);
 }

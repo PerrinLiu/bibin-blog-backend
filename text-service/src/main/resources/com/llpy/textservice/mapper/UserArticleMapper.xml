@@ -17,6 +17,9 @@
     <sql id="Base_Column_List">
         id, user_id, article_id, like, star, create_time, update_time
     </sql>
+    <delete id="deleteByArticleId">
+        delete from user_article where article_id = #{articleId}
+    </delete>
     <select id="getOneByUserIdAndArticleId" resultType="com.llpy.textservice.entity.UserArticle">
         SELECT
             *
