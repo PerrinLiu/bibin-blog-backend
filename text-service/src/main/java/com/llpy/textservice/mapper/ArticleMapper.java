@@ -19,8 +19,30 @@ import java.util.List;
 @Mapper
 public interface ArticleMapper extends BaseMapper<Article> {
 
+    /**
+     * 获取文章列表
+     *
+     * @param articlePage 文章页面
+     * @param searchText  搜索文本
+     * @return {@code IPage<Article>}
+     */
     IPage<Article> getArticleList(Page<Article> articlePage, String searchText);
 
+    /**
+     * 列出首页文章
+     *
+     * @return {@code List<Article>}
+     */
     List<Article> listIndexArticle();
 
+    /**
+     * 评论计数加一
+     *
+     * @param articleId 文章id
+     */
+    void commentCountAddOne(Long articleId);
+
+    void commentCountReduceOne(Long articleId);
+
+    void updateCommentCount(Long articleId, Integer sum);
 }

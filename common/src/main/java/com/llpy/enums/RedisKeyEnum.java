@@ -29,12 +29,9 @@ public enum RedisKeyEnum {
     //
     REDIS_KEY_USER_LIST_INFO("userList:", 60 * 60*3+2, "用户登录，限制登录次数"),
     REDIS_KEY_HEADER_INFO("X-Token", 60 * 60*15, "给前端的header"),
+    ACCESS_SUM("accessSum:",30*60,"网站访问量"),
 
-    REDIS_ROLE_STR("role:",-1,"普通角色 "),
-    REDIS_ADMIN_ROLE_STR("adminRole:",-1,"管理员角色 "),
-    REDIS_USER_ROLES_STR("userRoles:",-1,"用户和角色关系 "),
-    REDIS_ROLE_ACLS_MAP("roleAcls:",-1,"角色和权限关系 "),
-    ACCESS_SUM("accessSum:",30*60,"网站访问量")
+    USER_BASE_INFO("userBaseInfo",60*60*24,"用户基本信息")
     ;
     private final String key;
     private final int expireTime;

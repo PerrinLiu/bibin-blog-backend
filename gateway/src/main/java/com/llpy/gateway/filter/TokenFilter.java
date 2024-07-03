@@ -107,14 +107,14 @@ public class TokenFilter implements GlobalFilter, Ordered {
             //判断请求头是否空或空白
             if (StringUtils.isBlank(uuid)) {
 
-                return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "token出错");
+                return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "请先登录");
 
             } else {
                 //从缓存中获取jwt
                 Object sessionJwt = redisUtil.get(RedisKeyEnum.REDIS_KEY_USER_INFO.getKey() + uuid);
                 if (sessionJwt == null) {
                     //如果为空，返回无效
-                    return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "token is Invalidation");
+                    return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "该token无效");
                 }
 
                 //将其转为字符串

@@ -1,6 +1,7 @@
 package com.llpy.userservice.utils;
 
 import com.llpy.userservice.entity.dto.MailDto;
+import com.llpy.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,7 +20,6 @@ import java.util.Random;
  * @date 2023/11/08
  */
 @Component
-@Service
 @Slf4j
 public class EmailUtil {
     private final JavaMailSenderImpl mailSender;
@@ -33,7 +33,6 @@ public class EmailUtil {
             if (StringUtils.isEmpty(mailVo.getTo())) {
                 throw new RuntimeException("邮件收信人不能为空");
             }
-
             MimeMessageHelper messageHelper = new MimeMessageHelper(mailSender.createMimeMessage(), true);
             // 获取配置属性
             String from = mailSender.getJavaMailProperties().getProperty("from");
@@ -52,36 +51,34 @@ public class EmailUtil {
             String code = generateRandomCode();
             String date = LocalDateTime.now().toString();
             // 设置HTML内容，包含样式
-            String htmlContent = "<html>\n" +
-                    "<body style=\"font-family: Arial, sans-serif; margin: 20px; padding: 0; background-color: #f4f4f4;\">\n" +
-                    "        <tr>\n" +
-                    "            <td align=\"center\" style=\"padding: 20px;\">\n" +
-                    "                <table role=\"presentation\" style=\"width: 600px; border-collapse: collapse; background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">\n" +
-                    "                    <tr>\n" +
-                    "                        <td style=\"padding: 20px;\">\n" +
-                    "                            <h2 style=\"color: #333;\">您有一条来自Bibin的消息~</h2>\n" +
-                    "                            <p style=\"color: #555; line-height: 1.6;\">感谢使用Bibin!以下是邮件的正文内容。</p>\n" +
-                    "                            <p style=\"color: #555; line-height: 1.6;\">正在进行bibin账号的<span style='font-size: 18px; font-weight: bold;'>"+ message + "</span>，您的验证码是：<span style='font-size: 20px; font-weight: bold;'>"+ code + "</span></p>\n" +
-                    "                            <p style=\"color: #555;\">此验证码将在5分钟内有效。</p>\n" +
-                    "                        </td>\n" +
-                    "                    </tr>\n" +
-                    "                    <tr>\n" +
-                    "                        <td style=\"padding: 20px; background-color: #f4f4f4; text-align: center; color: #777;\">\n" +
-                    "                            <p style=\"margin: 0;\">&copy;"+date+ "&nbsp;&nbsp;Bibin. 保留所有权利。</p>\n" +
-                    "                        </td>\n" +
-                    "                    </tr>\n" +
-                    "                </table>\n" +
-                    "            </td>\n" +
-                    "        </tr>\n" +
-                    "    </table>\n" +
-                    "\n" +
-                    "</body>\n" +
-                    "</html>\n";
-
+            String htmlContent = "<html>" +
+                    "<body style=\"font-family: Arial, sans-serif; margin: 20px; padding: 0; background-color: #f4f4f4;\">" +
+                    "        <tr>" +
+                    "            <td align=\"center\" style=\"padding: 20px;\">" +
+                    "                <table role=\"presentation\" style=\"width: 600px; border-collapse: collapse; background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\">" +
+                    "                    <tr>" +
+                    "                        <td style=\"padding: 20px;\">" +
+                    "                            <h2 style=\"color: #333;\">您有一条来自Bibin的消息~</h2>" +
+                    "                            <p style=\"color: #555; line-height: 1.6;\">感谢使用Bibin!以下是邮件的正文内容。</p>"
+                    // 消息
+                    + message +
+                    "                        </td>" +
+                    "                    </tr>" +
+                    "                    <tr>" +
+                    "                        <td style=\"padding: 20px; background-color: #f4f4f4; text-align: center; color: #777;\">" +
+                    "                            <p style=\"margin: 0;\">&copy;" + date + "&nbsp;&nbsp;Bibin. 保留所有权利。</p>" +
+                    "                        </td>" +
+                    "                    </tr>" +
+                    "                </table>" +
+                    "            </td>" +
+                    "        </tr>" +
+                    "    </table>" +
+                    "</body>" +
+                    "</html>";
             messageHelper.setText(htmlContent, true); // 设置为true，表示内容是HTML格式
 
             // 更新MailDto中的信息
-            mailVo.setText(code);
+            mailVo.setText(message);
             mailVo.setSentDate(LocalDateTime.now());
 
             // 发送邮件

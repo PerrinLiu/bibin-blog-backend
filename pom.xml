@@ -18,7 +18,7 @@
 
     <groupId>com.llpy</groupId>
     <artifactId>llpy_blog</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>pom</packaging>
     <name>llpy_blog</name>
     <description>刘林培言个人博客父工程</description>
@@ -55,7 +55,7 @@
             <dependency>
                 <groupId>com.llpy</groupId>
                 <artifactId>common</artifactId>
-                <version>1.0</version>
+                <version>1.2</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

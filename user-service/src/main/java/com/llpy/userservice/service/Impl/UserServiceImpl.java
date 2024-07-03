@@ -9,25 +9,30 @@ import com.llpy.entity.UserDto;
 import com.llpy.enums.RedisKeyEnum;
 import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
+import com.llpy.userservice.design.factory.EmailStrategyFactory;
+import com.llpy.userservice.design.strategy.EmailStrategy;
 import com.llpy.userservice.entity.User;
 import com.llpy.userservice.entity.UserRoles;
-import com.llpy.userservice.entity.dto.MailDto;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
+import com.llpy.userservice.entity.vo.UserVo;
 import com.llpy.userservice.mapper.MenuMapper;
 import com.llpy.userservice.mapper.UserMapper;
 import com.llpy.userservice.mapper.UserRolesMapper;
+import com.llpy.userservice.redis.RedisService;
 import com.llpy.userservice.service.UserService;
-import com.llpy.userservice.utils.EmailUtil;
 import com.llpy.utils.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -44,8 +49,6 @@ public class UserServiceImpl implements UserService {
     //jwt工具类
     private final JwtTokenUtil jwtTokenUtil;
 
-    //发邮箱工具类
-    private final EmailUtil emailUtil;
     //redis工具类
     private final RedisUtil redisUtil;
     //阿里云oss工具类
@@ -57,16 +60,21 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserRolesMapper userRolesMapper;
+
+    private final EmailStrategyFactory emailFactory;
     //ip工具类
 
-    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, EmailUtil emailUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper) {
+    private final RedisService redisService;
+
+    public UserServiceImpl(UserMapper userMapper, JwtTokenUtil jwtTokenUtil, RedisUtil redisUtil, AliOSSUtils aliOssUtils, RegexUtils regexUtils, MenuMapper menuMapper, EmailStrategyFactory emailFactory, RedisService redisService) {
         this.userMapper = userMapper;
         this.jwtTokenUtil = jwtTokenUtil;
-        this.emailUtil = emailUtil;
         this.redisUtil = redisUtil;
         this.aliOSSUtils = aliOssUtils;
         this.regexUtils = regexUtils;
         this.menuMapper = menuMapper;
+        this.emailFactory = emailFactory;
+        this.redisService = redisService;
     }
 
     //默认图片
@@ -173,49 +181,24 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}<{@link ?}>
      */
     @Override
-    public Result<?> sendEmail(String email, Boolean bool) {
+    public Result<?> sendEmail(String email, String type) {
         //验证邮箱格式
         if (!regexUtils.isEmail(email)) {
             return Result.error(ResponseError.USER_EMAIL_REGEX_ERROR);
         }
 
+
         //根据邮箱查找用户
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getEmail, email));
 
-
-        //如果不存在且是修改密码
-        if (!bool && user == null) {
-            return new Result<>("改邮箱未注册账号", 200, null);
-        }
-
-        //如果存在且是注册用户返回邮箱已存在
-        if (user != null && bool) {
-            return Result.error(ResponseError.USER_EMAIL_EXIST);
-        }
-
-
-        //创建邮箱对象
-        MailDto mailDto = new MailDto();
-
-        String message = bool ? "注册" : "密码重置";
-        mailDto.setTo(email);
-        //调用工具类发送验证码
-        MailDto mail = emailUtil.sendMail(mailDto,message);
-
-        //如果状态码不为ok，返回发送失败
-        String retCode = "ok";
-        if (!mail.getStatus().equals(retCode)) {
+        //根据不同的类型，获取不同的策略
+        EmailStrategy emailStrategy = emailFactory.getEmailStrategy(type);
+        if(emailStrategy==null){
             return Result.error(ResponseError.USER_EMAIL_ERROR);
         }
-        //生成一个不带‘ - ‘的uuid，用来和邮箱验证码一起存进redis
-        String redisEmailKey = UUID.randomUUID().toString().replaceAll("-", "");
-        //1.获得枚举的key加上uuid，2.获得验证码，3.获得设置的默认过期时间
-        redisUtil.set(RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getKey() + redisEmailKey,
-                mail.getText(),
-                RedisKeyEnum.REDIS_KEY_EMAIL_CODE.getExpireTime());
 
-        return new Result<>("已发送，5分钟内有效~", 200, redisEmailKey);
+        return emailStrategy.sendEmail(email,user);
     }
 
     /**

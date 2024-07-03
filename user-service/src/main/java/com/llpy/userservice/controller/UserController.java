@@ -8,6 +8,8 @@ import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
+import com.llpy.userservice.entity.vo.UserVo;
+import com.llpy.userservice.redis.RedisService;
 import com.llpy.userservice.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
 /**
  * 用户控制器
@@ -28,8 +31,11 @@ import javax.validation.Valid;
 public class UserController extends BaseController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final RedisService redisService;
+
+    public UserController(UserService userService, RedisService redisService) {
         this.userService = userService;
+        this.redisService = redisService;
     }
 
     /**
@@ -75,9 +81,9 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("/sendEmail")
-    @ApiOperation(value = "获得邮箱验证码")
-    public Result<?> sendEmail(@RequestParam String email, @RequestParam Boolean bool) {
-        return userService.sendEmail(email, bool);
+    @ApiOperation(value = "发送邮件")
+    public Result<?> sendEmail(@RequestParam String email, @RequestParam String type) {
+        return userService.sendEmail(email, type);
     }
 
     @PostMapping("/register")
@@ -96,6 +102,13 @@ public class UserController extends BaseController {
     @ApiOperation("修改密码")
     public Result<?> updatePassword(@RequestBody UserDto2 userDto2) {
         return userService.updatePassword(userDto2);
+    }
+
+
+    @GetMapping("/common/getUserData")
+    @ApiOperation("获取用户数据")
+    public HashMap<Long, UserVo> getUserData() {
+        return redisService.getUserData();
     }
 
 }

@@ -6,10 +6,15 @@ import com.llpy.model.Result;
 import com.llpy.userservice.entity.query.UserLoginQuery;
 import com.llpy.userservice.entity.dto.UserDto2;
 import com.llpy.userservice.entity.dto.UserRegister;
+import com.llpy.userservice.entity.vo.UserVo;
 import io.swagger.models.auth.In;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 用户服务
@@ -30,11 +35,12 @@ public interface UserService {
 
     Result<?> updateUserImg(MultipartFile file, Long userId);
 
-    Result<?> sendEmail(String email, Boolean type);
+    Result<?> sendEmail(String email, String type);
 
 
     Result<?> emailIsTure(UserRegister userRegister, String emailToken);
 
 
     Result<?> updatePassword(UserDto2 userDto2);
+
 }

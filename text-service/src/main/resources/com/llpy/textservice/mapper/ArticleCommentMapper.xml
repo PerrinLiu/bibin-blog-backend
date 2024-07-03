@@ -7,14 +7,52 @@
         <id column="id" property="id" />
         <result column="article_id" property="articleId" />
         <result column="user_id" property="userId" />
-        <result column="reply_user_id" property="replyUserId" />
+        <result column="parent_id" property="parentId" />
         <result column="content" property="content" />
-        <result column="created_time" property="createdTime" />
+        <result column="created_time" property="createTime" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, article_id, user_id, reply_user_id, content, created_time
     </sql>
+    <delete id="deleteCommentByFinalId">
+        delete from article_comment where final_id = #{commentId}
+    </delete>
+    <delete id="deleteCommentByParentId">
+        delete from article_comment where parent_id = #{commentId}
+    </delete>
+
+    <select id="listCommentFinal" resultType="com.llpy.textservice.entity.vo.ArticleCommonVo">
+        select * from article_comment
+        <where>
+            parent_id is null
+            <if test="articleId != null">
+                and article_id = #{articleId}
+            </if>
+        </where>
+        order by
+        create_time desc
+    </select>
+    <select id="selectSubComment" resultType="com.llpy.textservice.entity.ArticleComment">
+        SELECT * FROM article_comment
+        where
+        final_id IN
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="listCommentParent" resultType="com.llpy.textservice.entity.ArticleComment">
+        SELECT * FROM article_comment
+        where
+        parent_id IN
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="countByArticleId" resultType="java.lang.Integer">
+        select count(*) from article_comment
+        where article_id = #{articleId}
+    </select>
 
 </mapper>

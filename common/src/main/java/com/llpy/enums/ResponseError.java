@@ -11,6 +11,8 @@ import lombok.Getter;
 @Getter
 public enum ResponseError {
 
+    COMMON_ERROR(500000, "网络错误"),
+    COMMON_PARAM_ERROR(400001, "参数错误"),
     /**
      * 未知错误
      */
@@ -25,7 +27,8 @@ public enum ResponseError {
     UPLOAD_IMG_ERROR(500108, "图片上传失败"),
     USER_EMAIL_ERROR(500109, "邮件发送失败"),
     USER_EMAIL_CODE_ERROR(500109, "邮件验证码错误"),
-    USER_EMAIL_REGEX_ERROR(500110, "邮件格式错误");
+    USER_EMAIL_REGEX_ERROR(500110, "邮件格式错误"),
+    COMMENT_ERROR(500111, "评论失败");
 
     private final int code;
     private final String message;

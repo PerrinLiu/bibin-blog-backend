@@ -1,5 +1,6 @@
 package com.llpy.config;
 
+import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -7,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,6 +24,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<FieldError> collect = new ArrayList<>(ex.getBindingResult().getFieldErrors());
@@ -29,9 +35,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(NullPointerException.class)
+    public Result<?> handleException(NullPointerException e) {
+        e.printStackTrace();
+        return Result.error(ResponseError.COMMON_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public Result<?> handleException(MethodArgumentTypeMismatchException e) {
+        e.printStackTrace();
+        return Result.error(ResponseError.COMMON_PARAM_ERROR);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public Result<?> handleException(RuntimeException e) {
         e.printStackTrace();
         return Result.error(e.getMessage());
     }
+
+
 }

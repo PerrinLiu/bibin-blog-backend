@@ -5,11 +5,10 @@
     <parent>
         <groupId>com.llpy</groupId>
         <artifactId>llpy_blog</artifactId>
-        <version>1.0</version>
+        <version>1.2</version>
     </parent>
 
     <artifactId>user-service</artifactId>
-    <version>1.0</version>
     <name>user-service</name>
     <description>用户模块</description>
     <properties>

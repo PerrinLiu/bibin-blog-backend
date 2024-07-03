@@ -5,11 +5,10 @@
     <parent>
         <groupId>com.llpy</groupId>
         <artifactId>llpy_blog</artifactId>
-        <version>1.0</version>
+        <version>1.2</version>
     </parent>
 
     <artifactId>text-service</artifactId>
-    <version>1.0</version>
     <name>text-service</name>
     <description>text-service</description>
     <properties>
@@ -30,6 +29,12 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+<!--       远程调用-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>2.2.6.RELEASE</version>
         </dependency>
 
         <dependency>

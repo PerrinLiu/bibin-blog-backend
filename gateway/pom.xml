@@ -5,11 +5,10 @@
     <parent>
         <artifactId>llpy_blog</artifactId>
         <groupId>com.llpy</groupId>
-        <version>1.0</version>
+        <version>1.2</version>
     </parent>
 
     <artifactId>gateway</artifactId>
-    <version>1.0</version>
     <name>gateway</name>
     <description>gateway网关</description>
     <properties>

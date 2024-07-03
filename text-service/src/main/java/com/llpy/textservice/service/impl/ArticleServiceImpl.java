@@ -222,6 +222,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             userArticleMapper.updateById(userArticle);
         }
+        //更新文章点赞和收藏数
         Article article = articleMapper.selectById(articleId);
         if (article == null) {
             return Result.error(ResponseError.NOT_FOUND_ERROR);
