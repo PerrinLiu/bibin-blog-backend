@@ -12,5 +12,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface AccessService {
 
-    Result<?> getAccess(HttpServletRequest request);
+    void getAccess(HttpServletRequest request);
+
+    Result<?> getCountData();
+
 }

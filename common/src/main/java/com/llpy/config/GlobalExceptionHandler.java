@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public Result<?> handleException(RuntimeException e) {
         e.printStackTrace();
-        return Result.error(e.getMessage());
+        return Result.error(ResponseError.COMMON_ERROR);
     }
 
 

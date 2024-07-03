@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -84,6 +86,13 @@ public class ArticleController extends BaseController {
     @ApiOperation(value = "获得文章分组")
     public Result<?> getGroupList() {
         return articleService.getGroupList();
+    }
+
+
+    @GetMapping("common/getCountText")
+    @ApiOperation(value = "获取统计数据")
+    public HashMap<String, Integer> getCountText() {
+        return articleService.getCountText();
     }
 }
 

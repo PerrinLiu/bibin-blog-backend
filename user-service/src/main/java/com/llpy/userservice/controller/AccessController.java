@@ -29,9 +29,16 @@ public class AccessController {
     }
 
     @GetMapping("/getAccess")
-    @ApiOperation(value = "统计网站访问")
-    public Result<?> getAccess(HttpServletRequest request) {
-        return accessService.getAccess(request);
+    @ApiOperation(value = "访问系统")
+    public void getAccess(HttpServletRequest request) {
+        accessService.getAccess(request);
+    }
+
+
+    @GetMapping("/common/getCountData")
+    @ApiOperation(value = "获取统计数据")
+    public Result<?> getCountData() {
+        return accessService.getCountData();
     }
 
 
