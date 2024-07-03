@@ -121,7 +121,7 @@ public class AccessServiceImpl implements AccessService {
         // 最近的日期（根据传进来的day）
         LocalDate startDate = current.minusDays(day); // 向前推183天，加上今天，总共184天
 
-        for (int i = 0; i < day -7; i++) {
+        for (int i = 0; i < day ; i++) {
             // 计算每次循环的日期
             LocalDate d = startDate.plusDays(i);
 
