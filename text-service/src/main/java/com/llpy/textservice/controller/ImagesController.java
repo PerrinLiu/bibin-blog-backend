@@ -1,6 +1,7 @@
 package com.llpy.textservice.controller;
 
 
+import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.service.ImagesService;
 import io.swagger.annotations.Api;
@@ -20,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/image")
 @Api(tags = "图片资源控制器")
-public class ImagesController {
+public class ImagesController extends BaseController {
 
     private final ImagesService imagesService;
 
@@ -28,9 +29,9 @@ public class ImagesController {
         this.imagesService = imagesService;
     }
 
-    @PostMapping("/common/uploadFile")
-    @ApiOperation(value = "上传文件")
+    @PostMapping("/uploadFile")
+    @ApiOperation(value = "上传图片")
     public Result<?> updateFile(@RequestParam("file") MultipartFile file) {
-        return imagesService.uploadFile(file);
+        return imagesService.uploadFile(file,loginUser().getUserId());
     }
 }

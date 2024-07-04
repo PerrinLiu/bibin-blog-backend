@@ -78,7 +78,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("当前请求接口：" + path);
 
             //如果是公共可请求的资源，直接放行
-            if (path.contains("common")) {
+            if (path.contains("common") || path.contains("/image/files")) {
                 return chain.filter(exchange);
             }
             //直接可请求的资源

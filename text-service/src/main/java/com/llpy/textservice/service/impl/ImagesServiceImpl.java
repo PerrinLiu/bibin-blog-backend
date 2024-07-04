@@ -31,14 +31,14 @@ public class ImagesServiceImpl implements ImagesService {
     private String serverUrl;
 
     @Override
-    public Result<?> uploadFile(MultipartFile file) {
+    public Result<?> uploadFile(MultipartFile file,Long userId) {
         if (file.isEmpty()) {
             return Result.error("文件为空");
         }
 
         try {
             // 获取当前日期并格式化为 "yyyy-MM" 格式
-            String currentMonth = "/"+new SimpleDateFormat("yyyy-MM").format(new Date());
+            String currentMonth ="/"+ userId + "/"+new SimpleDateFormat("yyyy-MM").format(new Date());
 
             // 获取上传文件的名字,生成唯一的名称
             String fileName = file.getOriginalFilename();
@@ -55,7 +55,7 @@ public class ImagesServiceImpl implements ImagesService {
             Files.write(path, file.getBytes());
 
             // 生成文件的URL
-            String fileUrl = serverUrl + "/files/common" +currentMonth+"/"+ uniqueFileName;
+            String fileUrl = serverUrl + "/files" +currentMonth+"/"+ uniqueFileName;
 
             // 返回文件URL
             return Result.success(fileUrl);

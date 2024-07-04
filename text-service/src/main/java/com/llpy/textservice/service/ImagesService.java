@@ -10,5 +10,5 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2024/06/25
  */
 public interface ImagesService {
-    Result<?> uploadFile(MultipartFile file);
+    Result<?> uploadFile(MultipartFile file,Long userId);
 }
