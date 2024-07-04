@@ -2,6 +2,7 @@ package com.llpy.textservice.controller;
 
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
+import com.llpy.textservice.entity.dto.AssessDiaryDto;
 import com.llpy.textservice.entity.vo.DiaryVo;
 import com.llpy.textservice.service.DiaryService;
 import io.swagger.annotations.Api;
@@ -65,13 +66,13 @@ public class DiaryController extends BaseController {
 
     @PutMapping("/rejectDiary")
     @ApiOperation(value = "拒绝日记")
-    public Result<?> rejectDiary(@RequestParam Long diaryId,@RequestParam String rejectReason) {
-        return diaryService.rejectDiary(diaryId,rejectReason,loginUser().getUserId());
+    public Result<?> rejectDiary(@RequestBody AssessDiaryDto assessDiaryDto) {
+        return diaryService.rejectDiary(assessDiaryDto,loginUser().getUserId());
     }
 
     @PutMapping("/passDiary")
     @ApiOperation(value = "通过日记")
-    public Result<?> passDiary(@RequestParam Long diaryId) {
-        return diaryService.passDiary(diaryId,loginUser().getUserId());
+    public Result<?> passDiary(@RequestBody AssessDiaryDto assessDiaryDto) {
+        return diaryService.passDiary(assessDiaryDto.getDiaryId(),loginUser().getUserId());
     }
 }

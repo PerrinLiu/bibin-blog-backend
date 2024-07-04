@@ -20,6 +20,9 @@ public class Result<T> implements Serializable {
     private int retCode;
     private T data;
 
+    public Result() {
+    }
+
     public Result(String message, int retCode, T data) {
         this.message = message;
         this.retCode = retCode;

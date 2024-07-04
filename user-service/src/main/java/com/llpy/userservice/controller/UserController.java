@@ -80,10 +80,10 @@ public class UserController extends BaseController {
         return userService.updateUserImg(file, loginUser().getUserId());
     }
 
-    @GetMapping("/sendEmail")
+    @PostMapping("/sendEmail")
     @ApiOperation(value = "发送邮件")
-    public Result<?> sendEmail(@RequestParam String email, @RequestParam String type) {
-        return userService.sendEmail(email, type);
+    public Result<?> sendEmail(@RequestParam String email, @RequestParam String type,@RequestParam String message) {
+        return userService.sendEmail(email, type,message);
     }
 
     @PostMapping("/register")
@@ -106,9 +106,16 @@ public class UserController extends BaseController {
 
 
     @GetMapping("/common/getUserData")
-    @ApiOperation("获取用户数据")
+    @ApiOperation("获取用户数据(头像和昵称")
     public HashMap<Long, UserVo> getUserData() {
         return redisService.getUserData();
+    }
+
+
+    @GetMapping("/getUserEmail")
+    @ApiOperation("获取用户邮箱")
+    public String getUserEmail(@RequestParam Long userId) {
+        return userService.getUserEmail(userId);
     }
 
 }

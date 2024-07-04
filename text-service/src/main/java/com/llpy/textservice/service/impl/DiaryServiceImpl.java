@@ -2,13 +2,20 @@ package com.llpy.textservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.llpy.config.BizException;
+import com.llpy.enums.EmailEnum;
+import com.llpy.enums.GatewayKey;
+import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
+import com.llpy.textservice.entity.dto.AssessDiaryDto;
 import com.llpy.textservice.entity.vo.DiaryVo;
+import com.llpy.textservice.feign.UserService;
 import com.llpy.textservice.mapper.DiaryMapper;
 import com.llpy.textservice.mapper.DiaryTextMapper;
 import com.llpy.textservice.service.DiaryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +32,9 @@ import java.util.List;
 public class DiaryServiceImpl implements DiaryService {
     private final DiaryMapper diaryMapper;
     private final DiaryTextMapper diaryTextMapper;
+
+    @Autowired
+    private UserService userService;
 
     public DiaryServiceImpl(DiaryMapper diaryMapper, DiaryTextMapper diaryTextMapper) {
         this.diaryMapper = diaryMapper;
@@ -136,14 +146,34 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public Result<?> rejectDiary(Long diaryId, String rejectReason,Long userId) {
-        // TODO: 2024/7/4 发送邮箱通知
-        return null;
+    @Transactional
+    public Result<?> rejectDiary(AssessDiaryDto assessDiaryDto, Long userId) {
+        Diary diary = diaryMapper.selectById(assessDiaryDto.getDiaryId());
+        if(diary==null){
+            throw new BizException(ResponseError.COMMON_ERROR);
+        }
+        diary.setDiaryStatus(3).setPassUser(userId);
+        diaryMapper.updateById(diary);
+        //发送邮件通知
+        Long diaryUserId = diary.getUserId();
+        String userEmail = userService.getUserEmail(diaryUserId);
+        //添加分割符号
+        String message = diary.getDiaryTitle()+ GatewayKey.GATEWAY_KEY.getKeyInfo() +assessDiaryDto.getRejectReason();
+        return userService.sendEmail(userEmail, EmailEnum.DIARY_REJECT.getKey(), message);
     }
 
     @Override
+    @Transactional
     public Result<?> passDiary(Long diaryId,Long userId) {
-        // TODO: 2024/7/4 发送邮箱通知
-        return null;
+        Diary diary = diaryMapper.selectById(diaryId);
+        if(diary==null){
+            throw new BizException(ResponseError.COMMON_ERROR);
+        }
+        diary.setDiaryStatus(2).setPassUser(userId);
+        diaryMapper.updateById(diary);
+        // 发送邮箱通知
+        Long diaryUserId = diary.getUserId();
+        String userEmail = userService.getUserEmail(diaryUserId);
+        return userService.sendEmail(userEmail, EmailEnum.DIARY_PASS.getKey(), diary.getDiaryTitle());
     }
 }

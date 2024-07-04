@@ -37,7 +37,7 @@ public class DiaryVo {
     /**
      * 审核人
      */
-    private int passUser;
+    private Long passUser;
 
     //是否公开
     private int isOpen;

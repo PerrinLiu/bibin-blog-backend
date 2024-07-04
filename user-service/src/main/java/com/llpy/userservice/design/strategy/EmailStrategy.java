@@ -10,5 +10,5 @@ import com.llpy.userservice.entity.User;
  * @date 2024/06/26
  */
 public interface EmailStrategy {
-    public Result<?> sendEmail(String email,  User user);
+    public Result<?> sendEmail(String email,  User user,String message);
 }

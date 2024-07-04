@@ -1,6 +1,12 @@
 package com.llpy.enums;
 
 
+/**
+ * 网关密钥
+ *
+ * @author llpy
+ * @date 2024/07/04
+ */
 public enum GatewayKey {
 
     GATEWAY_KEY("gatewayKey", "xiaoKeAiXiangCaiDeMiYao");

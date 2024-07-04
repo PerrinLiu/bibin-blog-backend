@@ -2,6 +2,7 @@ package com.llpy.textservice.service;
 
 
 import com.llpy.model.Result;
+import com.llpy.textservice.entity.dto.AssessDiaryDto;
 import com.llpy.textservice.entity.vo.DiaryVo;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public interface DiaryService {
      */
     Result deleteDiaryOne(Long diaryId);
 
-    Result<?> rejectDiary(Long diaryId, String rejectReason,Long userId);
+    Result<?> rejectDiary(AssessDiaryDto assessDiaryDto, Long userId);
 
     Result<?> passDiary(Long diaryId,Long userId);
 }

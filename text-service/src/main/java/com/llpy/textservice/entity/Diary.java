@@ -39,7 +39,7 @@ public class Diary {
     /**
      * 审核人
      */
-    private int passUser;
+    private Long passUser;
 
     private LocalDateTime createTime;
 
