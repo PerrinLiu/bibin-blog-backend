@@ -5,6 +5,7 @@ import com.llpy.model.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -33,6 +34,13 @@ public class GlobalExceptionHandler {
     public Result<?> handleBizException(BizException bizException) {
         log.error("业务异常:{}", bizException.getMessage(), bizException);
         return Result.error(bizException.getError());
+    }
+
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public Result<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        e.printStackTrace();
+        return Result.error(ResponseError.COMMON_PARAM_ERROR);
     }
 
 

@@ -41,7 +41,7 @@
         select *
         from article as a
         <where>
-            <if test="searchText!=null">
+            <if test="searchText!=null and searchText!=''">
                 a.article_title like concat('%',#{searchText},'%')
             </if>
         </where>

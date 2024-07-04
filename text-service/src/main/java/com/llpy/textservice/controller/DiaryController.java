@@ -28,20 +28,14 @@ public class DiaryController extends BaseController {
 
     @PostMapping("/addDiary")
     @ApiOperation(value = "新增日记")
-    public Result addDiary(@RequestBody DiaryVo diaryVo) {
+    public Result<?> addDiary(@RequestBody DiaryVo diaryVo) {
         return diaryService.addDiary(diaryVo, loginUser().getUserId());
-    }
-
-    @GetMapping("/getDiaryByUser")
-    @ApiOperation(value = "获得当前用户所有日记")
-    public Result<List<DiaryVo>> getDiaryByUser() {
-        return diaryService.getDiary(loginUser().getUserId());
     }
 
     @GetMapping("/getDiaryAll")
     @ApiOperation(value = "获得所有日记")
-    public Result<List<DiaryVo>> getDiary() {
-        return diaryService.getDiary();
+    public Result<?> getDiaryAll(@RequestParam Integer pageSize, @RequestParam Integer pageNum, Long userId,Integer status,String searchText) {
+        return diaryService.getDiary(userId,pageSize,pageNum,status,searchText);
     }
 
     @GetMapping("/getDiaryBase")
@@ -66,5 +60,18 @@ public class DiaryController extends BaseController {
     @ApiOperation(value = "删除单个日记")
     public Result deleteDiaryOne(@RequestParam Long diaryId) {
         return diaryService.deleteDiaryOne(diaryId);
+    }
+
+
+    @PutMapping("/rejectDiary")
+    @ApiOperation(value = "拒绝日记")
+    public Result<?> rejectDiary(@RequestParam Long diaryId,@RequestParam String rejectReason) {
+        return diaryService.rejectDiary(diaryId,rejectReason,loginUser().getUserId());
+    }
+
+    @PutMapping("/passDiary")
+    @ApiOperation(value = "通过日记")
+    public Result<?> passDiary(@RequestParam Long diaryId) {
+        return diaryService.passDiary(diaryId,loginUser().getUserId());
     }
 }
