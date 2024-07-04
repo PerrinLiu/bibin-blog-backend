@@ -15,4 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ArticleGroupMapper extends BaseMapper<ArticleGroup> {
 
+    int selectByName(String groupName);
 }

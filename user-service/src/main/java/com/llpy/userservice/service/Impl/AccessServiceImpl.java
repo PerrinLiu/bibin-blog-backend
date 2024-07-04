@@ -87,6 +87,7 @@ public class AccessServiceImpl implements AccessService {
             HashMap<String,Integer> map = submit.get();
             res.setArticleCount(map.get("articleCount"));
             res.setGroupCount(map.get("groupCount"));
+            res.setDiaryCount(map.get("diaryCount"));
             String[] arrByDay = DataUtils.getArrByDay(day);
             for (String s : arrByDay) {
                 CountDataVo.CommitData commitData = new CountDataVo.CommitData();

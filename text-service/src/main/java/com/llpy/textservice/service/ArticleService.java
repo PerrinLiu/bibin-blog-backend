@@ -101,4 +101,5 @@ public interface ArticleService extends IService<Article> {
      */
     HashMap<String, Integer> getCountText();
 
+    Result<?> addGroup(String groupName);
 }

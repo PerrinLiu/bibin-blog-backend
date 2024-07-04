@@ -89,6 +89,15 @@ public class ArticleController extends BaseController {
     }
 
 
+    @PostMapping("/addGroup")
+    @ApiOperation(value = "添加文章分组")
+    @OperateLog("添加文章分组")
+    public Result<?> addGroup(@RequestParam String groupName) {
+        return articleService.addGroup(groupName);
+    }
+
+
+
     @GetMapping("common/getCountText")
     @ApiOperation(value = "获取统计数据")
     public HashMap<String, Integer> getCountText() {

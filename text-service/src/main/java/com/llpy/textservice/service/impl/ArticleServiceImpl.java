@@ -1,20 +1,15 @@
 package com.llpy.textservice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
-import com.llpy.textservice.entity.Article;
-import com.llpy.textservice.entity.ArticleGroup;
-import com.llpy.textservice.entity.ArticleText;
-import com.llpy.textservice.entity.UserArticle;
+import com.llpy.textservice.entity.*;
 import com.llpy.textservice.entity.dto.ArticleDto;
 import com.llpy.textservice.entity.vo.ArticleDetailsVo;
 import com.llpy.textservice.entity.vo.ArticleCountVo;
-import com.llpy.textservice.mapper.ArticleGroupMapper;
-import com.llpy.textservice.mapper.ArticleMapper;
-import com.llpy.textservice.mapper.ArticleTextMapper;
-import com.llpy.textservice.mapper.UserArticleMapper;
+import com.llpy.textservice.mapper.*;
 import com.llpy.textservice.service.ArticleService;
 import com.llpy.textservice.service.CommentService;
 import com.llpy.utils.AliOSSUtils;
@@ -55,7 +50,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private final ThreadPoolTaskExecutor taskExecutor;
 
-    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper, ArticleGroupMapper articleGroupMapper, UserArticleMapper userArticleMapper, CommentService commentService, @Qualifier("taskExecutor") ThreadPoolTaskExecutor taskExecutor) {
+    private final DiaryMapper diaryMapper;
+
+    public ArticleServiceImpl(AliOSSUtils aliOSSUtils, ArticleMapper articleMapper, ArticleTextMapper articleTextMapper, ArticleGroupMapper articleGroupMapper, UserArticleMapper userArticleMapper, CommentService commentService, @Qualifier("taskExecutor") ThreadPoolTaskExecutor taskExecutor, DiaryMapper diaryMapper) {
         this.aliOSSUtils = aliOSSUtils;
         this.articleMapper = articleMapper;
         this.articleTextMapper = articleTextMapper;
@@ -63,6 +60,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         this.userArticleMapper = userArticleMapper;
         this.commentService = commentService;
         this.taskExecutor = taskExecutor;
+        this.diaryMapper = diaryMapper;
     }
 
     /**
@@ -291,9 +289,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //获取总文章数和组数
         int articleCount = articleMapper.selectCount(null);
         int groupCount = articleGroupMapper.selectCount(null);
+        LambdaQueryWrapper<Diary> query = new LambdaQueryWrapper<>();
+        query.eq(Diary::getDiaryStatus,2);
+        int diaryCount = diaryMapper.selectCount(query);
         res.put("articleCount",articleCount);
         res.put("groupCount",groupCount);
+        res.put("diaryCount",diaryCount);
         return res;
+    }
+
+    @Override
+    public Result<?> addGroup(String groupName) {
+        int i = articleGroupMapper.selectByName(groupName);
+        if (i !=0) {
+            return Result.error("该分组已经存在");
+        }
+        ArticleGroup articleGroup = new ArticleGroup();
+        articleGroup.setArticleType(groupName);
+        articleGroupMapper.insert(articleGroup);
+        return Result.success();
     }
 
 
