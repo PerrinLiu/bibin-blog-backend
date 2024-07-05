@@ -29,5 +29,20 @@
             user_id = #{userId}
           AND article_id = #{articleId}#
     </select>
+    <select id="lastArticle" resultType="com.llpy.textservice.entity.vo.UserArticleVo">
+        SELECT
+            a.article_id,
+            a.liked,
+            a.star,
+            b.article_group_id as groupList
+        FROM
+            user_article as a
+                INNER JOIN article as b on a.article_id = b.id
+        where
+            a.user_id = #{userId}
+        ORDER BY
+            a.update_time DESC
+        LIMIT 0,10
+    </select>
 
 </mapper>

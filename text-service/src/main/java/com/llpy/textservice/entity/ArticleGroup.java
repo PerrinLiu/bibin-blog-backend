@@ -27,8 +27,8 @@ public class ArticleGroup extends Model<ArticleGroup> {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "分组ID，自增主键")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    private Long id;
 
     @ApiModelProperty(value = "文章类型")
     private String articleType;

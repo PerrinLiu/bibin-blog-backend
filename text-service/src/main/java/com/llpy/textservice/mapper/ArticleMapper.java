@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.textservice.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.llpy.textservice.entity.vo.ArticleCountVo;
+import com.llpy.textservice.entity.vo.ArticleGroupVo;
+import com.llpy.textservice.entity.vo.RecommendArticleVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -64,4 +66,9 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return {@code Integer[]}
      */
     List<ArticleCountVo> selectCountByDate();
+
+    List<RecommendArticleVo> recommendArticle(String key, int value);
+
+    List<ArticleGroupVo> selectGroupAndCount();
+
 }

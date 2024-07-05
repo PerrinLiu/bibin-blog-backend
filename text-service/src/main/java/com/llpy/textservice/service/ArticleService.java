@@ -101,5 +101,19 @@ public interface ArticleService extends IService<Article> {
      */
     HashMap<String, Integer> getCountText();
 
+    /**
+     * 添加组
+     *
+     * @param groupName 组名称
+     * @return {@code Result<?>}
+     */
     Result<?> addGroup(String groupName);
+
+    /**
+     * 推荐文章
+     *
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
+    Result<?> recommendArticle(Long userId);
 }

@@ -64,6 +64,12 @@ public class ArticleController extends BaseController {
         return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
     }
 
+    @GetMapping("/common/recommendArticle")
+    @ApiOperation(value = "根据用户点赞获得推荐文章")
+    public Result<?> recommendArticle() {
+        return articleService.recommendArticle(loginUser().getUserId());
+    }
+
     @GetMapping("/common/listIndexArticle")
     @ApiOperation(value = "获得首页文章列表")
     public Result<?> listIndexArticle() {

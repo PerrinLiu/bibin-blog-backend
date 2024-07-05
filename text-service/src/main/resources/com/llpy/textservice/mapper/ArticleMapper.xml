@@ -67,5 +67,29 @@
         ORDER BY
             DATE(create_time);
     </select>
+    <select id="recommendArticle" resultType="com.llpy.textservice.entity.vo.RecommendArticleVo">
+        SELECT
+            id,
+            article_title,
+            des
+        FROM
+            article
+        <where>
+            <if test="key!=null and key!=''">
+                article_group_id like concat('%',#{key},'%')
+            </if>
+        </where>
+        order by update_time desc
+        limit #{value}
+    </select>
+    <select id="selectGroupAndCount" resultType="com.llpy.textservice.entity.vo.ArticleGroupVo">
+        select
+            article_group_id as articleType,
+            count(*) as number
+        from
+            article
+        GROUP BY
+            article_group_id
+    </select>
 
 </mapper>

@@ -2,7 +2,10 @@ package com.llpy.textservice.mapper;
 
 import com.llpy.textservice.entity.ArticleGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.llpy.textservice.entity.vo.ArticleGroupVo;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +19,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ArticleGroupMapper extends BaseMapper<ArticleGroup> {
 
     int selectByName(String groupName);
+
 }

@@ -7,8 +7,7 @@ import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.*;
 import com.llpy.textservice.entity.dto.ArticleDto;
-import com.llpy.textservice.entity.vo.ArticleDetailsVo;
-import com.llpy.textservice.entity.vo.ArticleCountVo;
+import com.llpy.textservice.entity.vo.*;
 import com.llpy.textservice.mapper.*;
 import com.llpy.textservice.service.ArticleService;
 import com.llpy.textservice.service.CommentService;
@@ -21,8 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -121,14 +119,43 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     /**
-     * 获取组列表
+     * 获取组列表和组的文章数量
      *
      * @return {@code Result<?>}
      */
     @Override
     public Result<?> getGroupList() {
-        List<ArticleGroup> articleTexts = articleGroupMapper.selectList(null);
-        return Result.success(articleTexts);
+        //获取分组数据
+        List<ArticleGroup> articleGroups = articleGroupMapper.selectList(null);
+        List<ArticleGroupVo> res = new ArrayList<>();
+        //初始化记录每个分组文章数量的map
+        HashMap<Long, Integer> groupNumber = new HashMap<>();
+        for (ArticleGroup articleGroup : articleGroups) {
+            ArticleGroupVo articleGroupVo = new ArticleGroupVo();
+            BeanUtils.copyProperties(articleGroup, articleGroupVo);
+            res.add(articleGroupVo);
+            groupNumber.put(articleGroup.getId(), 0);
+        }
+        //获取每个分组的个数
+        List<ArticleGroupVo> articleGroupVos = articleMapper.selectGroupAndCount();
+        for (ArticleGroupVo articleGroupVo : articleGroupVos) {
+            //有可能组合，拆分成数组。
+            String articleType = articleGroupVo.getArticleType();
+            String[] split = articleType.split(",");
+            for (String s : split) {
+                Long id = Long.valueOf(s);
+                groupNumber.put(id, groupNumber.get(id) + articleGroupVo.getNumber());
+            }
+        }
+        //将分组数量设置给返回结果
+        groupNumber.forEach((k, v) -> {
+            for (ArticleGroupVo articleGroupVo : res) {
+                if (k.equals(articleGroupVo.getId())) {
+                    articleGroupVo.setNumber(v);
+                }
+            }
+        });
+        return Result.success(res);
     }
 
     /**
@@ -236,9 +263,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return Result.error(ResponseError.NOT_FOUND_ERROR);
         }
         if (type == 1) {
-            article.setLikeSum(userArticle.getLiked() ? 1 : -1);
+            Integer likeSum = article.getLikeSum();
+            article.setLikeSum(likeSum + (userArticle.getLiked() ? 1 : -1));
         } else {
-            article.setCollectionsSum(userArticle.getStar() ? 1 : -1);
+            Integer collectionsSum = article.getCollectionsSum();
+            article.setCollectionsSum(collectionsSum + (userArticle.getStar() ? 1 : -1));
         }
         articleMapper.updateById(article);
         return Result.success();
@@ -284,30 +313,119 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //根据时间获取每天的文章数
         List<ArticleCountVo> list = articleMapper.selectCountByDate();
         for (ArticleCountVo articleCountVo : list) {
-            res.put(articleCountVo.getDate(),articleCountVo.getCount());
+            res.put(articleCountVo.getDate(), articleCountVo.getCount());
         }
         //获取总文章数和组数
         int articleCount = articleMapper.selectCount(null);
         int groupCount = articleGroupMapper.selectCount(null);
         LambdaQueryWrapper<Diary> query = new LambdaQueryWrapper<>();
-        query.eq(Diary::getDiaryStatus,2);
+        query.eq(Diary::getDiaryStatus, 2);
         int diaryCount = diaryMapper.selectCount(query);
-        res.put("articleCount",articleCount);
-        res.put("groupCount",groupCount);
-        res.put("diaryCount",diaryCount);
+        res.put("articleCount", articleCount);
+        res.put("groupCount", groupCount);
+        res.put("diaryCount", diaryCount);
         return res;
     }
 
     @Override
     public Result<?> addGroup(String groupName) {
         int i = articleGroupMapper.selectByName(groupName);
-        if (i !=0) {
+        if (i != 0) {
             return Result.error("该分组已经存在");
         }
         ArticleGroup articleGroup = new ArticleGroup();
         articleGroup.setArticleType(groupName);
         articleGroupMapper.insert(articleGroup);
         return Result.success();
+    }
+
+    /**
+     * 推荐文章
+     *
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> recommendArticle(Long userId) {
+        //如果用户没登陆，则返回最近的五个
+        if (userId == null) {
+            List<RecommendArticleVo> recommendArticleVo = articleMapper.recommendArticle(null, 5);
+            return Result.success(recommendArticleVo);
+        }
+        //最近的10条点赞和收藏的文章分组信息
+        List<UserArticleVo> articles = userArticleMapper.lastArticle(userId);
+        //统计每个分组的权重，点赞和收藏的权重1：1
+        HashMap<String, Integer> articleMap = getWeightByGroup(articles);
+        //构建返回数据
+        List<RecommendArticleVo> res = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : articleMap.entrySet()) {
+            String key = entry.getKey();
+            int value = entry.getValue();
+            //根据分组和个数，找出文章
+            List<RecommendArticleVo> recommendArticleVo = articleMapper.recommendArticle(key, value);
+            //不同的文章添加到返回数据
+            addRes(res, recommendArticleVo);
+        }
+        int diff = 5 - res.size();
+        //如果文章不够5个，获取最近的五篇，补足5篇文章
+        if(diff > 0){
+            List<RecommendArticleVo> recommendArticleVo = articleMapper.recommendArticle(null, 5);
+            addRes(res, recommendArticleVo);
+        }
+        return Result.success(res);
+    }
+
+    /**
+     * 按组计算体重
+     *
+     * @param articles 见习契约
+     * @return {@code HashMap<String, Integer>}
+     */
+    private static HashMap<String, Integer> getWeightByGroup(List<UserArticleVo> articles) {
+        HashMap<String, Integer> map = new HashMap<>();
+        //总权重，（总权重/5,就是一篇文章需要的权重，例如总权重为5，则代表分组权重大于1的才需要找文章）
+        int weightSum = 0;
+        for (UserArticleVo article : articles) {
+            String[] split = article.getGroupList().split(",");
+            //分组权重
+            int weight = article.getLiked() + article.getStar();
+            weightSum += weight;
+            for (String s : split) {
+                map.putIfAbsent(s, 0);
+                map.put(s, map.get(s) + weight);
+            }
+        }
+        //每个文章需要的权重
+        int weight = weightSum / 5;
+        //分组需要找出的文章
+        HashMap<String, Integer> articleMap = new HashMap<>();
+        for (Map.Entry<String, Integer> mapEntry : map.entrySet()) {
+            if (mapEntry.getValue() >= weight) {
+                articleMap.put(mapEntry.getKey(), mapEntry.getValue() / weight);
+            }
+        }
+        return articleMap;
+    }
+
+    /**
+     * 将不同的文章添加res
+     *
+     * @param res                物件
+     * @param recommendArticleVo 推荐文章vo
+     */
+    private void addRes(List<RecommendArticleVo> res, List<RecommendArticleVo> recommendArticleVo) {
+        for (RecommendArticleVo articleVo : recommendArticleVo) {
+            boolean flag = true;
+            for (RecommendArticleVo recommendArticleVo2 : res) {
+                if (articleVo.getId().equals(recommendArticleVo2.getId())) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                res.add(articleVo);
+            }
+        }
     }
 
 

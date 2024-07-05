@@ -2,8 +2,11 @@ package com.llpy.textservice.mapper;
 
 import com.llpy.textservice.entity.UserArticle;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.llpy.textservice.entity.vo.UserArticleVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,8 +19,27 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface UserArticleMapper extends BaseMapper<UserArticle> {
 
+    /**
+     * 按用户id和文章id获取一个点赞信息
+     *
+     * @param userId    用户id
+     * @param articleId 文章id
+     * @return {@code UserArticle}
+     */
     UserArticle getOneByUserIdAndArticleId(Long userId, Long articleId);
 
+    /**
+     * 按项目id删除点赞信息
+     *
+     * @param articleId 文章id
+     */
     void deleteByArticleId(Long articleId);
 
+    /**
+     * 获取用户最近的10条点赞记录
+     *
+     * @param userId 用户id
+     * @return {@code List<UserArticle>}
+     */
+    List<UserArticleVo> lastArticle(Long userId);
 }
