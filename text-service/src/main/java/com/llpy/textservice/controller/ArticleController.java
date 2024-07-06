@@ -60,8 +60,14 @@ public class ArticleController extends BaseController {
 
     @GetMapping("/listArticle")
     @ApiOperation(value = "获得文章列表")
-    public Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText) {
-        return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
+    public Result<?> listArticle(Integer pageSize, Integer pageNum,String sort) {
+        return articleService.listArticle(pageSize, pageNum, sort);
+    }
+
+    @GetMapping("/common/searchArticle")
+    @ApiOperation(value = "搜索文章列表")
+    public Result<?> searchArticle(Integer pageSize, Integer pageNum, String searchText,String groups,String sort) {
+        return articleService.searchArticle(pageSize, pageNum, searchText, groups,sort);
     }
 
     @GetMapping("/common/recommendArticle")

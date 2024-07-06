@@ -163,16 +163,35 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      *
      * @param pageSize   页面大小
      * @param pageNum    书籍页码
-     * @param searchText 搜索文本
-     * @param userId     用户id
+     * @param sort       排序字段
      * @return {@code Result<?>}
      */
     @Override
-    public Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText, Long userId) {
+    public Result<?> listArticle(Integer pageSize, Integer pageNum, String sort) {
         Page<Article> articlePage = new Page<>(pageNum, pageSize);
-        //todo 后续根据用户点赞，收藏，评论数排序
+        sort = Objects.equals(sort, "1") ? "read_sum" : Objects.equals(sort, "2") ? "like_sum" : "create_time";
         //得到基本信息
-        articleMapper.getArticleList(articlePage, searchText);
+        articleMapper.getArticleList(articlePage, sort);
+        return Result.success(articlePage);
+    }
+
+
+    /**
+     * 搜索文章
+     *
+     * @param pageSize   页面大小
+     * @param pageNum    书籍页码
+     * @param searchText 搜索文本
+     * @param groups     组
+     * @param sort       分类
+     * @return {@code Result<?>}
+     */
+    @Override
+    public Result<?> searchArticle(Integer pageSize, Integer pageNum, String searchText, String groupName, String sort) {
+        Page<Article> articlePage = new Page<>(pageNum, pageSize);
+        sort = Objects.equals(sort, "1") ? "read_sum" : Objects.equals(sort, "2") ? "like_sum" : "create_time";
+        //得到基本信息
+        articleMapper.getSearchArticleList(articlePage, searchText, groupName, sort);
         return Result.success(articlePage);
     }
 
@@ -368,7 +387,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         int diff = 5 - res.size();
         //如果文章不够5个，获取最近的五篇，补足5篇文章
-        if(diff > 0){
+        if (diff > 0) {
             List<RecommendArticleVo> recommendArticleVo = articleMapper.recommendArticle(null, 5);
             addRes(res, recommendArticleVo);
         }

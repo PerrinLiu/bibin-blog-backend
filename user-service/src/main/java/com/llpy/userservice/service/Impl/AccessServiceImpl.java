@@ -97,7 +97,7 @@ public class AccessServiceImpl implements AccessService {
                 commitData.setYear(s.substring(0,4)).setMonth(s.substring(5,7)).setDate(s.substring(8,10));
                 //设置数量和等级
                 Integer orDefault = map.getOrDefault(s, 0);
-                commitData.setNumber(orDefault).setLevel(orDefault);
+                commitData.setNumber(orDefault).setLevel(orDefault >= 3 ? 3 : orDefault);
                 commitDataList.add(commitData);
             }
             //设置commitData

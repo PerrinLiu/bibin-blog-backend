@@ -26,10 +26,14 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * 获取文章列表
      *
      * @param articlePage 文章页面
-     * @param searchText  搜索文本
+     * @param sort 排序字段
      * @return {@code IPage<Article>}
      */
-    IPage<Article> getArticleList(Page<Article> articlePage, String searchText);
+    IPage<Article> getArticleList(Page<Article> articlePage, String sort);
+
+
+
+    IPage<Article> getSearchArticleList(Page<Article> articlePage, String searchText, String groupName, String sort);
 
     /**
      * 列出首页文章
@@ -70,5 +74,4 @@ public interface ArticleMapper extends BaseMapper<Article> {
     List<RecommendArticleVo> recommendArticle(String key, int value);
 
     List<ArticleGroupVo> selectGroupAndCount();
-
 }

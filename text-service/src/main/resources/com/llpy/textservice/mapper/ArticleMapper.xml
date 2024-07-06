@@ -39,13 +39,26 @@
     </update>
     <select id="getArticleList" resultType="com.llpy.textservice.entity.Article">
         select *
-        from article as a
+        from article
+        order by ${sort} desc
+    </select>
+
+
+    <select id="getSearchArticleList" resultType="com.llpy.textservice.entity.Article">
+        SELECT
+            *
+        FROM
+            article
         <where>
+            <if test="groupName!=null and groupName!=''">
+                article_group_id like concat('%',#{groupName},'%')
+            </if>
             <if test="searchText!=null and searchText!=''">
-                a.article_title like concat('%',#{searchText},'%')
+                AND (des LIKE concat('%',#{searchText},'%')
+                OR article_title LIKE concat('%',#{searchText},'%'))
             </if>
         </where>
-        order by a.like_sum desc, a.create_time desc
+        order by ${sort} desc
     </select>
     <select id="listIndexArticle" resultType="com.llpy.textservice.entity.Article">
         select *
