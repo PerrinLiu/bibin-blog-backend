@@ -415,12 +415,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
         }
         //每个文章需要的权重
-        int weight = weightSum / 5;
+        Double weight = (double) (weightSum / 5) == 0 ? 1 : (double) (weightSum / 5);
         //分组需要找出的文章
         HashMap<String, Integer> articleMap = new HashMap<>();
         for (Map.Entry<String, Integer> mapEntry : map.entrySet()) {
             if (mapEntry.getValue() >= weight) {
-                articleMap.put(mapEntry.getKey(), mapEntry.getValue() / weight);
+                articleMap.put(mapEntry.getKey(), (int) (mapEntry.getValue() / weight));
             }
         }
         return articleMap;

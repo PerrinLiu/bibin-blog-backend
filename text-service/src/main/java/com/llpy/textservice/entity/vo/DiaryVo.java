@@ -32,7 +32,7 @@ public class DiaryVo {
     /**
      * 日记状态（1:未审核 2:通过 3:拒绝）
      */
-    private int diaryStatus;
+    private Integer diaryStatus;
 
     /**
      * 审核人

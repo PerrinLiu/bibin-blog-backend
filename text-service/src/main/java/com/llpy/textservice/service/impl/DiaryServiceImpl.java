@@ -63,7 +63,7 @@ public class DiaryServiceImpl implements DiaryService {
         Diary diary = new Diary();
 
         diary.setUserId(id).setDiaryId(null).setIsOpen(diaryVo.getIsOpen()).setDiaryTextId(textId)
-                .setDiaryTitle(diaryVo.getDiaryTitle()).setCreateTime(LocalDateTime.now());
+                .setDiaryTitle(diaryVo.getDiaryTitle()).setCreateTime(LocalDateTime.now()).setDiaryStatus(1);
 
         //往数据库添加日记
         diaryMapper.insert(diary);
