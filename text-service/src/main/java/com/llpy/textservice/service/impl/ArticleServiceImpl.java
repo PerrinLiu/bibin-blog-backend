@@ -90,7 +90,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article article = new Article();
         article.setArticleTitle(articleDto.getTitle()).setCreatBy(userId);
         StringBuilder groupId = new StringBuilder();
-        for (Integer i : articleDto.getGroupIds()) {
+        for (Long i : articleDto.getGroupIds()) {
             if (groupId.length() > 0) {
                 groupId.append(",");
             }
@@ -182,7 +182,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param pageSize   页面大小
      * @param pageNum    书籍页码
      * @param searchText 搜索文本
-     * @param groups     组
+     * @param groupName     组
      * @param sort       分类
      * @return {@code Result<?>}
      */
