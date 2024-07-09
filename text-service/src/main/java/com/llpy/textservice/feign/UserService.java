@@ -3,6 +3,7 @@ package com.llpy.textservice.feign;
 
 import com.llpy.config.FeignConfig;
 import com.llpy.model.Result;
+import com.llpy.textservice.feign.entity.UserDto2;
 import com.llpy.textservice.feign.entity.UserVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,4 +30,8 @@ public interface  UserService {
 
     @GetMapping("/user/getUserEmail")
     String getUserEmail(@RequestParam Long userId);
+
+
+    @GetMapping(value="/user/getUserData",consumes = "application/json")
+    UserDto2 getUser(@RequestParam  Long userId);
 }

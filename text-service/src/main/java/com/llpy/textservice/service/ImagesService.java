@@ -10,5 +10,20 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2024/06/25
  */
 public interface ImagesService {
-    Result<?> uploadFile(MultipartFile file,Long userId);
+    /**
+     * 上传img
+     *
+     * @param file   文件
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
+    Result<?> uploadImg(MultipartFile file,Long userId);
+
+    /**
+     * 按用户id列出img
+     *
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
+    Result<?> listImgByUserId(Long userId);
 }

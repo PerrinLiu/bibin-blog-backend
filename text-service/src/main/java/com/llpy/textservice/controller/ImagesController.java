@@ -6,10 +6,8 @@ import com.llpy.model.Result;
 import com.llpy.textservice.service.ImagesService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.Getter;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -32,6 +30,11 @@ public class ImagesController extends BaseController {
     @PostMapping("/uploadFile")
     @ApiOperation(value = "上传图片")
     public Result<?> updateFile(@RequestParam("file") MultipartFile file) {
-        return imagesService.uploadFile(file,loginUser().getUserId());
+        return imagesService.uploadImg(file,loginUser().getUserId());
+    }
+
+    @GetMapping("/listImgByUserId")
+    public Result<?> getImg(@RequestParam Long userId) {
+        return imagesService.listImgByUserId(userId);
     }
 }

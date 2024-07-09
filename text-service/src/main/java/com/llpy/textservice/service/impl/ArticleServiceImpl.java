@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -155,7 +156,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 }
             }
         });
-        return Result.success(res);
+        //排序
+        List<ArticleGroupVo> collect = res.stream().sorted().collect(Collectors.toList());
+        return Result.success(collect);
     }
 
     /**

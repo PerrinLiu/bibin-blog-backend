@@ -62,6 +62,9 @@ public class UserController extends BaseController {
         return userService.getUser(loginUser().getUserId());
     }
 
+
+
+
     @GetMapping("/logout")
     @ApiOperation(value = "当前用户退出")
     public Result<?> logout() {
@@ -116,6 +119,13 @@ public class UserController extends BaseController {
     @ApiOperation("获取用户邮箱")
     public String getUserEmail(@RequestParam Long userId) {
         return userService.getUserEmail(userId);
+    }
+
+
+    @GetMapping("/getUserData")
+    @ApiOperation("获取用户数据")
+    public UserDto2 getUserData(@RequestParam Long userId) {
+        return userService.getUser(userId).getData();
     }
 
 }
