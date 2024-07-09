@@ -13,5 +13,5 @@ public class UserVo {
 
     private String userImg;
 
-    private String userName;
+    private String nickname;
 }

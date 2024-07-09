@@ -123,12 +123,26 @@ public class ImagesServiceImpl implements ImagesService {
         }
     }
 
+    /**
+     * 按用户id列出img
+     *
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
     @Override
     public Result<?> listImgByUserId(Long userId) {
         List<PhotoWall> res =photoWallMapper.listImgByUserId(userId);
         return Result.success(res);
     }
 
+    /**
+     * 列表计数img
+     *
+     * @param pageSize   页面大小
+     * @param pageNum    书籍页码
+     * @param searchText 搜索文本
+     * @return {@code Result<?>}
+     */
     @Override
     public Result<?> listCountImg(Integer pageSize, Integer pageNum,String searchText) {
         Page<PhotoCountVo> page = new Page<>(pageNum,pageSize);
@@ -137,6 +151,12 @@ public class ImagesServiceImpl implements ImagesService {
     }
 
 
+    /**
+     * 获取唯一文件名
+     *
+     * @param fileName 文件名
+     * @return {@code String}
+     */
     private static String getUniqueFileName(String fileName) {
         String fileExtension = "";
 

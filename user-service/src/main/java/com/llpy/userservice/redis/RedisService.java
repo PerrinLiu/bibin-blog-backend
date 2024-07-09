@@ -103,12 +103,12 @@ public class RedisService {
         HashMap<Long, UserVo> map = new HashMap<>();
         if(o == null){
             LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.select(User::getUserId,User::getUserImg, User::getUsername);
+            queryWrapper.select(User::getUserId,User::getUserImg, User::getNickname);
             List<User> users = userMapper.selectList(queryWrapper);
             for (User user : users) {
                 UserVo userVo = new UserVo();
                 userVo.setUserImg(user.getUserImg());
-                userVo.setUserName(user.getUsername());
+                userVo.setNickname(user.getNickname());
                 map.put(user.getUserId(), userVo);
             }
         }else{

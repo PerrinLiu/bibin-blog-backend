@@ -29,14 +29,14 @@ public class ArticleCommonVo {
     private String userImg;
 
     /**
-     * 用户名
+     * 昵称
      */
-    private String userName;
+    private String nickname;
 
     /**
      * 回复用户名
      */
-    private String replyUserName;
+    private String replyNickname;
 
     /**
      * 所容纳之物
