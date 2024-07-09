@@ -26,4 +26,7 @@ public interface ImagesService {
      * @return {@code Result<?>}
      */
     Result<?> listImgByUserId(Long userId);
+
+    Result<?> listCountImg(Integer pageSize, Integer pageNum,String searchText);
+
 }

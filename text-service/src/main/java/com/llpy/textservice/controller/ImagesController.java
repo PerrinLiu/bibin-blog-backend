@@ -33,7 +33,15 @@ public class ImagesController extends BaseController {
         return imagesService.uploadImg(file,loginUser().getUserId());
     }
 
-    @GetMapping("/listImgByUserId")
+    @GetMapping("/common/groupCountByUser")
+    @ApiOperation(value = "统计每个用户的上传数量")
+    public Result<?> getCountImg(@RequestParam Integer pageSize, @RequestParam Integer pageNum,@RequestParam String searchText) {
+        return imagesService.listCountImg(pageSize,pageNum,searchText);
+    }
+
+
+    @GetMapping("/common/listImgByUserId")
+    @ApiOperation(value = "获得用户上传的图片")
     public Result<?> getImg(@RequestParam Long userId) {
         return imagesService.listImgByUserId(userId);
     }
