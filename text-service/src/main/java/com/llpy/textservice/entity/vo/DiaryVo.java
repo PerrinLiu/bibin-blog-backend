@@ -29,6 +29,16 @@ public class DiaryVo {
 
     private String diaryText;
 
+    /**
+     * 日记状态（1:未审核 2:通过 3:拒绝）
+     */
+    private Integer diaryStatus;
+
+    /**
+     * 审核人
+     */
+    private Long passUser;
+
     //是否公开
     private int isOpen;
 

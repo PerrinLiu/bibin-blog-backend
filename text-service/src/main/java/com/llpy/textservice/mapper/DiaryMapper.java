@@ -13,7 +13,7 @@ import java.util.List;
 public interface DiaryMapper extends BaseMapper<Diary> {
 
     //获取全部日记
-    List<DiaryVo> getList();
+    IPage<DiaryVo> getList(Page<DiaryVo> diaryVoPage,Long userId, Integer status,String searchText);
 
     //获取单个用户日记
     List<DiaryVo> getListById(Long userId);

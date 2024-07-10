@@ -1,6 +1,6 @@
 package com.llpy.userservice.design.factory;
 
-import com.llpy.userservice.enums.EmailEnum;
+import com.llpy.enums.EmailEnum;
 import com.llpy.userservice.design.strategy.EmailStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

@@ -32,7 +32,7 @@ public class ChangePswEmail implements EmailStrategy {
     }
 
     @Override
-    public Result<?> sendEmail(String email, User user) {
+    public Result<?> sendEmail(String email, User user,String message) {
         // 发送更改psw邮件
         //返回邮箱已存在
         if (user == null) {
@@ -42,17 +42,14 @@ public class ChangePswEmail implements EmailStrategy {
         //创建邮箱对象
         MailDto mailDto = new MailDto();
         String code = EmailUtil.generateRandomCode();
-        String message = "<p style=\"color: #555; line-height: 1.6;\">" +
+        String msg = "<p style=\"color: #555; line-height: 1.6;\">" +
                 "正在进行bibin账号的" +
                 "<span style='font-size: 18px; font-weight: bold;'>密码重置</span>，您的验证码是：" +
-                "<span style='font-size: 20px; font-weight: bold;'>" +
-                code+
-                "</span>" +
-                "</p>" +
+                "<span style='font-size: 20px; font-weight: bold;'>" +code+"</span></p>" +
                 "<p style=\"color: #555;\">此验证码将在5分钟内有效。</p>";
         mailDto.setTo(email);
         //调用工具类发送验证码
-        MailDto mail = emailUtil.sendMail(mailDto, message);
+        MailDto mail = emailUtil.sendMail(mailDto, msg);
 
         //如果状态码不为ok，返回发送失败
         String retCode = "ok";

@@ -21,6 +21,8 @@ public class CountDataVo {
      * 组计数
      */
     private int groupCount;
+
+    private int diaryCount;
     /**
      * 访问次数
      */

@@ -12,5 +12,8 @@
     <sql id="Base_Column_List">
         id, article_type
     </sql>
+    <select id="selectByName" resultType="java.lang.Integer">
+        select count(*) from article_group where article_type = #{groupName}
+    </select>
 
 </mapper>

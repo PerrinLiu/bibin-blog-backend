@@ -18,20 +18,44 @@ public class ArticleCommonVo {
 
     private Long id;
 
+    /**
+     * 用户id
+     */
     private Long userId;
 
+    /**
+     * 用户img
+     */
     private String userImg;
 
-    private String userName;
+    /**
+     * 昵称
+     */
+    private String nickname;
 
-    private String replyUserName;
+    /**
+     * 回复用户名
+     */
+    private String replyNickname;
 
+    /**
+     * 所容纳之物
+     */
     private String content;
 
+    /**
+     * 创建时间
+     */
     private LocalDateTime createTime;
 
+    /**
+     * 相同总和
+     */
     private Integer likeSum;
 
+    /**
+     * 喜欢
+     */
     private Boolean liked;
 
     /**
@@ -39,6 +63,9 @@ public class ArticleCommonVo {
      */
     private Boolean showDelete;
 
+    /**
+     * 子评论
+     */
     private List<ArticleCommonVo> subComment;
 
 

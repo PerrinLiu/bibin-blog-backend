@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.llpy.textservice.mapper.PhotoWallMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.llpy.textservice.entity.PhotoWall">
+        <id column="photo_id" property="photoId" />
+        <result column="user_id" property="userId" />
+        <result column="img_url" property="imgUrl" />
+        <result column="thumbnail_img_url" property="thumbnailImgUrl" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        photo_id, user_id, img_url, thumbnail_img_url, create_time
+    </sql>
+    <update id="updateImgToPrivate">
+        UPDATE photo_wall
+        SET is_open = 1
+        <where>
+            user_id = #{userId}
+            and
+            img_url in
+            <foreach item="item" index="index" collection="strings" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+    <select id="listImgByUserId" resultType="com.llpy.textservice.entity.PhotoWall">
+        SELECT
+            *
+        from llpyblog.photo_wall
+        where user_id = #{userId}
+        and is_open = 0
+        order by create_time desc
+    </select>
+    <select id="listCountImg" resultType="com.llpy.textservice.entity.vo.PhotoCountVo">
+        SELECT
+            a.user_id,
+            a.user_img,
+            a.nickname,
+            count(*)  as photoCount
+        FROM
+            USER AS a
+                INNER JOIN photo_wall AS b ON a.user_id = b.user_id
+        <where>
+            b.is_open = 0
+            <if test="searchText != null">
+                and a.nickname like concat('%',#{searchText},'%')
+            </if>
+        </where>
+        GROUP BY
+            a.user_id
+    </select>
+    <select id="listImgByUser" resultType="com.llpy.textservice.entity.PhotoWall">
+        SELECT
+            *
+        from llpyblog.photo_wall
+        where user_id = #{userId}
+        order by is_open,create_time desc
+    </select>
+
+</mapper>

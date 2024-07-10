@@ -50,11 +50,10 @@ public interface ArticleService extends IService<Article> {
      *
      * @param pageSize   页面大小
      * @param pageNum    书籍页码
-     * @param searchText 搜索文本
-     * @param userId     用户id
+     * @param sort       排序字段
      * @return {@code Result<?>}
      */
-    Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText, Long userId);
+    Result<?> listArticle(Integer pageSize, Integer pageNum, String sort);
 
     /**
      * 根据id获取文章
@@ -101,4 +100,31 @@ public interface ArticleService extends IService<Article> {
      */
     HashMap<String, Integer> getCountText();
 
+    /**
+     * 添加组
+     *
+     * @param groupName 组名称
+     * @return {@code Result<?>}
+     */
+    Result<?> addGroup(String groupName);
+
+    /**
+     * 推荐文章
+     *
+     * @param userId 用户id
+     * @return {@code Result<?>}
+     */
+    Result<?> recommendArticle(Long userId);
+
+    /**
+     * 搜索文章
+     *
+     * @param pageSize   页面大小
+     * @param pageNum    书籍页码
+     * @param searchText 搜索文本
+     * @param groups     组
+     * @param sort       排序字段
+     * @return {@code Result<?>}
+     */
+    Result<?> searchArticle(Integer pageSize, Integer pageNum, String searchText, String groups, String sort);
 }

@@ -13,6 +13,7 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -21,7 +22,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-import org.apache.commons.lang3.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
@@ -63,15 +63,13 @@ public class TokenFilter implements GlobalFilter, Ordered {
         ServerHttpResponse response = exchange.getResponse();
         response.getHeaders().add("Content-Type", "application/json; charset=UTF-8");
 
-        //添加请求头，防止用户绕过网关访问微服务
-        ServerHttpRequest request1 = exchange.getRequest();
-        request1.mutate().header(GatewayKey.GATEWAY_KEY.getKey(), GatewayKey.GATEWAY_KEY.getKeyInfo());
-
         //拿到请求对象
         ServerHttpRequest serverHttpRequest = exchange.getRequest();
         //获取请求头的RedisKeyEnum.REDIS_KEY_HEADER_INFO  也就是X-Token
         String uuid = serverHttpRequest.getHeaders().getFirst(RedisKeyEnum.REDIS_KEY_HEADER_INFO.getKey());
 
+        //添加请求头，防止用户绕过网关访问微服务
+        serverHttpRequest.mutate().header(GatewayKey.GATEWAY_KEY.getKey(), GatewayKey.GATEWAY_KEY.getKeyInfo());
         //准备用来存储token
         String authToken;
         try {
@@ -80,7 +78,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("当前请求接口：" + path);
 
             //如果是公共可请求的资源，直接放行
-            if (path.contains("common")) {
+            if (path.contains("common") || path.contains("/image/files")) {
                 return chain.filter(exchange);
             }
             //直接可请求的资源
@@ -106,7 +104,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             }
             //判断请求头是否空或空白
             if (StringUtils.isBlank(uuid)) {
-
+                // 异常捕获，发送到error controller
                 return JwtResponse.jwtResponse(exchange, HttpStatus.UNAUTHORIZED.value(), "请先登录");
 
             } else {

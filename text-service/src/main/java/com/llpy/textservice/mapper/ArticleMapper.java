@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.textservice.entity.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.llpy.textservice.entity.vo.ArticleCountVo;
+import com.llpy.textservice.entity.vo.ArticleGroupVo;
+import com.llpy.textservice.entity.vo.RecommendArticleVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -24,10 +26,14 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * 获取文章列表
      *
      * @param articlePage 文章页面
-     * @param searchText  搜索文本
+     * @param sort 排序字段
      * @return {@code IPage<Article>}
      */
-    IPage<Article> getArticleList(Page<Article> articlePage, String searchText);
+    IPage<Article> getArticleList(Page<Article> articlePage, String sort);
+
+
+
+    IPage<Article> getSearchArticleList(Page<Article> articlePage, String searchText, String groupName, String sort);
 
     /**
      * 列出首页文章
@@ -64,4 +70,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return {@code Integer[]}
      */
     List<ArticleCountVo> selectCountByDate();
+
+    List<RecommendArticleVo> recommendArticle(String key, int value);
+
+    List<ArticleGroupVo> selectGroupAndCount();
 }

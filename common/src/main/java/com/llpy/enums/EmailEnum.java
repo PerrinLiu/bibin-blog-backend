@@ -1,4 +1,4 @@
-package com.llpy.userservice.enums;
+package com.llpy.enums;
 
 import lombok.Getter;
 
@@ -13,7 +13,10 @@ public enum EmailEnum {
 
 
     REGISTER("register", "registerEmail", "注册邮件"),
-    CHANGE_PSW("changePsw","changePswEmail","更改密码邮件");
+    CHANGE_PSW("changePsw","changePswEmail","更改密码邮件"),
+    DIARY_PASS( "diaryPass", "diaryPassEmail","日记审核通过邮件"),
+    DIARY_REJECT( "diaryReject", "diaryRejectEmail","日记审核失败邮件"),
+    ;
     private final String key;
     private final String name;
     private final String keyInfo;

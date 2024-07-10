@@ -12,11 +12,13 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Created by MOMO on 2018/12/28.
+ *
+ * @author llpy
+ * @date 2024/07/03
  */
 public class JwtResponse {
     public static Mono<Void> jwtResponse(ServerWebExchange exchange, Integer httpStatus, String responseMsg) {
-
-        byte[] bytes = JSONObject.toJSONString(new Result(responseMsg, httpStatus.intValue(), null)).getBytes(StandardCharsets.UTF_8);
+        byte[] bytes = JSONObject.toJSONString(new Result<>(responseMsg, httpStatus, null)).getBytes(StandardCharsets.UTF_8);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
         return exchange.getResponse().writeWith(Flux.just(buffer));

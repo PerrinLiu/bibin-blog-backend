@@ -60,8 +60,20 @@ public class ArticleController extends BaseController {
 
     @GetMapping("/listArticle")
     @ApiOperation(value = "获得文章列表")
-    public Result<?> listArticle(Integer pageSize, Integer pageNum, String searchText) {
-        return articleService.listArticle(pageSize, pageNum, searchText, loginUser().getUserId());
+    public Result<?> listArticle(Integer pageSize, Integer pageNum,String sort) {
+        return articleService.listArticle(pageSize, pageNum, sort);
+    }
+
+    @GetMapping("/common/searchArticle")
+    @ApiOperation(value = "搜索文章列表")
+    public Result<?> searchArticle(Integer pageSize, Integer pageNum, String searchText,String groups,String sort) {
+        return articleService.searchArticle(pageSize, pageNum, searchText, groups,sort);
+    }
+
+    @GetMapping("/common/recommendArticle")
+    @ApiOperation(value = "根据用户点赞获得推荐文章")
+    public Result<?> recommendArticle() {
+        return articleService.recommendArticle(loginUser().getUserId());
     }
 
     @GetMapping("/common/listIndexArticle")
@@ -87,6 +99,15 @@ public class ArticleController extends BaseController {
     public Result<?> getGroupList() {
         return articleService.getGroupList();
     }
+
+
+    @PostMapping("/addGroup")
+    @ApiOperation(value = "添加文章分组")
+    @OperateLog("添加文章分组")
+    public Result<?> addGroup(@RequestParam String groupName) {
+        return articleService.addGroup(groupName);
+    }
+
 
 
     @GetMapping("common/getCountText")

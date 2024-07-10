@@ -39,13 +39,26 @@
     </update>
     <select id="getArticleList" resultType="com.llpy.textservice.entity.Article">
         select *
-        from article as a
+        from article
+        order by ${sort} desc
+    </select>
+
+
+    <select id="getSearchArticleList" resultType="com.llpy.textservice.entity.Article">
+        SELECT
+            *
+        FROM
+            article
         <where>
-            <if test="searchText!=null">
-                a.article_title like concat('%',#{searchText},'%')
+            <if test="groupName!=null and groupName!=''">
+                article_group_id like concat('%',#{groupName},'%')
+            </if>
+            <if test="searchText!=null and searchText!=''">
+                AND (des LIKE concat('%',#{searchText},'%')
+                OR article_title LIKE concat('%',#{searchText},'%'))
             </if>
         </where>
-        order by a.like_sum desc, a.create_time desc
+        order by ${sort} desc
     </select>
     <select id="listIndexArticle" resultType="com.llpy.textservice.entity.Article">
         select *
@@ -66,6 +79,30 @@
             DATE(create_time)
         ORDER BY
             DATE(create_time);
+    </select>
+    <select id="recommendArticle" resultType="com.llpy.textservice.entity.vo.RecommendArticleVo">
+        SELECT
+            id,
+            article_title,
+            des
+        FROM
+            article
+        <where>
+            <if test="key!=null and key!=''">
+                article_group_id like concat('%',#{key},'%')
+            </if>
+        </where>
+        order by update_time desc
+        limit #{value}
+    </select>
+    <select id="selectGroupAndCount" resultType="com.llpy.textservice.entity.vo.ArticleGroupVo">
+        select
+            article_group_id as articleType,
+            count(*) as number
+        from
+            article
+        GROUP BY
+            article_group_id
     </select>
 
 </mapper>

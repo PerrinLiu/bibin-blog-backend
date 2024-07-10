@@ -1,7 +1,5 @@
 package com.llpy.textservice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.enums.ResponseError;
@@ -93,7 +91,7 @@ public class CommentServiceImpl implements CommentService {
             userIdByCommentIdMap.put(record.getId(), record.getUserId());
             //设置父级评论的信息
             record.setUserImg(userData.get(record.getUserId()).getUserImg());
-            record.setUserName(userData.get(record.getUserId()).getUserName());
+            record.setNickname(userData.get(record.getUserId()).getNickname());
             // 设置是否点赞
             record.setShowDelete(false).setLiked(commentLikes.getOrDefault(record.getId(), false));
 
@@ -112,12 +110,12 @@ public class CommentServiceImpl implements CommentService {
                 ArticleCommonVo articleCommonVo = new ArticleCommonVo();
                 BeanUtils.copyProperties(articleComment, articleCommonVo);
                 //设置用户名和图片以及回复的用户名
-                articleCommonVo.setUserName(userData.get(articleComment.getUserId()).getUserName());
+                articleCommonVo.setNickname(userData.get(articleComment.getUserId()).getNickname());
                 articleCommonVo.setUserImg(userData.get(articleComment.getUserId()).getUserImg());
 
                 Long parentUserId = userIdByCommentIdMap.get(articleComment.getParentId());
-                String replyUserName = parentUserId == null ? "该评论已删除" : userData.get(parentUserId).getUserName();
-                articleCommonVo.setReplyUserName(replyUserName);
+                String replyUserName = parentUserId == null ? "该评论已删除" : userData.get(parentUserId).getNickname();
+                articleCommonVo.setReplyNickname(replyUserName);
                 articleCommonVo.setShowDelete(false).setLiked(commentLikes.getOrDefault(articleComment.getId(), false));
                 subComment.add(articleCommonVo);
             }

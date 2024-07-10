@@ -41,5 +41,5 @@ public class ArticleDto {
     /**
      * 组id
      */
-    private List<Integer> groupIds;
+    private List<Long> groupIds;
 }

@@ -40,10 +40,6 @@ public class AccessServiceImpl implements AccessService {
 
     private final TextService textService;
 
-    /**
-     * 统计多少天
-     */
-    private static final int COUNT_DAY = 181;
 
     public AccessServiceImpl(AccessMapper accessMapper, IPUtils ipUtils, RedisService redisService, @Qualifier("taskExecutor")  ThreadPoolTaskExecutor taskExecutor, TextService textService) {
         this.accessMapper = accessMapper;
@@ -77,7 +73,7 @@ public class AccessServiceImpl implements AccessService {
     }
 
     @Override
-    public Result<?> getCountData() {
+    public Result<?> getCountData(Integer day) {
         //异步获取文章统计数据
         Future<HashMap<String,Integer>> submit = taskExecutor.submit(textService::getCountText);
         CountDataVo res = new CountDataVo();
@@ -91,7 +87,8 @@ public class AccessServiceImpl implements AccessService {
             HashMap<String,Integer> map = submit.get();
             res.setArticleCount(map.get("articleCount"));
             res.setGroupCount(map.get("groupCount"));
-            String[] arrByDay = DataUtils.getArrByDay(COUNT_DAY);
+            res.setDiaryCount(map.get("diaryCount"));
+            String[] arrByDay = DataUtils.getArrByDay(day);
             for (String s : arrByDay) {
                 CountDataVo.CommitData commitData = new CountDataVo.CommitData();
                 //判断是否为今天
@@ -100,7 +97,7 @@ public class AccessServiceImpl implements AccessService {
                 commitData.setYear(s.substring(0,4)).setMonth(s.substring(5,7)).setDate(s.substring(8,10));
                 //设置数量和等级
                 Integer orDefault = map.getOrDefault(s, 0);
-                commitData.setNumber(orDefault).setLevel(orDefault);
+                commitData.setNumber(orDefault).setLevel(orDefault >= 3 ? 3 : orDefault);
                 commitDataList.add(commitData);
             }
             //设置commitData
@@ -112,20 +109,20 @@ public class AccessServiceImpl implements AccessService {
 
         // 半年前的日期
         String[] monthBar = new String[24]; // 存储24列的月份信息
-        setMonBar(monthBar);
+        setMonBar(monthBar,day);
         res.setMonthBar(monthBar);
         return Result.success(res);
     }
 
-    private static void setMonBar(String[] monthBar) {
+    private static void setMonBar(String[] monthBar,Integer day) {
         Arrays.fill(monthBar, "");
 
         // 获取今天的日期
         LocalDate current = LocalDate.now();
-        // 最近半年的日期（184天）
-        LocalDate startDate = current.minusDays(COUNT_DAY); // 向前推183天，加上今天，总共184天
+        // 最近的日期（根据传进来的day）
+        LocalDate startDate = current.minusDays(day); // 向前推183天，加上今天，总共184天
 
-        for (int i = 0; i < COUNT_DAY -7; i++) {
+        for (int i = 0; i < day ; i++) {
             // 计算每次循环的日期
             LocalDate d = startDate.plusDays(i);
 

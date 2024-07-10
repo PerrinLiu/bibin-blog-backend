@@ -31,6 +31,16 @@ public class Diary {
 
     private int isOpen;
 
+    /**
+     * 日记状态（1:未审核 2:通过 3:拒绝）
+     */
+    private int diaryStatus;
+
+    /**
+     * 审核人
+     */
+    private Long passUser;
+
     private LocalDateTime createTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)

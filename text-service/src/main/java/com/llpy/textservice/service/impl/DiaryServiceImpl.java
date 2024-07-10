@@ -2,34 +2,67 @@ package com.llpy.textservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.llpy.config.BizException;
+import com.llpy.enums.EmailEnum;
+import com.llpy.enums.GatewayKey;
+import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.Diary;
 import com.llpy.textservice.entity.DiaryText;
+import com.llpy.textservice.entity.dto.AssessDiaryDto;
 import com.llpy.textservice.entity.vo.DiaryVo;
+import com.llpy.textservice.feign.UserService;
 import com.llpy.textservice.mapper.DiaryMapper;
 import com.llpy.textservice.mapper.DiaryTextMapper;
+import com.llpy.textservice.mapper.PhotoWallMapper;
 import com.llpy.textservice.service.DiaryService;
+import com.llpy.utils.DataUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 日记服务impl
+ *
+ * @author llpy
+ * @date 2024/07/04
+ */
 @Service
 public class DiaryServiceImpl implements DiaryService {
     private final DiaryMapper diaryMapper;
     private final DiaryTextMapper diaryTextMapper;
 
-    public DiaryServiceImpl(DiaryMapper diaryMapper, DiaryTextMapper diaryTextMapper) {
+    @Autowired
+    private UserService userService;
+
+    private final PhotoWallMapper photoWallMapper;
+
+    public DiaryServiceImpl(DiaryMapper diaryMapper, DiaryTextMapper diaryTextMapper, PhotoWallMapper photoWallMapper) {
         this.diaryMapper = diaryMapper;
         this.diaryTextMapper = diaryTextMapper;
+        this.photoWallMapper = photoWallMapper;
     }
 
     @Override
     @Transactional  //开启事务，确保同时成功，或同时失败，保持数据一致性
-    public Result addDiary(DiaryVo diaryVo, Long id) {
-        if (id == null) return Result.error("会话过期");
+    public Result<?> addDiary(DiaryVo diaryVo, Long id) {
+        if(id == null){
+            return Result.error("会话过期");
+        }
 
+
+
+        //如果是隐私的日记，需要将图片也一同标记为隐私
+        if(diaryVo.getIsOpen()==1){
+            List<String> strings = DataUtils.extractImgSrc(diaryVo.getDiaryText());
+            if (!strings.isEmpty()){
+                photoWallMapper.updateImgToPrivate(strings,id);
+            }
+
+        }
         //新建日记信息对象
         DiaryText diaryText = new DiaryText();
         //设置文章内容
@@ -44,12 +77,8 @@ public class DiaryServiceImpl implements DiaryService {
         //添加日记信息id到日记基本信息表，然后插入数据库
         Diary diary = new Diary();
 
-        diary.setUserId(id)
-                .setDiaryId(null)
-                .setIsOpen(diaryVo.getIsOpen())
-                .setDiaryTextId(textId)
-                .setDiaryTitle(diaryVo.getDiaryTitle())
-                .setCreateTime(LocalDateTime.now());
+        diary.setUserId(id).setDiaryId(null).setIsOpen(diaryVo.getIsOpen()).setDiaryTextId(textId)
+                .setDiaryTitle(diaryVo.getDiaryTitle()).setCreateTime(LocalDateTime.now()).setDiaryStatus(1);
 
         //往数据库添加日记
         diaryMapper.insert(diary);
@@ -66,28 +95,17 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     /**
-     * 获取所有日记
+     * 根据用户id，获得用户的所有日记，如果id为空，则是全部
      *
-     * @return
+     * @return list
      */
     @Override
-    public Result getDiary() {
-        List<DiaryVo> list = diaryMapper.getList();
+    public Result<?> getDiary(Long userId, Integer pageSize, Integer pageNum,Integer status,String searchText) {
+        Page<DiaryVo> diaryVoPage = new Page<>(pageNum, pageSize);
 
-        return Result.success(list);
-    }
+        diaryMapper.getList(diaryVoPage,userId,status,searchText);
 
-    /**
-     * 把日记
-     *
-     * @param userId 用户id
-     * @return {@link Result}<{@link List}<{@link DiaryVo}>>
-     */
-    @Override
-    public Result getDiary(Long userId) {
-        //查询当前用户的所有文章
-        List<DiaryVo> list = diaryMapper.getListById(userId);
-        return Result.success(list);
+        return Result.success(diaryVoPage);
     }
 
     /**
@@ -140,5 +158,37 @@ public class DiaryServiceImpl implements DiaryService {
         diaryTextMapper.delete(diaryQuery);
 
         return Result.success();
+    }
+
+    @Override
+    @Transactional
+    public Result<?> rejectDiary(AssessDiaryDto assessDiaryDto, Long userId) {
+        Diary diary = diaryMapper.selectById(assessDiaryDto.getDiaryId());
+        if(diary==null){
+            throw new BizException(ResponseError.COMMON_ERROR);
+        }
+        diary.setDiaryStatus(3).setPassUser(userId);
+        diaryMapper.updateById(diary);
+        //发送邮件通知
+        Long diaryUserId = diary.getUserId();
+        String userEmail = userService.getUserEmail(diaryUserId);
+        //添加分割符号
+        String message = diary.getDiaryTitle()+ GatewayKey.GATEWAY_KEY.getKeyInfo() +assessDiaryDto.getRejectReason();
+        return userService.sendEmail(userEmail, EmailEnum.DIARY_REJECT.getKey(), message);
+    }
+
+    @Override
+    @Transactional
+    public Result<?> passDiary(Long diaryId,Long userId) {
+        Diary diary = diaryMapper.selectById(diaryId);
+        if(diary==null){
+            throw new BizException(ResponseError.COMMON_ERROR);
+        }
+        diary.setDiaryStatus(2).setPassUser(userId);
+        diaryMapper.updateById(diary);
+        // 发送邮箱通知
+        Long diaryUserId = diary.getUserId();
+        String userEmail = userService.getUserEmail(diaryUserId);
+        return userService.sendEmail(userEmail, EmailEnum.DIARY_PASS.getKey(), diary.getDiaryTitle());
     }
 }

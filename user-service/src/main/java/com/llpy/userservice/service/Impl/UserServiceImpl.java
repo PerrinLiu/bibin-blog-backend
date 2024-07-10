@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
      * @return {@link Result}<{@link ?}>
      */
     @Override
-    public Result<?> sendEmail(String email, String type) {
+    public Result<?> sendEmail(String email, String type,String message) {
         //验证邮箱格式
         if (!regexUtils.isEmail(email)) {
             return Result.error(ResponseError.USER_EMAIL_REGEX_ERROR);
@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
             return Result.error(ResponseError.USER_EMAIL_ERROR);
         }
 
-        return emailStrategy.sendEmail(email,user);
+        return emailStrategy.sendEmail(email,user,message);
     }
 
     /**
@@ -255,6 +255,18 @@ public class UserServiceImpl implements UserService {
         userMapper.update(user, userUpdate);
 
         return Result.success();
+    }
+
+    /**
+     * 获取用户电子邮件
+     *
+     * @param userId 用户id
+     * @return {@code String}
+     */
+    @Override
+    public String getUserEmail(Long userId) {
+        User user = userMapper.selectById(userId);
+        return user.getEmail();
     }
 
 

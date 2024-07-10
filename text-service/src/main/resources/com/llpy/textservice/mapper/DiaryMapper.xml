@@ -3,17 +3,39 @@
 <mapper namespace="com.llpy.textservice.mapper.DiaryMapper">
 
     <select id="getList" resultType="com.llpy.textservice.entity.vo.DiaryVo">
-        SELECT d.diary_id,
-               d.user_id,
-               d.diary_title,
-               dt.diary_text,
-               dt.create_time,
-               u.nickname
-        FROM llpyblog.diary AS d
-                 LEFT JOIN llpyblog.diary_text AS dt
-                           on d.diary_id = dt.diary_id
-                 left join llpyblog.`user` as u on d.user_id = u.user_id
-        where d.is_open = 0
+        SELECT
+        d.diary_id,
+        d.user_id,
+        d.diary_title,
+        d.diary_status,
+        d.pass_user,
+        u.nickname,
+        u.user_img,
+        d.create_time
+        FROM
+        llpyblog.diary AS d
+        LEFT JOIN
+        llpyblog.`user` AS u ON d.user_id = u.user_id
+        INNER JOIN
+        (SELECT
+        diary_id
+        FROM
+        llpyblog.diary
+        <where>
+            <if test="userId!=null ">
+                user_id = #{userId}
+            </if>
+            <if test="status!=null">
+                and diary_status = #{status}
+            </if>
+            <if test="searchText!=null and searchText!=''">
+                diary_title like concat('%',#{searchText},'%')
+            </if>
+        </where>
+        ) AS subquery ON d.diary_id = subquery.diary_id
+        ORDER BY
+        d.create_time DESC,
+        d.diary_status ASC
     </select>
 
     <select id="getListTitle" resultType="com.llpy.textservice.entity.vo.DiaryVo">
@@ -21,6 +43,8 @@
             d.diary_id,
             d.user_id,
             d.diary_title,
+            d.diary_status,
+            d.pass_user,
             u.nickname,
             u.user_img,
             d.create_time
@@ -29,19 +53,20 @@
         LEFT JOIN
             llpyblog.`user` AS u ON d.user_id = u.user_id
         INNER JOIN
-            (SELECT
-                 diary_id
-            FROM
-                llpyblog.diary
-            <where>
-                <if test="userId!=null">
-                    user_id = #{userId}
-                </if>
-                <if test="userId==null">
-                    is_open = 0
-                </if>
-            </where>
-            ) AS subquery ON d.diary_id = subquery.diary_id
+        (SELECT
+            diary_id
+        FROM
+            llpyblog.diary
+        <where>
+            diary_status = 2
+            <if test="userId!=null">
+                and user_id = #{userId}
+            </if>
+            <if test="userId==null">
+                and is_open = 0
+            </if>
+        </where>
+        ) AS subquery ON d.diary_id = subquery.diary_id
         ORDER BY
         d.create_time DESC
     </select>
@@ -51,6 +76,8 @@
                d.user_id,
                d.diary_title,
                dt.diary_text,
+               d.diary_status,
+               d.pass_user,
                u.nickname,
                dt.create_time
         FROM llpyblog.diary AS d
@@ -61,7 +88,8 @@
     </select>
     <select id="getOneText" resultType="com.llpy.textservice.entity.vo.DiaryVo">
         SELECT d.diary_id,
-               dt.diary_text
+               dt.diary_text,
+               d.diary_status
         FROM llpyblog.diary AS d
                  LEFT JOIN llpyblog.diary_text AS dt ON d.diary_id = dt.diary_id
         WHERE d.diary_id = #{diaryId}
