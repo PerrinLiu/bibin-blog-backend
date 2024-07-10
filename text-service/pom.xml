@@ -29,6 +29,12 @@
             <artifactId>thumbnailator</artifactId>
             <version>0.4.14</version>
         </dependency>
+        <!-- webp-imageio 依赖 -->
+        <dependency>
+            <groupId>org.sejda.imageio</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <version>0.1.6</version>
+        </dependency>
     </dependencies>
 
     <build>
