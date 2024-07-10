@@ -14,7 +14,9 @@ import com.llpy.textservice.entity.vo.DiaryVo;
 import com.llpy.textservice.feign.UserService;
 import com.llpy.textservice.mapper.DiaryMapper;
 import com.llpy.textservice.mapper.DiaryTextMapper;
+import com.llpy.textservice.mapper.PhotoWallMapper;
 import com.llpy.textservice.service.DiaryService;
+import com.llpy.utils.DataUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +38,12 @@ public class DiaryServiceImpl implements DiaryService {
     @Autowired
     private UserService userService;
 
-    public DiaryServiceImpl(DiaryMapper diaryMapper, DiaryTextMapper diaryTextMapper) {
+    private final PhotoWallMapper photoWallMapper;
+
+    public DiaryServiceImpl(DiaryMapper diaryMapper, DiaryTextMapper diaryTextMapper, PhotoWallMapper photoWallMapper) {
         this.diaryMapper = diaryMapper;
         this.diaryTextMapper = diaryTextMapper;
+        this.photoWallMapper = photoWallMapper;
     }
 
     @Override
@@ -48,6 +53,16 @@ public class DiaryServiceImpl implements DiaryService {
             return Result.error("会话过期");
         }
 
+
+
+        //如果是隐私的日记，需要将图片也一同标记为隐私
+        if(diaryVo.getIsOpen()==1){
+            List<String> strings = DataUtils.extractImgSrc(diaryVo.getDiaryText());
+            if (!strings.isEmpty()){
+                photoWallMapper.updateImgToPrivate(strings,id);
+            }
+
+        }
         //新建日记信息对象
         DiaryText diaryText = new DiaryText();
         //设置文章内容

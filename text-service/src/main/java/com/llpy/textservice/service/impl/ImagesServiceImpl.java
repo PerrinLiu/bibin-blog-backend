@@ -14,6 +14,7 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
@@ -148,6 +149,45 @@ public class ImagesServiceImpl implements ImagesService {
         Page<PhotoCountVo> page = new Page<>(pageNum,pageSize);
         IPage<PhotoCountVo> res = photoWallMapper.listCountImg(page,searchText.trim());
         return Result.success(res);
+    }
+
+    @Override
+    public Result<?> listImgByUser(Long userId) {
+        List<PhotoWall> res =photoWallMapper.listImgByUser(userId);
+        return Result.success(res);
+    }
+
+    @Override
+    public Result<?> openOrCloseImg(Long imgId) {
+        PhotoWall photoWall = photoWallMapper.selectById(imgId);
+        if(photoWall==null){
+            return Result.error("图片不存在");
+        }
+        int i = photoWall.getIsOpen() == 0? 1 : 0;
+        photoWall.setIsOpen(i);
+        photoWallMapper.updateById(photoWall);
+        return Result.success();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<?> deleteImg(Long imgId,Long userId) {
+        PhotoWall photoWall = photoWallMapper.selectById(imgId);
+        if(photoWall==null){
+            return Result.error("图片不存在");
+        }
+        photoWallMapper.deleteById(imgId);
+        String imgUrl = photoWall.getImgUrl().split("/image/files")[1];
+        String thumbnailImgUrl = photoWall.getThumbnailImgUrl().split("/image/files")[1];
+        File file = new File(uploadDir+imgUrl);
+        if(file.exists()){
+            file.delete();
+        }
+        File file1 = new File(uploadDir+thumbnailImgUrl);
+        if(file1.exists()){
+            file1.delete();
+        }
+        return Result.success();
     }
 
 

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 校验数据工具类
@@ -78,5 +80,26 @@ public class DataUtils {
         LocalDate today = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
+    }
+
+
+    /**
+     * 提取文章中的img的链接信息
+     *
+     * @param html html
+     * @return {@code List<String>}
+     */
+    public static List<String> extractImgSrc(String html) {
+        List<String> imgSrcList= new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("<img\\s+[^>]*src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>");
+
+        Matcher matcher = pattern.matcher(html);
+
+        while (matcher.find()) {
+            imgSrcList.add(matcher.group(1)); // 获取整个img标签
+        }
+
+        return imgSrcList;
     }
 }

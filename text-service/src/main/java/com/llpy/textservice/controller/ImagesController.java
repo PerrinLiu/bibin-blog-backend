@@ -45,4 +45,22 @@ public class ImagesController extends BaseController {
     public Result<?> getImg(@RequestParam Long userId) {
         return imagesService.listImgByUserId(userId);
     }
+
+    @GetMapping("/listImgByUser")
+    @ApiOperation(value = "获取自己的上传的图片")
+    public Result<?> getImg() {
+        return imagesService.listImgByUser(loginUser().getUserId());
+    }
+
+    @DeleteMapping("/deleteImg")
+    @ApiOperation(value = "删除图片")
+    public Result<?> deleteImg(@RequestParam Long imgId) {
+        return imagesService.deleteImg(imgId, loginUser().getUserId());
+    }
+
+    @PutMapping("/openOrCloseImg")
+    @ApiOperation(value = "开启或关闭图片")
+    public Result<?> openOrCloseImg(@RequestParam Long imgId) {
+        return imagesService.openOrCloseImg(imgId);
+    }
 }

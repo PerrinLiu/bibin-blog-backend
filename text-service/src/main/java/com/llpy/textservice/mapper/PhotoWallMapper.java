@@ -23,4 +23,8 @@ public interface PhotoWallMapper extends BaseMapper<PhotoWall> {
     List<PhotoWall> listImgByUserId(Long userId);
 
     IPage<PhotoCountVo> listCountImg(Page<PhotoCountVo> page, String searchText);
+
+    void updateImgToPrivate(List<String> strings,Long userId);
+
+    List<PhotoWall> listImgByUser(Long userId);
 }

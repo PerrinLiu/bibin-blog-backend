@@ -46,6 +46,9 @@ public class PhotoWall extends Model<PhotoWall> {
     @ApiModelProperty(value = "图片缩略图链接")
     private String thumbnailImgUrl;
 
+    @ApiModelProperty(value = "是否公开")
+    private Integer isOpen;
+
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
