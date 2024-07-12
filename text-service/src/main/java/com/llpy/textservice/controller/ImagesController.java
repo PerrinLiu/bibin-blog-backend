@@ -1,6 +1,7 @@
 package com.llpy.textservice.controller;
 
 
+import com.llpy.annotation.OperateLog;
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.service.ImagesService;
@@ -29,6 +30,7 @@ public class ImagesController extends BaseController {
 
     @PostMapping("/uploadFile")
     @ApiOperation(value = "上传图片")
+    @OperateLog("上传图片")
     public Result<?> updateFile(@RequestParam("file") MultipartFile file) {
         return imagesService.uploadImg(file,loginUser().getUserId());
     }
@@ -54,6 +56,7 @@ public class ImagesController extends BaseController {
 
     @DeleteMapping("/deleteImg")
     @ApiOperation(value = "删除图片")
+    @OperateLog("删除图片")
     public Result<?> deleteImg(@RequestParam Long imgId) {
         return imagesService.deleteImg(imgId, loginUser().getUserId());
     }

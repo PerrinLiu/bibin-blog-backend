@@ -45,6 +45,7 @@ public class CommentController extends BaseController {
 
     @DeleteMapping("/deleteComment")
     @ApiOperation("删除评论")
+    @OperateLog("删除评论")
     public Result<?> deleteComment(@RequestParam Long commentId) {
         return commentService.deleteComment(commentId);
     }
@@ -57,6 +58,7 @@ public class CommentController extends BaseController {
 
     @PostMapping("/addDanMu")
     @ApiOperation("添加弹幕")
+    @OperateLog("添加弹幕")
     public Result<?> addBulletChat(@RequestBody BulletChat bulletChat) {
         return commentService.addBulletChat(bulletChat, loginUser().getUserId());
     }

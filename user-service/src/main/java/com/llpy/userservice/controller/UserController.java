@@ -85,12 +85,14 @@ public class UserController extends BaseController {
 
     @PostMapping("/sendEmail")
     @ApiOperation(value = "发送邮件")
+    @OperateLog("发送邮件")
     public Result<?> sendEmail(@RequestParam String email, @RequestParam String type,@RequestParam String message) {
         return userService.sendEmail(email, type,message);
     }
 
     @PostMapping("/register")
     @ApiOperation(value = "注册用户")
+    @OperateLog("注册用户")
     public Result<?> register(@RequestBody UserRegister userRegister, @RequestHeader("email-token") String emailToken) {
         return userService.register(userRegister, emailToken);
     }
@@ -103,6 +105,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/updatePassword")
     @ApiOperation("修改密码")
+    @OperateLog("修改密码")
     public Result<?> updatePassword(@RequestBody UserDto2 userDto2) {
         return userService.updatePassword(userDto2);
     }
