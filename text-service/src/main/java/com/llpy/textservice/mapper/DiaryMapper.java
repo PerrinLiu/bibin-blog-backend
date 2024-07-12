@@ -9,6 +9,12 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * 日记映射器
+ *
+ * @author llpy
+ * @date 2024/07/12
+ */
 @Mapper
 public interface DiaryMapper extends BaseMapper<Diary> {
 

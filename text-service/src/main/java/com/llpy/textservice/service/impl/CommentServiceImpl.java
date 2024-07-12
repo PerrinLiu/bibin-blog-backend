@@ -5,13 +5,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.enums.ResponseError;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.ArticleComment;
+import com.llpy.textservice.entity.BulletChat;
 import com.llpy.textservice.entity.UserComment;
 import com.llpy.textservice.entity.dto.CommentDto;
 import com.llpy.textservice.entity.vo.ArticleCommonVo;
+import com.llpy.textservice.entity.vo.BulletChatVo;
 import com.llpy.textservice.feign.UserService;
+import com.llpy.textservice.feign.entity.UserDto2;
 import com.llpy.textservice.feign.entity.UserVo;
 import com.llpy.textservice.mapper.ArticleCommentMapper;
 import com.llpy.textservice.mapper.ArticleMapper;
+import com.llpy.textservice.mapper.BulletChatMapper;
 import com.llpy.textservice.mapper.UserCommentMapper;
 import com.llpy.textservice.service.CommentService;
 import com.llpy.utils.DataUtils;
@@ -45,12 +49,15 @@ public class CommentServiceImpl implements CommentService {
 
     private final ThreadPoolTaskExecutor anotherTaskExecutor;
 
-    public CommentServiceImpl(ArticleCommentMapper articleCommentMapper, ArticleMapper articleMapper, UserService userService, UserCommentMapper userCommentMapper, @Qualifier("anotherTaskExecutor") ThreadPoolTaskExecutor anotherTaskExecutor) {
+    private final BulletChatMapper bulletChatMapper;
+
+    public CommentServiceImpl(ArticleCommentMapper articleCommentMapper, ArticleMapper articleMapper, UserService userService, UserCommentMapper userCommentMapper, @Qualifier("anotherTaskExecutor") ThreadPoolTaskExecutor anotherTaskExecutor, BulletChatMapper bulletChatMapper) {
         this.articleCommentMapper = articleCommentMapper;
         this.articleMapper = articleMapper;
         this.userService = userService;
         this.userCommentMapper = userCommentMapper;
         this.anotherTaskExecutor = anotherTaskExecutor;
+        this.bulletChatMapper = bulletChatMapper;
     }
 
     @Override
@@ -234,5 +241,26 @@ public class CommentServiceImpl implements CommentService {
     public void deleteByArticleId(Long articleId) {
         userCommentMapper.deleteByArticleId(articleId);
         articleCommentMapper.deleteByArticleId(articleId);
+    }
+
+    @Override
+    public Result<?> addBulletChat(BulletChat bulletChat, Long userId) {
+        if (bulletChat.getText() == null || bulletChat.getText().isEmpty()) {
+            return Result.error(ResponseError.COMMENT_ERROR);
+        }
+        //远程调用获取用户信息
+        UserDto2 user = userService.getUser(userId);
+        if (user == null) {
+            return Result.error(ResponseError.COMMON_ERROR);
+        }
+        bulletChat.setUserId(userId).setText(bulletChat.getText()).setUserImg(user.getUserImg());
+        bulletChatMapper.insert(bulletChat);
+       return Result.success();
+    }
+
+    @Override
+    public Result<?> getBulletChat() {
+        List<BulletChatVo> bulletChatVos = bulletChatMapper.getBulletChat();
+        return Result.success(bulletChatVos);
     }
 }

@@ -2,6 +2,7 @@ package com.llpy.textservice.service;
 
 
 import com.llpy.model.Result;
+import com.llpy.textservice.entity.BulletChat;
 import com.llpy.textservice.entity.dto.CommentDto;
 
 /**
@@ -48,4 +49,9 @@ public interface CommentService {
     Result<?> likeComment(Long commentId, Long userId);
 
     void deleteByArticleId(Long articleId);
+
+    Result<?> addBulletChat(BulletChat bulletChat,Long userId);
+
+    Result<?> getBulletChat();
+
 }

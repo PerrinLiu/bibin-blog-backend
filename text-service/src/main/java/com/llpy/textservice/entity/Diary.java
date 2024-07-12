@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Data
 @Accessors(chain = true)  //开启链式编程
 @ApiModel(value="Diary对象", description="日记表")
-public class Diary {
+public class Diary extends Model<Diary> {
     @TableId
     private Long diaryId;
 

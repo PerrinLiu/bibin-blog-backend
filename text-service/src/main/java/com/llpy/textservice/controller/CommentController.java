@@ -4,6 +4,7 @@ package com.llpy.textservice.controller;
 import com.llpy.annotation.OperateLog;
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
+import com.llpy.textservice.entity.BulletChat;
 import com.llpy.textservice.entity.dto.CommentDto;
 import com.llpy.textservice.service.CommentService;
 import io.swagger.annotations.Api;
@@ -52,5 +53,17 @@ public class CommentController extends BaseController {
     @ApiOperation("点赞评论")
     public Result<?> likeComment(@RequestParam Long commentId,@RequestParam Long userId) {
         return commentService.likeComment(commentId,userId);
+    }
+
+    @PostMapping("/addDanMu")
+    @ApiOperation("添加弹幕")
+    public Result<?> addBulletChat(@RequestBody BulletChat bulletChat) {
+        return commentService.addBulletChat(bulletChat, loginUser().getUserId());
+    }
+
+    @GetMapping("/common/getDanMu")
+    @ApiOperation("获取弹幕")
+    public Result<?> getBulletChat() {
+        return commentService.getBulletChat();
     }
 }
