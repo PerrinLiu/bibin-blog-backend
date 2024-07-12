@@ -71,9 +71,10 @@ public class ImagesServiceImpl implements ImagesService {
             }
         }
         //用户文件夹
-        String userPath = uploadDir + "/" + userId +"/";
-        // 当前月份的文件夹，获取当前日期并格式化为 "yyyy-MM" 格式
+        String userPath = uploadDir + File.separator + userId +File.separator;
+        // 获取当前日期并格式化为 "yyyy-MM" 格式
         String folderByMonth = new SimpleDateFormat("yyyy-MM").format(new Date());
+        // 用户当前月份的文件夹
         String userPathCurrentMonth =userPath+folderByMonth;
         // 获取上传文件的名字,生成唯一的名称
         String fileName = file.getOriginalFilename();
@@ -116,7 +117,7 @@ public class ImagesServiceImpl implements ImagesService {
                     .toFile(thumbnailFile);
 
             // 可访问的路径
-            String userPathCurrentMonthUrl = serverUrl + "/files" + "/" + userId +"/" +folderByMonth + "/";
+            String userPathCurrentMonthUrl = serverUrl + "/files" + File.separator + userId +File.separator +folderByMonth + File.separator;
             // 生成文件的URL
             String fileUrl = userPathCurrentMonthUrl+ webpUrl;
             // 生成缩略图的URL
@@ -130,7 +131,7 @@ public class ImagesServiceImpl implements ImagesService {
             return Result.success(fileUrl);
 
         } catch (Exception e) {
-            //发送异常删除上传的图片
+            //发生异常删除上传的图片
             File file1 = new File(userPathCurrentMonth + File.separator + uniqueFileName);
             if (file1.exists()) {
                 file1.delete();
