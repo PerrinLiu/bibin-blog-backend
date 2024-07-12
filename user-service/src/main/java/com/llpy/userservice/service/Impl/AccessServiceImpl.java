@@ -131,7 +131,7 @@ public class AccessServiceImpl implements AccessService {
                 int month = d.getMonthValue(); // 获取月份
                 int weekOfMonth = i / 7; // 计算当前是第几周
                 if (weekOfMonth < monthBar.length) {
-                    monthBar[weekOfMonth-1] = month + "月";
+                    monthBar[weekOfMonth-1 < 0 ? 0 : weekOfMonth] = month + "月";
                 }
             }
         }

@@ -42,7 +42,7 @@
             a.nickname,
             count(*)  as photoCount
         FROM
-            USER AS a
+            user AS a
                 INNER JOIN photo_wall AS b ON a.user_id = b.user_id
         <where>
             b.is_open = 0

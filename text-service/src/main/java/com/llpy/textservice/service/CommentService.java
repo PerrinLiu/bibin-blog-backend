@@ -2,6 +2,7 @@ package com.llpy.textservice.service;
 
 
 import com.llpy.model.Result;
+import com.llpy.textservice.entity.BulletChat;
 import com.llpy.textservice.entity.dto.CommentDto;
 
 /**
@@ -47,5 +48,34 @@ public interface CommentService {
      */
     Result<?> likeComment(Long commentId, Long userId);
 
+    /**
+     * 按文章id删除
+     *
+     * @param articleId 文章id
+     */
     void deleteByArticleId(Long articleId);
+
+    /**
+     * 添加子弹聊天
+     *
+     * @param bulletChat 子弹聊天
+     * @param userId     用户id
+     * @return {@code Result<?>}
+     */
+    Result<?> addBulletChat(BulletChat bulletChat,Long userId);
+
+    /**
+     * 获取子弹聊天
+     *
+     * @return {@code Result<?>}
+     */
+    Result<?> getBulletChat();
+
+    /**
+     * 获取最近评论
+     *
+     * @return {@code Result<?>}
+     */
+    Result<?> getRecentComment();
+
 }

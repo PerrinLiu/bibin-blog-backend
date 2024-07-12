@@ -1,5 +1,6 @@
 package com.llpy.textservice.controller;
 
+import com.llpy.annotation.OperateLog;
 import com.llpy.controller.BaseController;
 import com.llpy.model.Result;
 import com.llpy.textservice.entity.dto.AssessDiaryDto;
@@ -29,6 +30,7 @@ public class DiaryController extends BaseController {
 
     @PostMapping("/addDiary")
     @ApiOperation(value = "新增日记")
+    @OperateLog("新增日记")
     public Result<?> addDiary(@RequestBody DiaryVo diaryVo) {
         return diaryService.addDiary(diaryVo, loginUser().getUserId());
     }
@@ -59,6 +61,7 @@ public class DiaryController extends BaseController {
 
     @DeleteMapping("/deleteDiaryOne")
     @ApiOperation(value = "删除单个日记")
+    @OperateLog("删除单个日记")
     public Result deleteDiaryOne(@RequestParam Long diaryId) {
         return diaryService.deleteDiaryOne(diaryId);
     }
@@ -66,12 +69,14 @@ public class DiaryController extends BaseController {
 
     @PutMapping("/rejectDiary")
     @ApiOperation(value = "拒绝日记")
+    @OperateLog("拒绝日记")
     public Result<?> rejectDiary(@RequestBody AssessDiaryDto assessDiaryDto) {
         return diaryService.rejectDiary(assessDiaryDto,loginUser().getUserId());
     }
 
     @PutMapping("/passDiary")
     @ApiOperation(value = "通过日记")
+    @OperateLog("通过日记")
     public Result<?> passDiary(@RequestBody AssessDiaryDto assessDiaryDto) {
         return diaryService.passDiary(assessDiaryDto.getDiaryId(),loginUser().getUserId());
     }

@@ -39,6 +39,7 @@ public class ArticleController extends BaseController {
 
     @PostMapping("/uploadImg")
     @ApiOperation(value = "上传图片")
+    @OperateLog("上传图片到阿里云")
     public Result<?> updateImg(@RequestParam("image") MultipartFile image) {
         return articleService.uploadImg(image);
     }

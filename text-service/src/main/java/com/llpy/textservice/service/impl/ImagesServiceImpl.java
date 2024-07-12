@@ -10,12 +10,19 @@ import com.llpy.textservice.feign.UserService;
 import com.llpy.textservice.feign.entity.UserDto2;
 import com.llpy.textservice.mapper.PhotoWallMapper;
 import com.llpy.textservice.service.ImagesService;
+import com.luciad.imageio.webp.WebPWriteParam;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.FileImageOutputStream;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -64,15 +71,18 @@ public class ImagesServiceImpl implements ImagesService {
             }
         }
         //用户文件夹
-        String userPath = uploadDir + "/" + userId +"/";
-        // 当前月份的文件夹，获取当前日期并格式化为 "yyyy-MM" 格式
+        String userPath = uploadDir + File.separator + userId +File.separator;
+        // 获取当前日期并格式化为 "yyyy-MM" 格式
         String folderByMonth = new SimpleDateFormat("yyyy-MM").format(new Date());
+        // 用户当前月份的文件夹
         String userPathCurrentMonth =userPath+folderByMonth;
         // 获取上传文件的名字,生成唯一的名称
         String fileName = file.getOriginalFilename();
         String uniqueFileName = getUniqueFileName(fileName);
+        //webp文件名
+        String webpUrl = uniqueFileName.substring(0, uniqueFileName.lastIndexOf(".")) + ".webp";
         try {
-            Path path = Paths.get(userPathCurrentMonth + File.separator + uniqueFileName);
+            Path path = Paths.get(userPathCurrentMonth + File.separator + webpUrl);
             // 检查用户文件夹大小
             Path userFolder = Paths.get(userPath);
             long folderSize = getFolderSize(userFolder);
@@ -86,8 +96,18 @@ public class ImagesServiceImpl implements ImagesService {
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            // 保存文件到服务器目录
-            Files.write(path, file.getBytes());
+            // 获取原始文件的编码
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            // 创建WebP ImageWriter实例
+            ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
+            // 配置编码参数
+            WebPWriteParam writeParam = new WebPWriteParam(writer.getLocale());
+            // 设置压缩模式
+            writeParam.setCompressionMode(WebPWriteParam.MODE_DEFAULT);
+            // 配置ImageWriter输出
+            writer.setOutput(new FileImageOutputStream(path.toFile()));
+            // 进行编码，重新生成新图片
+            writer.write(null, new IIOImage(image, null, null), writeParam);
 
             // 压缩成缩略图并保存
             // 生成缩略图
@@ -97,9 +117,9 @@ public class ImagesServiceImpl implements ImagesService {
                     .toFile(thumbnailFile);
 
             // 可访问的路径
-            String userPathCurrentMonthUrl = serverUrl + "/files" + "/" + userId +"/" +folderByMonth + "/";
+            String userPathCurrentMonthUrl = serverUrl + "/files" + File.separator + userId +File.separator +folderByMonth + File.separator;
             // 生成文件的URL
-            String fileUrl = userPathCurrentMonthUrl+ uniqueFileName;
+            String fileUrl = userPathCurrentMonthUrl+ webpUrl;
             // 生成缩略图的URL
             String thumbnailUrl = userPathCurrentMonthUrl + "thumbnail_" + uniqueFileName;
 
@@ -111,7 +131,7 @@ public class ImagesServiceImpl implements ImagesService {
             return Result.success(fileUrl);
 
         } catch (Exception e) {
-            //发送异常删除上传的图片
+            //发生异常删除上传的图片
             File file1 = new File(userPathCurrentMonth + File.separator + uniqueFileName);
             if (file1.exists()) {
                 file1.delete();

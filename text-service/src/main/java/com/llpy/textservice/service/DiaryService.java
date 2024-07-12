@@ -52,7 +52,21 @@ public interface DiaryService {
      */
     Result deleteDiaryOne(Long diaryId);
 
+    /**
+     * 拒绝日记
+     *
+     * @param assessDiaryDto 评估日记dto
+     * @param userId         用户id
+     * @return {@code Result<?>}
+     */
     Result<?> rejectDiary(AssessDiaryDto assessDiaryDto, Long userId);
 
+    /**
+     * 通行证日记
+     *
+     * @param diaryId 日记id
+     * @param userId  用户id
+     * @return {@code Result<?>}
+     */
     Result<?> passDiary(Long diaryId,Long userId);
 }

@@ -12,8 +12,19 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface AccessService {
 
+    /**
+     * 访问页面
+     *
+     * @param request 要求
+     */
     void getAccess(HttpServletRequest request);
 
+    /**
+     * 获取网站统计数据
+     *
+     * @param day 白天
+     * @return {@code Result<?>}
+     */
     Result<?> getCountData(Integer day);
 
 }
