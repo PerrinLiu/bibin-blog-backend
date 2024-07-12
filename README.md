@@ -2,7 +2,7 @@
 
 Bibin博客（bibinBlog），基于微服务架构的前后端分离博客系统。Web端使用Vue + Element。后端使用Spring cloud + Spring boot + mybatis-plus + redis进行开发，使用 Jwt 做登录验证和权限校验，文件支持上传阿里云。
 
-[后端代码地址](https://github.com/PerrinLiu/bibin-blog-backend)
+[前端代码地址](https://github.com/PerrinLiu/bibin-blog-frontend)
 
 # 前言
 在上网冲浪时，看到过很多大佬的优质博客系统，心中不由想开发一个属于自己的博客系统，并且当时正在学习微服务，所以二话不说直接开始了自己博客系统的搭建。
