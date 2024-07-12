@@ -66,4 +66,10 @@ public class CommentController extends BaseController {
     public Result<?> getBulletChat() {
         return commentService.getBulletChat();
     }
+
+    @GetMapping("/common/getRecentComment")
+    @ApiOperation("获取最近的五条评论")
+    public Result<?> getRecentComment() {
+        return commentService.getRecentComment();
+    }
 }

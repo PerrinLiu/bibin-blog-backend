@@ -57,5 +57,12 @@
         select count(*) from article_comment
         where article_id = #{articleId}
     </select>
+    <select id="getRecentComment" resultType="com.llpy.textservice.entity.vo.RecentlyCommentVo">
+        SELECT b.user_img,b.nickname, a.content, a.create_time,a.article_id
+        FROM `article_comment` as a
+                 INNER JOIN `user` as b on a.user_id = b.user_id
+        ORDER BY create_time desc
+        limit 5
+    </select>
 
 </mapper>

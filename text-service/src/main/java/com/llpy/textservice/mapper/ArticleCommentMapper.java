@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.llpy.textservice.entity.ArticleComment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.llpy.textservice.entity.vo.ArticleCommonVo;
+import com.llpy.textservice.entity.vo.RecentlyCommentVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -75,4 +76,7 @@ public interface ArticleCommentMapper extends BaseMapper<ArticleComment> {
      * @param articleId 文章id
      */
     void deleteByArticleId(Long articleId);
+
+    List<RecentlyCommentVo> getRecentComment();
+
 }
